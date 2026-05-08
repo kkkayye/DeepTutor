@@ -17,8 +17,6 @@ const TOUR_TARGETS = [
   "agents",
   "co-writer",
   "book",
-  "knowledge",
-  "space",
 ] as const;
 const PET_WIDTH = 192 * 0.62;
 const PET_HEIGHT = 244 * 0.62;
