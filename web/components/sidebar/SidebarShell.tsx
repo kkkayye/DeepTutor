@@ -31,6 +31,7 @@ interface NavEntry {
   label: string;
   icon: LucideIcon;
   tooltipKey?: string;
+  petTarget?: string;
 }
 
 const PRIMARY_NAV: NavEntry[] = [
@@ -39,31 +40,42 @@ const PRIMARY_NAV: NavEntry[] = [
     label: "Chat",
     icon: MessageSquare,
     tooltipKey: "Chat tooltip",
+    petTarget: "chat",
   },
   {
     href: "/agents",
     label: "TutorBot",
     icon: Bot,
     tooltipKey: "TutorBot tooltip",
+    petTarget: "agents",
   },
   {
     href: "/co-writer",
     label: "Co-Writer",
     icon: PenLine,
     tooltipKey: "Co-Writer tooltip",
+    petTarget: "co-writer",
   },
-  { href: "/book", label: "Book", icon: Library, tooltipKey: "Book tooltip" },
+  {
+    href: "/book",
+    label: "Book",
+    icon: Library,
+    tooltipKey: "Book tooltip",
+    petTarget: "book",
+  },
   {
     href: "/knowledge",
     label: "Knowledge",
     icon: BookOpen,
     tooltipKey: "Knowledge tooltip",
+    petTarget: "knowledge",
   },
   {
     href: "/space",
     label: "Space",
     icon: LayoutGrid,
     tooltipKey: "Space tooltip",
+    petTarget: "space",
   },
 ];
 
@@ -143,6 +155,7 @@ export function SidebarShell({
         {/* New chat — visually distinct circular button */}
         <button
           onClick={handleNewChat}
+          data-pet-target="new-chat"
           title={t("New Chat") as string}
           className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)]/50 bg-[var(--background)]/40 text-[var(--foreground)] shadow-sm transition-all duration-150 hover:border-[var(--border)] hover:bg-[var(--background)]/80"
           aria-label={t("New Chat")}
@@ -170,6 +183,7 @@ export function SidebarShell({
                 <Link
                   href={item.href}
                   aria-label={t(item.label)}
+                  data-pet-target={item.petTarget}
                   className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 ${
                     active
                       ? "bg-[var(--background)]/80 text-[var(--foreground)] shadow-sm"
@@ -260,6 +274,7 @@ export function SidebarShell({
           {/* New chat */}
           <button
             onClick={handleNewChat}
+            data-pet-target="new-chat"
             className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] text-[var(--muted-foreground)] transition-colors hover:bg-[var(--background)]/60 hover:text-[var(--foreground)]"
           >
             <Plus size={16} strokeWidth={2} />
@@ -279,6 +294,7 @@ export function SidebarShell({
               <div key={item.href}>
                 <Link
                   href={item.href}
+                  data-pet-target={item.petTarget}
                   className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] transition-colors ${
                     active
                       ? "bg-[var(--background)]/70 font-medium text-[var(--foreground)]"
