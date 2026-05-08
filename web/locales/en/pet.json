@@ -1,0 +1,66 @@
+{
+  "label": "Socartes page pet",
+  "bodyAria": "Open Socartes page pet",
+  "error": {
+    "actionFailed": "That action did not work. I will try another way.",
+    "maxSteps": "I will stop here. The page may not be ready yet.",
+    "noAction": "I did not receive a page action.",
+    "requestFailed": "The page assistant is not responding right now."
+  },
+  "dialog": {
+    "title": "Socartes Assistant",
+    "pauseWander": "Pause roaming",
+    "resumeWander": "Resume roaming",
+    "close": "Close assistant",
+    "status": {
+      "label": "Status:",
+      "wandering": "Free roaming",
+      "thinking": "Thinking…",
+      "stopped": "Stopped"
+    },
+    "quick": {
+      "look": "Look at page",
+      "tasks": "Organize tasks",
+      "exam": "Open question bank",
+      "review": "What should I review?"
+    },
+    "role": {
+      "user": "You",
+      "pet": "Assistant"
+    },
+    "execute": "Run",
+    "ok": "✓",
+    "fail": "failed",
+    "empty": "Ask me to do one thing on this page.",
+    "reset": "Restart",
+    "placeholder": "Ask the assistant to use this page…",
+    "send": "Send",
+    "sendIcon": "↑",
+    "stop": "Stop",
+    "stopIcon": "■"
+  },
+  "memoryPrefix": {
+    "0": "Knowledge point",
+    "1": "Focus",
+    "2": "Review reminder"
+  },
+  "memoryLine": {
+    "0": "Pick one weak spot today and explain it to yourself for five minutes.",
+    "1": "Tie the concept you just learned to one problem so it sticks.",
+    "2": "When you get stuck, write the known facts before pushing forward.",
+    "3": "When reviewing mistakes, focus on why the wrong choice looked right.",
+    "4": "Keep examples next to conclusions when organizing notes.",
+    "5": "After practice, add one reusable method for next time.",
+    "6": "If the topics feel scattered, group them by chapter or theme first.",
+    "7": "Glance at today's key takeaways before bed so tomorrow starts faster."
+  },
+  "tour": {
+    "learn": "Continue learning and chatting from here.",
+    "knowledge": "Manage course materials and knowledge files here.",
+    "books": "Book content and reading progress live here.",
+    "library": "Review notebooks and question bank records here.",
+    "exam": "Start exams and practice questions here.",
+    "skills": "Skills shape how DeepTutor answers you.",
+    "memory": "Long-term memory keeps your learning profile and summaries."
+  }
+}

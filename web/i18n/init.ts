@@ -2,7 +2,9 @@ import i18n, { type Resource } from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import enApp from "@/locales/en/app.json";
+import enPet from "@/locales/en/pet.json";
 import zhApp from "@/locales/zh/app.json";
+import zhPet from "@/locales/zh/pet.json";
 
 export type AppLanguage = "en" | "zh";
 
@@ -19,8 +21,8 @@ export function initI18n(language?: unknown) {
   if (_initialized) return i18n;
 
   const resources: Resource = {
-    en: { app: enApp },
-    zh: { app: zhApp },
+    en: { app: enApp, pet: enPet },
+    zh: { app: zhApp, pet: zhPet },
   };
 
   i18n.use(initReactI18next).init({
@@ -30,7 +32,7 @@ export function initI18n(language?: unknown) {
     // Use a single default namespace to keep lookups simple.
     // We intentionally keep keySeparator disabled so keys like "Generating..." remain valid.
     defaultNS: "app",
-    ns: ["app"],
+    ns: ["app", "pet"],
     keySeparator: false,
     interpolation: {
       escapeValue: false,
