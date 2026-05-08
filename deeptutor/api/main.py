@@ -245,6 +245,7 @@ from deeptutor.api.routers import (
     knowledge,
     memory,
     notebook,
+    page_agent,
     plugins_api,
     question,
     question_notebook,
@@ -313,6 +314,9 @@ app.include_router(
 )
 app.include_router(
     agent_config.router, prefix="/api/v1/agent-config", tags=["agent-config"], dependencies=_auth
+)
+app.include_router(
+    page_agent.router, prefix="/api/v1/page-agent", tags=["page-agent"], dependencies=_auth
 )
 app.include_router(
     vision_solver.router, prefix="/api/v1", tags=["vision-solver"], dependencies=_auth
