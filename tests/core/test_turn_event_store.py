@@ -59,6 +59,58 @@ async def test_sqlite_store_persists_turns_and_events(tmp_path) -> None:
 
 
 @pytest.mark.asyncio
+async def test_sqlite_store_appends_turn_events_in_batch(tmp_path) -> None:
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+
+    session = await store.create_session(title="Batch", session_id="session-batch")
+    turn = await store.create_turn(session["id"], capability="chat")
+
+    events = await store.append_turn_events(
+        turn["id"],
+        [
+            {
+                "type": "content",
+                "source": "chat",
+                "stage": "responding",
+                "content": "A",
+                "metadata": {},
+                "timestamp": 1.0,
+            },
+            {
+                "type": "content",
+                "source": "chat",
+                "stage": "responding",
+                "content": "B",
+                "metadata": {},
+                "timestamp": 2.0,
+            },
+        ],
+    )
+
+    assert [event["seq"] for event in events] == [1, 2]
+
+    next_event = await store.append_turn_event(
+        turn["id"],
+        {
+            "type": "done",
+            "source": "chat",
+            "stage": "",
+            "content": "",
+            "metadata": {},
+            "timestamp": 3.0,
+        },
+    )
+
+    assert next_event["seq"] == 3
+    replay = await store.get_turn_events(turn["id"])
+    assert [(event["seq"], event["content"]) for event in replay] == [
+        (1, "A"),
+        (2, "B"),
+        (3, ""),
+    ]
+
+
+@pytest.mark.asyncio
 async def test_sqlite_store_persists_message_metadata(tmp_path) -> None:
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
     session = await store.create_session(title="Demo", session_id="session-demo")

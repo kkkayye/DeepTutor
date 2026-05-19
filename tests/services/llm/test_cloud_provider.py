@@ -111,6 +111,42 @@ async def test_cloud_complete_fallback(monkeypatch: MonkeyPatch) -> None:
 
 
 @pytest.mark.asyncio
+async def test_cloud_complete_reuses_aiohttp_session(monkeypatch: MonkeyPatch) -> None:
+    """Cloud completion should reuse a pooled aiohttp session for same endpoint."""
+    fake_response = _FakeResponse(
+        200,
+        {
+            "choices": [
+                {"message": {"content": "ok"}},
+            ]
+        },
+    )
+    created: list[_FakeSession] = []
+
+    def _session_factory(*_args: object, **_kwargs: object) -> _FakeSession:
+        session = _FakeSession(fake_response)
+        created.append(session)
+        return session
+
+    monkeypatch.setattr(cloud_provider.aiohttp, "ClientSession", _session_factory)
+    clear_cache = getattr(cloud_provider, "clear_cached_http_clients", None)
+    if callable(clear_cache):
+        clear_cache()
+
+    for _ in range(2):
+        result = await cloud_provider.complete(
+            prompt="hello",
+            model="gpt-test",
+            api_key="sk-test",
+            base_url="https://api.openai.com/v1",
+            binding="openai",
+        )
+        assert result == "ok"
+
+    assert len(created) == 1
+
+
+@pytest.mark.asyncio
 async def test_cloud_stream_yields_chunks(monkeypatch: MonkeyPatch) -> None:
     """Streaming should yield delta content from SSE lines."""
     lines = [

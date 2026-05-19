@@ -112,6 +112,10 @@ class BookStorage:
             self.path_service.get_book_manifest_file(book.id), book.model_dump(mode="json")
         )
 
+    async def save_book_async(self, book: Book) -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.save_book, book)
+
     def load_book(self, book_id: str) -> Book | None:
         data = _read_json(self.path_service.get_book_manifest_file(book_id))
         if data is None:
@@ -122,6 +126,9 @@ class BookStorage:
             logger.warning(f"Failed to validate Book {book_id}: {exc}")
             return None
 
+    async def load_book_async(self, book_id: str) -> Book | None:
+        return await asyncio.to_thread(self.load_book, book_id)
+
     # ── Inputs (immutable snapshot) ─────────────────────────────────────
 
     def save_inputs(self, book_id: str, inputs: BookInputs) -> None:
@@ -129,6 +136,10 @@ class BookStorage:
         _atomic_write_json(
             self.path_service.get_book_inputs_file(book_id), inputs.model_dump(mode="json")
         )
+
+    async def save_inputs_async(self, book_id: str, inputs: BookInputs) -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.save_inputs, book_id, inputs)
 
     def load_inputs(self, book_id: str) -> BookInputs | None:
         data = _read_json(self.path_service.get_book_inputs_file(book_id))
@@ -140,6 +151,9 @@ class BookStorage:
             logger.warning(f"Failed to validate BookInputs {book_id}: {exc}")
             return None
 
+    async def load_inputs_async(self, book_id: str) -> BookInputs | None:
+        return await asyncio.to_thread(self.load_inputs, book_id)
+
     # ── Spine ────────────────────────────────────────────────────────────
 
     def save_spine(self, spine: Spine) -> None:
@@ -148,6 +162,10 @@ class BookStorage:
             self.path_service.get_book_spine_file(spine.book_id),
             spine.model_dump(mode="json"),
         )
+
+    async def save_spine_async(self, spine: Spine) -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.save_spine, spine)
 
     def load_spine(self, book_id: str) -> Spine | None:
         data = _read_json(self.path_service.get_book_spine_file(book_id))
@@ -159,6 +177,9 @@ class BookStorage:
             logger.warning(f"Failed to validate Spine {book_id}: {exc}")
             return None
 
+    async def load_spine_async(self, book_id: str) -> Spine | None:
+        return await asyncio.to_thread(self.load_spine, book_id)
+
     # ── Exploration report (Stage 2 — Source sweep) ────────────────────
 
     def _exploration_path(self, book_id: str) -> Path:
@@ -168,6 +189,14 @@ class BookStorage:
         self.ensure_book_root(book_id)
         report.book_id = report.book_id or book_id
         _atomic_write_json(self._exploration_path(book_id), report.model_dump(mode="json"))
+
+    async def save_exploration_async(
+        self,
+        book_id: str,
+        report: ExplorationReport,
+    ) -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.save_exploration, book_id, report)
 
     def load_exploration(self, book_id: str) -> ExplorationReport | None:
         data = _read_json(self._exploration_path(book_id))
@@ -179,6 +208,9 @@ class BookStorage:
             logger.warning(f"Failed to validate ExplorationReport {book_id}: {exc}")
             return None
 
+    async def load_exploration_async(self, book_id: str) -> ExplorationReport | None:
+        return await asyncio.to_thread(self.load_exploration, book_id)
+
     # ── Progress ─────────────────────────────────────────────────────────
 
     def save_progress(self, progress: Progress) -> None:
@@ -187,6 +219,10 @@ class BookStorage:
             self.path_service.get_book_progress_file(progress.book_id),
             progress.model_dump(mode="json"),
         )
+
+    async def save_progress_async(self, progress: Progress) -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.save_progress, progress)
 
     def load_progress(self, book_id: str) -> Progress | None:
         data = _read_json(self.path_service.get_book_progress_file(book_id))
@@ -198,6 +234,9 @@ class BookStorage:
             logger.warning(f"Failed to validate Progress {book_id}: {exc}")
             return None
 
+    async def load_progress_async(self, book_id: str) -> Progress | None:
+        return await asyncio.to_thread(self.load_progress, book_id)
+
     # ── Pages ────────────────────────────────────────────────────────────
 
     def save_page(self, page: Page) -> None:
@@ -206,6 +245,10 @@ class BookStorage:
             self.path_service.get_book_page_file(page.book_id, page.id),
             page.model_dump(mode="json"),
         )
+
+    async def save_page_async(self, page: Page) -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.save_page, page)
 
     def load_page(self, book_id: str, page_id: str) -> Page | None:
         data = _read_json(self.path_service.get_book_page_file(book_id, page_id))
@@ -216,6 +259,9 @@ class BookStorage:
         except Exception as exc:
             logger.warning(f"Failed to validate Page {page_id}: {exc}")
             return None
+
+    async def load_page_async(self, book_id: str, page_id: str) -> Page | None:
+        return await asyncio.to_thread(self.load_page, book_id, page_id)
 
     def list_pages(self, book_id: str) -> list[Page]:
         pages_dir = self.path_service.get_book_pages_dir(book_id)
@@ -235,12 +281,19 @@ class BookStorage:
         result.sort(key=lambda p: (p.order, p.created_at))
         return result
 
+    async def list_pages_async(self, book_id: str) -> list[Page]:
+        return await asyncio.to_thread(self.list_pages, book_id)
+
     def delete_page(self, book_id: str, page_id: str) -> bool:
         path = self.path_service.get_book_page_file(book_id, page_id)
         if path.exists():
             path.unlink()
             return True
         return False
+
+    async def delete_page_async(self, book_id: str, page_id: str) -> bool:
+        async with self._lock:
+            return await asyncio.to_thread(self.delete_page, book_id, page_id)
 
     # ── Log (append-only) ────────────────────────────────────────────────
 
@@ -252,6 +305,10 @@ class BookStorage:
         with open(path, "a", encoding="utf-8") as f:
             f.write(line)
 
+    async def append_log_async(self, book_id: str, message: str, *, op: str = "info") -> None:
+        async with self._lock:
+            await asyncio.to_thread(self.append_log, book_id, message, op=op)
+
     # ── Delete ───────────────────────────────────────────────────────────
 
     def delete_book(self, book_id: str) -> bool:
@@ -260,6 +317,10 @@ class BookStorage:
             return False
         shutil.rmtree(root, ignore_errors=True)
         return not root.exists()
+
+    async def delete_book_async(self, book_id: str) -> bool:
+        async with self._lock:
+            return await asyncio.to_thread(self.delete_book, book_id)
 
 
 _storage: BookStorage | None = None

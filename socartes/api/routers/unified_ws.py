@@ -61,6 +61,7 @@ async def unified_websocket(ws: WebSocket) -> None:
 
     await ws.accept()
     closed = False
+    send_lock = asyncio.Lock()
     subscription_tasks: dict[str, asyncio.Task[None]] = {}
 
     async def safe_send(data: dict[str, Any]) -> None:
@@ -68,7 +69,10 @@ async def unified_websocket(ws: WebSocket) -> None:
         if closed:
             return
         try:
-            await ws.send_json(data)
+            async with send_lock:
+                if closed:
+                    return
+                await ws.send_json(data)
         except Exception:
             closed = True
 

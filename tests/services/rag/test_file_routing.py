@@ -11,6 +11,7 @@ from socartes.services.rag.file_routing import (
     DocumentType,
     FileTypeRouter,
 )
+from socartes.services.rag import file_routing
 
 
 class TestExtensionClassification:
@@ -147,3 +148,24 @@ class TestReadTextFile:
         path.write_bytes("中文测试".encode("gbk"))
         content = asyncio.run(FileTypeRouter.read_text_file(str(path)))
         assert "中文" in content
+
+    @pytest.mark.asyncio
+    async def test_read_text_file_offloads_file_io(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        path = tmp_path / "u.txt"
+        path.write_text("hello", encoding="utf-8")
+        calls: list[str] = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append(getattr(func, "__name__", repr(func)))
+            return func(*args, **kwargs)
+
+        monkeypatch.setattr(file_routing.asyncio, "to_thread", fake_to_thread)
+
+        content = await FileTypeRouter.read_text_file(str(path))
+
+        assert content == "hello"
+        assert calls

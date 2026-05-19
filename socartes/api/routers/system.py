@@ -3,6 +3,7 @@ System Status API Router
 Manages system status checks and model connection tests
 """
 
+import asyncio
 from datetime import datetime
 import time
 
@@ -293,7 +294,11 @@ async def test_search_connection():
                 message=f"Search provider `{search_config.requested_provider}` missing credentials.",
                 error="Set profile.api_key or PERPLEXITY_API_KEY",
             )
-        result = web_search("Socartes health check", provider=search_config.provider)
+        result = await asyncio.to_thread(
+            web_search,
+            "Socartes health check",
+            provider=search_config.provider,
+        )
         response_time = (time.time() - start_time) * 1000
         answer = result.get("answer") or result.get("search_results")
         if not answer:

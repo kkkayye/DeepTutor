@@ -619,6 +619,23 @@ class PocketBaseSessionStore:
             payload["seq"] = int(time.time() * 1000) % 1_000_000
         return payload
 
+    async def append_turn_events(
+        self, turn_id: str, events: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        payloads: list[dict[str, Any]] = []
+        seq = 0
+        for event in events:
+            payload = dict(event)
+            payload.setdefault("turn_id", turn_id)
+            provided_seq = int(payload.get("seq") or 0)
+            if provided_seq > 0:
+                seq = max(seq, provided_seq)
+            else:
+                seq += 1
+                payload["seq"] = seq
+            payloads.append(payload)
+        return payloads
+
     async def get_turn_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
         """Retrieve persisted turn events from PocketBase (post-turn replay)."""
 

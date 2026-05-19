@@ -66,6 +66,7 @@ class SQLiteSessionStore:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._migrate_legacy_db(path_service)
         self._lock = asyncio.Lock()
+        self._turn_seq_cache: dict[str, int] = {}
         self._initialize()
 
     def _migrate_legacy_db(self, path_service) -> None:
@@ -83,6 +84,9 @@ class SQLiteSessionStore:
     def _initialize(self) -> None:
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("PRAGMA foreign_keys = ON")
+            conn.execute("PRAGMA journal_mode = WAL")
+            conn.execute("PRAGMA synchronous = NORMAL")
+            conn.execute("PRAGMA busy_timeout = 5000")
             conn.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -200,9 +204,11 @@ class SQLiteSessionStore:
             return await asyncio.to_thread(fn, *args)
 
     def _connect(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("PRAGMA busy_timeout = 5000")
+        conn.execute("PRAGMA synchronous = NORMAL")
         return conn
 
     def _create_session_sync(
@@ -433,7 +439,23 @@ class SQLiteSessionStore:
     async def update_turn_status(self, turn_id: str, status: str, error: str = "") -> bool:
         return await self._run(self._update_turn_status_sync, turn_id, status, error)
 
-    def _append_turn_event_sync(self, turn_id: str, event: dict[str, Any]) -> dict[str, Any]:
+    def _last_seq_sync(self, conn: sqlite3.Connection, turn_id: str) -> int:
+        cached = self._turn_seq_cache.get(turn_id)
+        if cached is not None:
+            return cached
+        row = conn.execute(
+            "SELECT COALESCE(MAX(seq), 0) AS last_seq FROM turn_events WHERE turn_id = ?",
+            (turn_id,),
+        ).fetchone()
+        last_seq = int(row["last_seq"]) if row else 0
+        self._turn_seq_cache[turn_id] = last_seq
+        return last_seq
+
+    def _append_turn_events_sync(
+        self, turn_id: str, events: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        if not events:
+            return []
         now = time.time()
         with self._connect() as conn:
             turn = conn.execute(
@@ -441,46 +463,60 @@ class SQLiteSessionStore:
             ).fetchone()
             if turn is None:
                 raise ValueError(f"Turn not found: {turn_id}")
-            provided_seq = int(event.get("seq") or 0)
-            if provided_seq > 0:
-                seq = provided_seq
-            else:
-                row = conn.execute(
-                    "SELECT COALESCE(MAX(seq), 0) AS last_seq FROM turn_events WHERE turn_id = ?",
-                    (turn_id,),
-                ).fetchone()
-                seq = int(row["last_seq"]) + 1 if row else 1
-            payload = dict(event)
-            payload["seq"] = seq
-            payload["turn_id"] = payload.get("turn_id") or turn_id
-            payload["session_id"] = payload.get("session_id") or turn["session_id"]
-            conn.execute(
+            seq = self._last_seq_sync(conn, turn_id)
+            payloads: list[dict[str, Any]] = []
+            rows: list[tuple[Any, ...]] = []
+            for event in events:
+                payload = dict(event)
+                provided_seq = int(payload.get("seq") or 0)
+                if provided_seq > 0:
+                    seq = max(seq, provided_seq)
+                    payload["seq"] = provided_seq
+                else:
+                    seq += 1
+                    payload["seq"] = seq
+                payload["turn_id"] = payload.get("turn_id") or turn_id
+                payload["session_id"] = payload.get("session_id") or turn["session_id"]
+                payloads.append(payload)
+                rows.append(
+                    (
+                        turn_id,
+                        payload["seq"],
+                        payload.get("type", ""),
+                        payload.get("source", ""),
+                        payload.get("stage", ""),
+                        payload.get("content", "") or "",
+                        _json_dumps(payload.get("metadata", {})),
+                        float(payload.get("timestamp") or now),
+                        now,
+                    )
+                )
+            conn.executemany(
                 """
                 INSERT OR REPLACE INTO turn_events (
                     turn_id, seq, type, source, stage, content, metadata_json, timestamp, created_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (
-                    turn_id,
-                    seq,
-                    payload.get("type", ""),
-                    payload.get("source", ""),
-                    payload.get("stage", ""),
-                    payload.get("content", "") or "",
-                    _json_dumps(payload.get("metadata", {})),
-                    float(payload.get("timestamp") or now),
-                    now,
-                ),
+                rows,
             )
             conn.execute(
                 "UPDATE turns SET updated_at = ? WHERE id = ?",
                 (now, turn_id),
             )
             conn.commit()
-        return payload
+            self._turn_seq_cache[turn_id] = seq
+        return payloads
+
+    def _append_turn_event_sync(self, turn_id: str, event: dict[str, Any]) -> dict[str, Any]:
+        return self._append_turn_events_sync(turn_id, [event])[0]
 
     async def append_turn_event(self, turn_id: str, event: dict[str, Any]) -> dict[str, Any]:
         return await self._run(self._append_turn_event_sync, turn_id, event)
+
+    async def append_turn_events(
+        self, turn_id: str, events: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        return await self._run(self._append_turn_events_sync, turn_id, events)
 
     def _get_turn_events_sync(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
         with self._connect() as conn:

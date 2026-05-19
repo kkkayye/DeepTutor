@@ -48,3 +48,44 @@ async def test_embeddings_connection_rejects_partial_batch_response(
 
     assert response.success is False
     assert response.message == "Embeddings connection failed: Invalid response"
+
+
+@pytest.mark.asyncio
+async def test_search_connection_offloads_sync_web_search(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    inside_to_thread = False
+
+    async def fake_to_thread(func, *args, **kwargs):
+        nonlocal inside_to_thread
+        inside_to_thread = True
+        try:
+            return func(*args, **kwargs)
+        finally:
+            inside_to_thread = False
+
+    def fake_web_search(*_args, **_kwargs):
+        assert inside_to_thread
+        return {"answer": "ok"}
+
+    monkeypatch.setattr(
+        system_router,
+        "resolve_search_runtime_config",
+        lambda: SimpleNamespace(
+            requested_provider="duckduckgo",
+            unsupported_provider=False,
+            missing_credentials=False,
+            provider="duckduckgo",
+        ),
+    )
+    monkeypatch.setattr(system_router, "web_search", fake_web_search)
+    monkeypatch.setattr(
+        system_router,
+        "asyncio",
+        SimpleNamespace(to_thread=fake_to_thread),
+        raising=False,
+    )
+
+    response = await system_router.test_search_connection()
+
+    assert response.success is True

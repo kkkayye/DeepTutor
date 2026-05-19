@@ -29,12 +29,20 @@ try:
         SyncError,
         UploadError,
     )
-    from nio.crypto.attachments import decrypt_attachment
-    from nio.exceptions import EncryptionError
 except ImportError as e:
     raise ImportError(
         "Matrix dependencies not installed. Run: pip install socartes[matrix]"
     ) from e
+
+try:
+    from nio.crypto.attachments import decrypt_attachment
+    from nio.exceptions import EncryptionError
+except ImportError:
+    decrypt_attachment = None
+    EncryptionError = Exception
+    MATRIX_E2EE_AVAILABLE = False
+else:
+    MATRIX_E2EE_AVAILABLE = True
 
 from socartes.tutorbot.bus.events import OutboundMessage
 from socartes.tutorbot.bus.queue import MessageBus
@@ -185,7 +193,7 @@ class MatrixConfig(Base):
     access_token: str = ""
     user_id: str = ""
     device_id: str = ""
-    e2ee_enabled: bool = True
+    e2ee_enabled: bool = False
     sync_stop_grace_seconds: int = 2
     max_media_bytes: int = 20 * 1024 * 1024
     allow_from: list[str] = Field(default_factory=list)
@@ -229,6 +237,12 @@ class MatrixChannel(BaseChannel):
         """Start Matrix client and begin sync loop."""
         self._running = True
         _configure_nio_logging_bridge()
+        if self.config.e2ee_enabled and not MATRIX_E2EE_AVAILABLE:
+            raise ImportError(
+                "Matrix E2EE dependencies are not installed. Install "
+                "`socartes[matrix-e2e]` or `requirements/matrix-e2e.txt`, and make "
+                "sure libolm is available on your system."
+            )
 
         store_path = get_data_dir() / "matrix-store"
         store_path.mkdir(parents=True, exist_ok=True)
@@ -514,7 +528,7 @@ class MatrixChannel(BaseChannel):
             if isinstance(response, RoomTypingError):
                 logger.debug("Matrix typing failed for {}: {}", room_id, response)
         except Exception:
-            pass
+            logger.opt(exception=True).debug("Matrix typing update failed for {}", room_id)
 
     async def _start_typing_keepalive(self, room_id: str) -> None:
         """Start periodic typing refresh (spec-recommended keepalive)."""
@@ -698,6 +712,12 @@ class MatrixChannel(BaseChannel):
         return None
 
     def _decrypt_media_bytes(self, event: MatrixMediaEvent, ciphertext: bytes) -> bytes | None:
+        if decrypt_attachment is None:
+            logger.warning(
+                "Matrix encrypted attachment received but E2EE dependencies are not installed. "
+                "Install socartes[matrix-e2e] to decrypt encrypted media."
+            )
+            return None
         key_obj, hashes, iv = (
             getattr(event, "key", None),
             getattr(event, "hashes", None),

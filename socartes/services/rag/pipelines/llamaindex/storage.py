@@ -11,9 +11,9 @@ from typing import Any
 from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_storage
 
 from socartes.services.embedding.validation import validate_embedding_batch
+from socartes.services.rag import index_versioning
 from socartes.services.rag.index_versioning import (
     EmbeddingSignature,
-    find_matching_version,
     resolve_storage_dir_for_read,
     resolve_storage_dir_for_write,
 )
@@ -23,6 +23,38 @@ from socartes.services.rag.index_versioning import (
 class AddStoragePlan:
     existing_storage: Path | None
     storage_dir: Path
+
+
+_INDEX_CACHE: dict[tuple[str, tuple[tuple[str, int, int], ...]], Any] = {}
+
+
+def clear_index_cache() -> None:
+    _INDEX_CACHE.clear()
+
+
+def _storage_fingerprint(storage_dir: Path) -> tuple[tuple[str, int, int], ...]:
+    entries: list[tuple[str, int, int]] = []
+    if not storage_dir.exists():
+        return ()
+    for path in sorted(storage_dir.glob("*.json")):
+        try:
+            stat = path.stat()
+        except OSError:
+            continue
+        entries.append((path.name, stat.st_mtime_ns, stat.st_size))
+    return tuple(entries)
+
+
+def _load_index_cached(storage_dir: Path) -> Any:
+    key = (str(storage_dir.resolve()), _storage_fingerprint(storage_dir))
+    cached = _INDEX_CACHE.get(key)
+    if cached is not None:
+        return cached
+    storage_context = StorageContext.from_defaults(persist_dir=str(storage_dir))
+    index = load_index_from_storage(storage_context)
+    _validate_persisted_embeddings(index, storage_dir)
+    _INDEX_CACHE[key] = index
+    return index
 
 
 def cleanup_failed_version_dir(storage_dir: Path) -> bool:
@@ -39,7 +71,11 @@ def cleanup_failed_version_dir(storage_dir: Path) -> bool:
 
 def resolve_add_storage_plan(kb_dir: Path, signature: EmbeddingSignature | None) -> AddStoragePlan:
     """Choose existing/new storage dirs for incremental adds."""
-    matching_version = find_matching_version(kb_dir, signature) if signature is not None else None
+    matching_version = (
+        index_versioning.find_matching_version(kb_dir, signature)
+        if signature is not None
+        else None
+    )
     existing_storage = Path(str(matching_version["storage_path"])) if matching_version else None
 
     if matching_version and matching_version.get("layout") == "flat":
@@ -67,6 +103,7 @@ def resolve_add_storage_plan(kb_dir: Path, signature: EmbeddingSignature | None)
 def create_index(documents: list[Any], storage_dir: Path, *, show_progress: bool = True) -> int:
     index = VectorStoreIndex.from_documents(documents, show_progress=show_progress)
     index.storage_context.persist(persist_dir=str(storage_dir))
+    clear_index_cache()
     return len(documents)
 
 
@@ -77,6 +114,7 @@ def insert_documents(existing_storage: Path, storage_dir: Path, documents: list[
     for document in documents:
         index.insert(document)
     index.storage_context.persist(persist_dir=str(storage_dir))
+    clear_index_cache()
     return len(documents)
 
 
@@ -163,9 +201,7 @@ def validate_storage_embeddings(storage_dir: Path) -> None:
 
 
 def retrieve_nodes(storage_dir: Path, query: str, *, top_k: int = 5) -> list[Any]:
-    storage_context = StorageContext.from_defaults(persist_dir=str(storage_dir))
-    index = load_index_from_storage(storage_context)
-    _validate_persisted_embeddings(index, storage_dir)
+    index = _load_index_cached(storage_dir)
     retriever = index.as_retriever(similarity_top_k=top_k)
     return retriever.retrieve(query)
 
@@ -173,5 +209,6 @@ def retrieve_nodes(storage_dir: Path, query: str, *, top_k: int = 5) -> list[Any
 def delete_kb_dir(kb_dir: Path) -> bool:
     if kb_dir.exists():
         shutil.rmtree(kb_dir)
+        clear_index_cache()
         return True
     return False

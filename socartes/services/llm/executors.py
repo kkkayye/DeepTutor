@@ -6,11 +6,11 @@ from collections.abc import AsyncGenerator
 import logging
 import os
 from typing import Any
-import uuid
 
 from openai import AsyncOpenAI, BadRequestError
 
 from socartes.services.llm.capabilities import disable_response_format_at_runtime
+from socartes.services.llm.openai_http_client import get_cached_async_openai_client
 from socartes.services.llm.provider_registry import find_by_name, strip_provider_prefix
 
 from .config import get_token_limit_kwargs
@@ -147,15 +147,17 @@ async def sdk_complete(
         base_url,
     )
 
-    default_headers: dict[str, str] = {"x-session-affinity": uuid.uuid4().hex}
+    default_headers: dict[str, str] = {}
     if extra_headers:
         default_headers.update(extra_headers)
 
-    client = AsyncOpenAI(
-        api_key=effective_key or "no-key",
+    client = get_cached_async_openai_client(
+        provider_name=provider_name or "openai",
+        api_key=effective_key,
         base_url=effective_base,
         default_headers=default_headers,
         max_retries=0,
+        async_openai_factory=AsyncOpenAI,
     )
 
     max_tokens_val = _coerce_int(kwargs.pop("max_tokens", 4096), 4096)
@@ -213,15 +215,17 @@ async def sdk_stream(
         base_url,
     )
 
-    default_headers: dict[str, str] = {"x-session-affinity": uuid.uuid4().hex}
+    default_headers: dict[str, str] = {}
     if extra_headers:
         default_headers.update(extra_headers)
 
-    client = AsyncOpenAI(
-        api_key=effective_key or "no-key",
+    client = get_cached_async_openai_client(
+        provider_name=provider_name or "openai",
+        api_key=effective_key,
         base_url=effective_base,
         default_headers=default_headers,
         max_retries=0,
+        async_openai_factory=AsyncOpenAI,
     )
 
     max_tokens_val = _coerce_int(kwargs.pop("max_tokens", 4096), 4096)

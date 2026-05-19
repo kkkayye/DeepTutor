@@ -8,6 +8,7 @@ Determines the appropriate processing method for each document type.
 
 from dataclasses import dataclass
 from enum import Enum
+import asyncio
 import logging
 from pathlib import Path
 from typing import List
@@ -270,7 +271,7 @@ class FileTypeRouter:
         return data.decode("utf-8", errors="replace")
 
     @classmethod
-    async def read_text_file(cls, file_path: str) -> str:
+    def _read_text_file_sync(cls, file_path: str) -> str:
         """Read a text file with automatic encoding detection."""
         for encoding in cls.TEXT_DECODING_CANDIDATES:
             try:
@@ -281,6 +282,11 @@ class FileTypeRouter:
 
         with open(file_path, "rb") as f:
             return f.read().decode("utf-8", errors="replace")
+
+    @classmethod
+    async def read_text_file(cls, file_path: str) -> str:
+        """Read a text file without blocking the event loop."""
+        return await asyncio.to_thread(cls._read_text_file_sync, file_path)
 
     @classmethod
     def needs_parser(cls, file_path: str) -> bool:

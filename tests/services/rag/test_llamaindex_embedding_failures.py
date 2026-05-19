@@ -174,6 +174,43 @@ def test_retrieve_nodes_checks_storage_context_vector_stores(
         storage_module.retrieve_nodes(tmp_path, "what is this?")
 
 
+def test_retrieve_nodes_reuses_loaded_index_for_same_storage_dir(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from socartes.services.rag.pipelines.llamaindex import storage as storage_module
+
+    load_calls: list[str] = []
+    retrieved_queries: list[str] = []
+
+    class _Retriever:
+        def retrieve(self, query: str):
+            retrieved_queries.append(query)
+            return []
+
+    fake_index = SimpleNamespace(
+        vector_store=SimpleNamespace(data=SimpleNamespace(embedding_dict={})),
+        as_retriever=lambda similarity_top_k=5: _Retriever(),
+    )
+
+    monkeypatch.setattr(
+        storage_module.StorageContext,
+        "from_defaults",
+        lambda persist_dir: object(),
+    )
+
+    def _load_index(_ctx):
+        load_calls.append("load")
+        return fake_index
+
+    monkeypatch.setattr(storage_module, "load_index_from_storage", _load_index)
+
+    storage_module.retrieve_nodes(tmp_path, "first")
+    storage_module.retrieve_nodes(tmp_path, "second")
+
+    assert load_calls == ["load"]
+    assert retrieved_queries == ["first", "second"]
+
+
 @pytest.mark.asyncio
 async def test_search_reconfigures_llamaindex_settings_for_cached_pipeline(
     tmp_path, monkeypatch: pytest.MonkeyPatch

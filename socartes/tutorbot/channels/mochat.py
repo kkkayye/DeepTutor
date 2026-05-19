@@ -351,7 +351,7 @@ class MochatChannel(BaseChannel):
             try:
                 await self._socket.disconnect()
             except Exception:
-                pass
+                logger.opt(exception=True).debug("Mochat websocket disconnect failed")
             self._socket = None
 
         if self._cursor_save_task:
@@ -497,7 +497,7 @@ class MochatChannel(BaseChannel):
             try:
                 await client.disconnect()
             except Exception:
-                pass
+                logger.opt(exception=True).debug("Mochat websocket cleanup disconnect failed")
             self._socket = None
             return False
 

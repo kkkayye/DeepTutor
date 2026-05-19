@@ -87,6 +87,7 @@ class _BookRuntime:
 
     queue: asyncio.Queue[str] = field(default_factory=asyncio.Queue)
     queued: set[str] = field(default_factory=set)
+    compiling: dict[str, asyncio.Event] = field(default_factory=dict)
     worker: asyncio.Task[None] | None = None
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     stream: BookStream | None = None  # default stream for background work
@@ -143,6 +144,31 @@ class BookEngine:
             progress = Progress(book_id=book_id)
             self.storage.save_progress(progress)
         return progress
+
+    async def _claim_page_compile(
+        self,
+        book_id: str,
+        page_id: str,
+        stream: StreamBus | None,
+    ) -> tuple[_BookRuntime, asyncio.Event, bool]:
+        runtime = await self._get_or_create_runtime(book_id, stream)
+        async with runtime.lock:
+            active = runtime.compiling.get(page_id)
+            if active is not None:
+                return runtime, active, False
+            event = asyncio.Event()
+            runtime.compiling[page_id] = event
+            return runtime, event, True
+
+    async def _release_page_compile(
+        self,
+        runtime: _BookRuntime,
+        page_id: str,
+    ) -> None:
+        async with runtime.lock:
+            event = runtime.compiling.pop(page_id, None)
+            if event is not None:
+                event.set()
 
     def delete_book(self, book_id: str) -> bool:
         runtime = self._runtimes.pop(book_id, None)
@@ -705,16 +731,44 @@ class BookEngine:
         force: bool = False,
     ) -> Page:
         """Drive the compiler for one page (used when a user opens it)."""
-        book = self.storage.load_book(book_id)
-        spine = self.storage.load_spine(book_id)
-        page = self.storage.load_page(book_id, page_id)
+        runtime, active, claimed = await self._claim_page_compile(book_id, page_id, stream)
+        if not claimed:
+            await active.wait()
+            page = await self.storage.load_page_async(book_id, page_id)
+            if page is None:
+                raise ValueError(f"Cannot compile page – missing page ({book_id}/{page_id})")
+            return page
+
+        try:
+            return await self._compile_page_claimed(
+                book_id=book_id,
+                page_id=page_id,
+                stream=stream,
+                force=force,
+            )
+        finally:
+            await self._release_page_compile(runtime, page_id)
+
+    async def _compile_page_claimed(
+        self,
+        *,
+        book_id: str,
+        page_id: str,
+        stream: StreamBus | None = None,
+        force: bool = False,
+    ) -> Page:
+        book, spine, page = await asyncio.gather(
+            self.storage.load_book_async(book_id),
+            self.storage.load_spine_async(book_id),
+            self.storage.load_page_async(book_id, page_id),
+        )
         if book is None or spine is None or page is None:
             raise ValueError(f"Cannot compile page – missing book/spine/page ({book_id}/{page_id})")
         if page.status == PageStatus.READY and not force:
             return page
         if force and page.content_type != ContentType.OVERVIEW:
             self._reset_page_for_force_compile(page)
-            self.storage.save_page(page)
+            await self.storage.save_page_async(page)
 
         chapter = spine.chapter_by_id(page.chapter_id)
         if chapter is None:
@@ -740,9 +794,13 @@ class BookEngine:
             try:
                 from .kb_health import refresh_book_fingerprints
 
-                refreshed = self.storage.load_book(book_id)
+                refreshed = await self.storage.load_book_async(book_id)
                 if refreshed is not None and not refreshed.kb_fingerprints:
-                    refresh_book_fingerprints(book_id, storage=self.storage)
+                    await asyncio.to_thread(
+                        refresh_book_fingerprints,
+                        book_id,
+                        storage=self.storage,
+                    )
             except Exception as exc:  # noqa: BLE001
                 logger.debug(f"fingerprint refresh skipped: {exc}")
 
@@ -805,9 +863,11 @@ class BookEngine:
                 continue
 
             try:
-                book = self.storage.load_book(book_id)
-                spine = self.storage.load_spine(book_id)
-                page = self.storage.load_page(book_id, page_id)
+                book, spine, page = await asyncio.gather(
+                    self.storage.load_book_async(book_id),
+                    self.storage.load_spine_async(book_id),
+                    self.storage.load_page_async(book_id, page_id),
+                )
                 if book is None or spine is None or page is None:
                     continue
                 if page.status == PageStatus.READY:
@@ -815,13 +875,10 @@ class BookEngine:
                 chapter = spine.chapter_by_id(page.chapter_id)
                 if chapter is None:
                     continue
-                await self.compiler.compile_page(
+                await self.compile_page(
                     book_id=book_id,
-                    chapter=chapter,
-                    page=page,
-                    stream=bstream,
-                    knowledge_bases=book.knowledge_bases,
-                    language=book.language,
+                    page_id=page_id,
+                    stream=bstream.bus,
                 )
             except asyncio.CancelledError:
                 raise
@@ -830,7 +887,7 @@ class BookEngine:
                     f"Background compilation failed for {book_id}/{page_id}: {exc}",
                     exc_info=True,
                 )
-                self.storage.append_log(
+                await self.storage.append_log_async(
                     book_id,
                     f"background compile failed for page {page_id}: {exc}",
                     op="compile_error",
@@ -841,17 +898,21 @@ class BookEngine:
             await self._maybe_finalize_book(book_id)
 
     async def _maybe_finalize_book(self, book_id: str) -> None:
-        book = self.storage.load_book(book_id)
+        book = await self.storage.load_book_async(book_id)
         if book is None:
             return
-        pages = self.storage.list_pages(book_id)
+        pages = await self.storage.list_pages_async(book_id)
         if not pages:
             return
         if all(p.status == PageStatus.READY for p in pages):
             if book.status != BookStatus.READY:
                 book.status = BookStatus.READY
-                self.storage.save_book(book)
-                self.storage.append_log(book_id, "all pages ready → status=READY", op="finalize")
+                await self.storage.save_book_async(book)
+                await self.storage.append_log_async(
+                    book_id,
+                    "all pages ready → status=READY",
+                    op="finalize",
+                )
 
     # ── Block-level controls (Phase 1: regenerate single block) ─────────
 

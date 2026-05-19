@@ -142,7 +142,7 @@ class ZulipChannel(BaseChannel):
             try:
                 self._client.deregister(self._queue_id)
             except Exception:
-                pass
+                logger.opt(exception=True).debug("Zulip queue deregister failed")
 
         self._queue_id = None
         self._client = None
@@ -622,4 +622,4 @@ class ZulipChannel(BaseChannel):
                         }
                     )
                 except Exception:
-                    pass
+                    logger.opt(exception=True).debug("Zulip typing stop failed")

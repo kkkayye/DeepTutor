@@ -3,6 +3,7 @@ EditAgent - Co-writer editing agent.
 Inherits from unified BaseAgent.
 """
 
+import asyncio
 from datetime import datetime
 import json
 from typing import Any, Literal
@@ -156,7 +157,7 @@ class EditAgent(BaseAgent):
         elif source == "web":
             self.logger.info(f"Searching Web for: {instruction}")
             try:
-                search_result = web_search(instruction)
+                search_result = await asyncio.to_thread(web_search, instruction)
                 context = search_result.get("answer", "")
                 self.logger.info(f"Web context found: {len(context)} chars")
 

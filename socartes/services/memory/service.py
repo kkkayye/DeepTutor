@@ -116,7 +116,7 @@ class MemoryService:
                     else:
                         path.unlink()
                 except Exception:
-                    pass
+                    logger.debug("Failed to persist cleaned memory file %s", path, exc_info=True)
             return cleaned
         except Exception:
             return ""

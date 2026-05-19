@@ -21,6 +21,7 @@ from .capabilities import (
 )
 from .config import get_token_limit_kwargs
 from .exceptions import LLMAPIError, LLMAuthenticationError, LLMConfigError
+from .openai_http_client import clear_cached_http_clients, get_cached_aiohttp_session
 from .utils import (
     build_auth_headers,
     build_chat_url,
@@ -115,6 +116,53 @@ def _looks_like_unsupported_response_format(error_text: str) -> bool:
         or "not supported" in text
         or "not valid" in text
         or "must be" in text
+    )
+
+
+def _get_pooled_session(
+    *,
+    owner: str,
+    base_url: str | None,
+    api_key: str | None,
+    timeout_total: int | float,
+):
+    return get_cached_aiohttp_session(
+        owner=owner,
+        base_url=base_url,
+        api_key=api_key,
+        timeout_total=timeout_total,
+        trust_env=True,
+        client_session_factory=aiohttp.ClientSession,
+        timeout_factory=aiohttp.ClientTimeout,
+        connector_factory=aiohttp.TCPConnector,
+    )
+
+
+class _BorrowedAiohttpSession:
+    def __init__(self, session):
+        self._session = session
+
+    async def __aenter__(self):
+        return self._session
+
+    async def __aexit__(self, *_args):
+        return None
+
+
+def _borrow_pooled_session(
+    *,
+    owner: str,
+    base_url: str | None,
+    api_key: str | None,
+    timeout_total: int | float,
+) -> _BorrowedAiohttpSession:
+    return _BorrowedAiohttpSession(
+        _get_pooled_session(
+            owner=owner,
+            base_url=base_url,
+            api_key=api_key,
+            timeout_total=timeout_total,
+        )
     )
 
 
@@ -349,10 +397,11 @@ async def _openai_complete(
         ):
             data["reasoning_effort"] = effort
 
-    timeout = aiohttp.ClientTimeout(total=120)
-    connector = _get_aiohttp_connector()
-    async with aiohttp.ClientSession(
-        timeout=timeout, connector=connector, trust_env=True
+    async with _borrow_pooled_session(
+        owner=f"cloud:{binding}:complete",
+        base_url=effective_base,
+        api_key=api_key,
+        timeout_total=120,
     ) as session:
         try:
             async with session.post(url, headers=headers, json=data) as resp:
@@ -518,10 +567,11 @@ async def _openai_stream(
         ):
             data["reasoning_effort"] = effort
 
-    timeout = aiohttp.ClientTimeout(total=300)
-    connector = _get_aiohttp_connector()
-    async with aiohttp.ClientSession(
-        timeout=timeout, connector=connector, trust_env=True
+    async with _borrow_pooled_session(
+        owner=f"cloud:{binding}:stream",
+        base_url=effective_base,
+        api_key=api_key,
+        timeout_total=300,
     ) as session:
         # Try once; if the server rejects response_format with HTTP 400,
         # disable it for this (binding, model) pair and retry once before
@@ -681,10 +731,11 @@ async def _anthropic_complete(
         "temperature": temperature_value,
     }
 
-    timeout = aiohttp.ClientTimeout(total=120)
-    connector = _get_aiohttp_connector()
-    async with aiohttp.ClientSession(
-        timeout=timeout, connector=connector, trust_env=True
+    async with _borrow_pooled_session(
+        owner="cloud:anthropic:complete",
+        base_url=effective_base,
+        api_key=api_key,
+        timeout_total=120,
     ) as session:
         async with session.post(url, headers=headers, json=data) as response:
             if response.status != 200:
@@ -758,10 +809,11 @@ async def _anthropic_stream(
         "stream": True,
     }
 
-    timeout = aiohttp.ClientTimeout(total=300)
-    connector = _get_aiohttp_connector()
-    async with aiohttp.ClientSession(
-        timeout=timeout, connector=connector, trust_env=True
+    async with _borrow_pooled_session(
+        owner="cloud:anthropic:stream",
+        base_url=effective_base,
+        api_key=api_key,
+        timeout_total=300,
     ) as session:
         async with session.post(url, headers=headers, json=data) as response:
             if response.status != 200:
@@ -826,10 +878,11 @@ async def _cohere_complete(
         "temperature": temperature_value,
     }
 
-    timeout = aiohttp.ClientTimeout(total=120)
-    connector = _get_aiohttp_connector()
-    async with aiohttp.ClientSession(
-        timeout=timeout, connector=connector, trust_env=True
+    async with _borrow_pooled_session(
+        owner="cloud:cohere:complete",
+        base_url=effective_base,
+        api_key=api_key,
+        timeout_total=120,
     ) as session:
         async with session.post(url, headers=headers, json=data) as response:
             if response.status != 200:
@@ -875,10 +928,11 @@ async def fetch_models(
     # Remove Content-Type for GET request
     headers.pop("Content-Type", None)
 
-    timeout = aiohttp.ClientTimeout(total=30)
-    connector = _get_aiohttp_connector()
-    async with aiohttp.ClientSession(
-        timeout=timeout, connector=connector, trust_env=True
+    async with _borrow_pooled_session(
+        owner=f"cloud:{binding}:models",
+        base_url=base_url,
+        api_key=api_key,
+        timeout_total=30,
     ) as session:
         try:
             url = f"{base_url}/models"

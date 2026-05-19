@@ -457,7 +457,9 @@ class TelegramChannel(BaseChannel):
             )
             await asyncio.sleep(0.15)
         except Exception:
-            pass
+            logger.opt(exception=True).debug(
+                "Telegram draft update failed; sending regular message"
+            )
         await self._send_text(chat_id, text, reply_params, thread_kwargs)
 
     async def _on_start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

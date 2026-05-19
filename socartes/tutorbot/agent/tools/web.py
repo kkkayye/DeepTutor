@@ -88,6 +88,16 @@ class WebSearchTool(Tool):
 
         self.config = config if config is not None else WebSearchConfig()
         self.proxy = proxy
+        self._client: httpx.AsyncClient | None = None
+
+    def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None or getattr(self._client, "is_closed", False):
+            self._client = httpx.AsyncClient(proxy=self.proxy)
+        return self._client
+
+    async def aclose(self) -> None:
+        if self._client is not None and not getattr(self._client, "is_closed", False):
+            await self._client.aclose()
 
     async def execute(self, query: str, count: int | None = None, **kwargs: Any) -> str:  # type: ignore[override]
         provider = self.config.provider.strip().lower() or "brave"
@@ -112,14 +122,13 @@ class WebSearchTool(Tool):
             logger.warning("BRAVE_API_KEY not set, falling back to DuckDuckGo")
             return await self._search_duckduckgo(query, n)
         try:
-            async with httpx.AsyncClient(proxy=self.proxy) as client:
-                r = await client.get(
-                    "https://api.search.brave.com/res/v1/web/search",
-                    params={"q": query, "count": n},
-                    headers={"Accept": "application/json", "X-Subscription-Token": api_key},
-                    timeout=10.0,
-                )
-                r.raise_for_status()
+            r = await self._get_client().get(
+                "https://api.search.brave.com/res/v1/web/search",
+                params={"q": query, "count": n},
+                headers={"Accept": "application/json", "X-Subscription-Token": api_key},
+                timeout=10.0,
+            )
+            r.raise_for_status()
             items = [
                 {
                     "title": x.get("title", ""),
@@ -138,14 +147,13 @@ class WebSearchTool(Tool):
             logger.warning("TAVILY_API_KEY not set, falling back to DuckDuckGo")
             return await self._search_duckduckgo(query, n)
         try:
-            async with httpx.AsyncClient(proxy=self.proxy) as client:
-                r = await client.post(
-                    "https://api.tavily.com/search",
-                    headers={"Authorization": f"Bearer {api_key}"},
-                    json={"query": query, "max_results": n},
-                    timeout=15.0,
-                )
-                r.raise_for_status()
+            r = await self._get_client().post(
+                "https://api.tavily.com/search",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={"query": query, "max_results": n},
+                timeout=15.0,
+            )
+            r.raise_for_status()
             return _format_results(query, r.json().get("results", []), n)
         except Exception as e:
             return f"Error: {e}"
@@ -160,14 +168,13 @@ class WebSearchTool(Tool):
         if not is_valid:
             return f"Error: invalid SearXNG URL: {error_msg}"
         try:
-            async with httpx.AsyncClient(proxy=self.proxy) as client:
-                r = await client.get(
-                    endpoint,
-                    params={"q": query, "format": "json"},
-                    headers={"User-Agent": USER_AGENT},
-                    timeout=10.0,
-                )
-                r.raise_for_status()
+            r = await self._get_client().get(
+                endpoint,
+                params={"q": query, "format": "json"},
+                headers={"User-Agent": USER_AGENT},
+                timeout=10.0,
+            )
+            r.raise_for_status()
             return _format_results(query, r.json().get("results", []), n)
         except Exception as e:
             return f"Error: {e}"
@@ -179,14 +186,13 @@ class WebSearchTool(Tool):
             return await self._search_duckduckgo(query, n)
         try:
             headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
-            async with httpx.AsyncClient(proxy=self.proxy) as client:
-                r = await client.get(
-                    "https://s.jina.ai/",
-                    params={"q": query},
-                    headers=headers,
-                    timeout=15.0,
-                )
-                r.raise_for_status()
+            r = await self._get_client().get(
+                "https://s.jina.ai/",
+                params={"q": query},
+                headers=headers,
+                timeout=15.0,
+            )
+            r.raise_for_status()
             data = r.json().get("data", [])[:n]
             items = [
                 {
@@ -240,6 +246,27 @@ class WebFetchTool(Tool):
     def __init__(self, max_chars: int = 50000, proxy: str | None = None):
         self.max_chars = max_chars
         self.proxy = proxy
+        self._client: httpx.AsyncClient | None = None
+        self._redirect_client: httpx.AsyncClient | None = None
+
+    def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None or getattr(self._client, "is_closed", False):
+            self._client = httpx.AsyncClient(proxy=self.proxy)
+        return self._client
+
+    def _get_redirect_client(self) -> httpx.AsyncClient:
+        if self._redirect_client is None or getattr(self._redirect_client, "is_closed", False):
+            self._redirect_client = httpx.AsyncClient(
+                follow_redirects=True,
+                max_redirects=MAX_REDIRECTS,
+                proxy=self.proxy,
+            )
+        return self._redirect_client
+
+    async def aclose(self) -> None:
+        for client in (self._client, self._redirect_client):
+            if client is not None and not getattr(client, "is_closed", False):
+                await client.aclose()
 
     async def execute(  # type: ignore[override]
         self, url: str, extractMode: str = "markdown", maxChars: int | None = None, **kwargs: Any
@@ -263,12 +290,15 @@ class WebFetchTool(Tool):
             jina_key = os.environ.get("JINA_API_KEY", "")
             if jina_key:
                 headers["Authorization"] = f"Bearer {jina_key}"
-            async with httpx.AsyncClient(proxy=self.proxy, timeout=20.0) as client:
-                r = await client.get(f"https://r.jina.ai/{url}", headers=headers)
-                if r.status_code == 429:
-                    logger.debug("Jina Reader rate limited, falling back to readability")
-                    return None
-                r.raise_for_status()
+            r = await self._get_client().get(
+                f"https://r.jina.ai/{url}",
+                headers=headers,
+                timeout=20.0,
+            )
+            if r.status_code == 429:
+                logger.debug("Jina Reader rate limited, falling back to readability")
+                return None
+            r.raise_for_status()
 
             data = r.json().get("data", {})
             title = data.get("title", "")
@@ -303,14 +333,12 @@ class WebFetchTool(Tool):
         from readability import Document
 
         try:
-            async with httpx.AsyncClient(
-                follow_redirects=True,
-                max_redirects=MAX_REDIRECTS,
+            r = await self._get_redirect_client().get(
+                url,
+                headers={"User-Agent": USER_AGENT},
                 timeout=30.0,
-                proxy=self.proxy,
-            ) as client:
-                r = await client.get(url, headers={"User-Agent": USER_AGENT})
-                r.raise_for_status()
+            )
+            r.raise_for_status()
 
             ctype = r.headers.get("content-type", "")
 

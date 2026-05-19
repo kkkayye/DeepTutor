@@ -153,7 +153,8 @@ async def test_turn_runtime_replays_events_and_materializes_messages(
     async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
         events.append(event)
 
-    assert [event["type"] for event in events] == ["session", "content", "done"]
+    assert [event["type"] for event in events] == ["session", "progress", "content", "done"]
+    assert events[1]["stage"] == "summarizing"
     assert events[-1]["metadata"]["status"] == "completed"
 
     detail = await store.get_session_with_messages(session["id"])

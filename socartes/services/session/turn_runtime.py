@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 MemoryReference = Literal["summary", "profile"]
+_MAX_SUBSCRIBER_QUEUE_SIZE = 500
 
 
 def _should_capture_assistant_content(event: StreamEvent) -> bool:
@@ -337,7 +338,21 @@ def _format_followup_question_context(context: dict[str, Any], language: str = "
 
 @dataclass
 class _LiveSubscriber:
-    queue: asyncio.Queue[dict[str, Any]]
+    queue: asyncio.Queue[dict[str, Any] | None]
+
+
+def _put_subscriber_event(
+    queue: asyncio.Queue[dict[str, Any] | None],
+    item: dict[str, Any] | None,
+) -> None:
+    """Bound live subscriber memory by dropping oldest queued events."""
+    while True:
+        try:
+            queue.put_nowait(item)
+            return
+        except asyncio.QueueFull:
+            with contextlib.suppress(asyncio.QueueEmpty):
+                queue.get_nowait()
 
 
 @dataclass
@@ -348,6 +363,10 @@ class _TurnExecution:
     payload: dict[str, Any]
     task: asyncio.Task[None] | None = None
     subscribers: list[_LiveSubscriber] = field(default_factory=list)
+    last_seq: int = 0
+    persist_buffer: list[dict[str, Any]] = field(default_factory=list)
+    persist_task: asyncio.Task[None] | None = None
+    persist_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
 
 class TurnRuntimeManager:
@@ -467,6 +486,8 @@ class TurnRuntimeManager:
             session_metadata["superseded_turn_id"] = str(superseded_turn_id)
         if runtime_only_config.get("_regenerate"):
             session_metadata["regenerate"] = True
+        async with self._lock:
+            self._executions[turn["id"]] = execution
         await self._persist_and_publish(
             execution,
             StreamEvent(
@@ -476,7 +497,6 @@ class TurnRuntimeManager:
             ),
         )
         async with self._lock:
-            self._executions[turn["id"]] = execution
             execution.task = asyncio.create_task(self._run_turn(execution))
         return session, turn
 
@@ -607,13 +627,20 @@ class TurnRuntimeManager:
         turn_id: str,
         after_seq: int = 0,
     ) -> AsyncIterator[dict[str, Any]]:
+        async with self._lock:
+            active_execution = self._executions.get(turn_id)
+        if active_execution is not None:
+            await self._flush_execution_events(active_execution)
+
         backlog = await self.store.get_turn_events(turn_id, after_seq=after_seq)
         last_seq = after_seq
         for item in backlog:
             last_seq = max(last_seq, int(item.get("seq") or 0))
             yield item
 
-        queue: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue()
+        queue: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue(
+            maxsize=_MAX_SUBSCRIBER_QUEUE_SIZE
+        )
         subscriber = _LiveSubscriber(queue=queue)
         execution: _TurnExecution | None = None
         async with self._lock:
@@ -630,7 +657,7 @@ class TurnRuntimeManager:
             if execution is None:
                 yield item
             else:
-                queue.put_nowait(item)
+                _put_subscriber_event(queue, item)
 
         turn = await self.store.get_turn(turn_id)
         if execution is None:
@@ -1055,6 +1082,7 @@ class TurnRuntimeManager:
                 if _should_capture_assistant_content(event):
                     assistant_content += event.content
 
+            await self._flush_execution_events(execution)
             await self.store.add_message(
                 session_id=session_id,
                 role="assistant",
@@ -1075,7 +1103,6 @@ class TurnRuntimeManager:
                 except Exception:
                     logger.debug("Failed to refresh lightweight memory", exc_info=True)
         except asyncio.CancelledError:
-            await self.store.update_turn_status(turn_id, "cancelled", "Turn cancelled")
             await self._persist_and_publish(
                 execution,
                 StreamEvent(
@@ -1093,10 +1120,11 @@ class TurnRuntimeManager:
                     metadata={"status": "cancelled"},
                 ),
             )
+            await self._flush_execution_events(execution)
+            await self.store.update_turn_status(turn_id, "cancelled", "Turn cancelled")
             raise
         except Exception as exc:
             logger.error("Turn %s failed: %s", turn_id, exc, exc_info=True)
-            await self.store.update_turn_status(turn_id, "failed", str(exc))
             await self._persist_and_publish(
                 execution,
                 StreamEvent(
@@ -1114,15 +1142,20 @@ class TurnRuntimeManager:
                     metadata={"status": "failed"},
                 ),
             )
+            await self._flush_execution_events(execution)
+            await self.store.update_turn_status(turn_id, "failed", str(exc))
         finally:
+            with contextlib.suppress(Exception):
+                await self._flush_execution_events(execution)
             if llm_scope_token is not None and reset_active_llm_selection is not None:
                 reset_active_llm_selection(llm_scope_token)
             async with self._lock:
                 current = self._executions.get(turn_id)
                 if current is not None:
+                    if current.persist_task is not None and not current.persist_task.done():
+                        current.persist_task.cancel()
                     for subscriber in current.subscribers:
-                        with contextlib.suppress(asyncio.QueueFull):
-                            subscriber.queue.put_nowait(None)
+                        _put_subscriber_event(subscriber.queue, None)
                     self._executions.pop(turn_id, None)
 
     async def _persist_and_publish(
@@ -1135,39 +1168,90 @@ class TurnRuntimeManager:
         event.session_id = execution.session_id
         event.turn_id = execution.turn_id
         payload = event.to_dict()
-        try:
-            persisted = await self.store.append_turn_event(execution.turn_id, payload)
-        except ValueError as exc:
-            # A turn can disappear when the session is deleted while the turn task
-            # is still draining events. Avoid cascading failures in the error path.
-            if "Turn not found:" not in str(exc):
-                raise
-            logger.warning(
-                "Skip persisting event for missing turn %s (%s)",
-                execution.turn_id,
-                event.type.value,
-            )
-            persisted = payload
-        self._mirror_event_to_workspace(execution, persisted)
+        async with execution.persist_lock:
+            provided_seq = int(payload.get("seq") or 0)
+            if provided_seq > 0:
+                execution.last_seq = max(execution.last_seq, provided_seq)
+            else:
+                execution.last_seq += 1
+                payload["seq"] = execution.last_seq
+                event.seq = execution.last_seq
+            execution.persist_buffer.append(payload)
+            if execution.persist_task is None or execution.persist_task.done():
+                execution.persist_task = asyncio.create_task(
+                    self._flush_execution_events_after_delay(execution)
+                )
         async with self._lock:
             subscribers = list(self._executions.get(execution.turn_id, execution).subscribers)
         for subscriber in subscribers:
-            with contextlib.suppress(asyncio.QueueFull):
-                subscriber.queue.put_nowait(persisted)
-        return persisted
+            _put_subscriber_event(subscriber.queue, payload)
+        return payload
+
+    async def _flush_execution_events_after_delay(self, execution: _TurnExecution) -> None:
+        await asyncio.sleep(0.05)
+        await self._flush_execution_events(execution)
+
+    async def _flush_execution_events(self, execution: _TurnExecution) -> None:
+        task = execution.persist_task
+        current_task = asyncio.current_task()
+        if task is not None and task is not current_task and not task.done():
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
+
+        async with execution.persist_lock:
+            events = list(execution.persist_buffer)
+            execution.persist_buffer.clear()
+            if execution.persist_task is current_task or (
+                execution.persist_task is not None and execution.persist_task.done()
+            ):
+                execution.persist_task = None
+
+        if not events:
+            return
+
+        try:
+            append_many = getattr(self.store, "append_turn_events", None)
+            if callable(append_many):
+                persisted_events = await append_many(execution.turn_id, events)
+            else:
+                persisted_events = [
+                    await self.store.append_turn_event(execution.turn_id, event)
+                    for event in events
+                ]
+        except ValueError as exc:
+            if "Turn not found:" not in str(exc):
+                raise
+            logger.warning(
+                "Skip persisting %d events for missing turn %s",
+                len(events),
+                execution.turn_id,
+            )
+            persisted_events = events
+
+        await asyncio.to_thread(self._mirror_events_to_workspace, execution, persisted_events)
 
     @staticmethod
-    def _mirror_event_to_workspace(execution: _TurnExecution, payload: dict[str, Any]) -> None:
+    def _mirror_events_to_workspace(
+        execution: _TurnExecution, payloads: list[dict[str, Any]]
+    ) -> None:
         """Mirror turn events to task-local ``events.jsonl`` files under ``data/user/workspace``."""
+        if not payloads:
+            return
         try:
             path_service = get_path_service()
             task_dir = path_service.get_task_workspace(execution.capability, execution.turn_id)
             task_dir.mkdir(parents=True, exist_ok=True)
             event_file = task_dir / "events.jsonl"
             with open(event_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+                for payload in payloads:
+                    f.write(json.dumps(payload, ensure_ascii=False) + "\n")
         except Exception:
             logger.debug("Failed to mirror turn event to workspace", exc_info=True)
+
+    @staticmethod
+    def _mirror_event_to_workspace(execution: _TurnExecution, payload: dict[str, Any]) -> None:
+        TurnRuntimeManager._mirror_events_to_workspace(execution, [payload])
 
 
 _runtime_instances: dict[str, TurnRuntimeManager] = {}
