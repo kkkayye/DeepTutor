@@ -2,18 +2,18 @@
 
 from __future__ import annotations
 
-from deeptutor.core.context import Attachment, UnifiedContext
-from deeptutor.core.errors import (
+from socartes.core.context import Attachment, UnifiedContext
+from socartes.core.errors import (
     ConfigurationError,
-    DeepTutorError,
+    SocartesError,
     EnvironmentConfigError,
     LLMContextError,
     LLMServiceError,
     ServiceError,
     ValidationError,
 )
-from deeptutor.core.stream import StreamEvent, StreamEventType
-from deeptutor.core.trace import (
+from socartes.core.stream import StreamEvent, StreamEventType
+from socartes.core.trace import (
     build_trace_metadata,
     derive_trace_metadata,
     merge_trace_metadata,
@@ -147,18 +147,18 @@ class TestStreamEvent:
 
 class TestErrors:
     def test_base_error_str_without_details(self) -> None:
-        err = DeepTutorError("boom")
+        err = SocartesError("boom")
         assert str(err) == "boom"
         assert err.details == {}
 
     def test_base_error_str_with_details(self) -> None:
-        err = DeepTutorError("boom", details={"key": "val"})
+        err = SocartesError("boom", details={"key": "val"})
         assert "key" in str(err)
 
     def test_hierarchy(self) -> None:
-        assert issubclass(ConfigurationError, DeepTutorError)
-        assert issubclass(ValidationError, DeepTutorError)
-        assert issubclass(ServiceError, DeepTutorError)
+        assert issubclass(ConfigurationError, SocartesError)
+        assert issubclass(ValidationError, SocartesError)
+        assert issubclass(ServiceError, SocartesError)
         assert issubclass(LLMServiceError, ServiceError)
         assert issubclass(LLMContextError, LLMServiceError)
         assert issubclass(EnvironmentConfigError, ConfigurationError)

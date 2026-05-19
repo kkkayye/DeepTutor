@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from deeptutor.services.rag.file_routing import (
+from socartes.services.rag.file_routing import (
     DocumentType,
     FileTypeRouter,
 )

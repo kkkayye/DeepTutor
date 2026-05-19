@@ -6,8 +6,8 @@ from typing import Any, Dict
 
 import pytest
 
-from deeptutor.services.rag.service import RAGService
-from deeptutor.services.rag.smart_retriever import SmartRetriever
+from socartes.services.rag.service import RAGService
+from socartes.services.rag.smart_retriever import SmartRetriever
 
 
 class _FakePipeline:

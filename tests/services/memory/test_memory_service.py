@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from deeptutor.services.memory.service import MemoryService
-from deeptutor.services.session.sqlite_store import SQLiteSessionStore
+from socartes.services.memory.service import MemoryService
+from socartes.services.session.sqlite_store import SQLiteSessionStore
 
 
 def _make_service(tmp_path):
@@ -68,7 +68,7 @@ async def _no_change_stream(**_kwargs):
 
 
 async def _rewrite_stream(**_kwargs):
-    yield "## Preferences\n- Prefer concise answers.\n\n## Context\n- Working on DeepTutor memory."
+    yield "## Preferences\n- Prefer concise answers.\n\n## Context\n- Working on Socartes memory."
 
 
 async def _thinking_rewrite_stream(**_kwargs):
@@ -85,7 +85,7 @@ async def _invalid_profile_stream(**_kwargs):
 
 def test_memory_service_refresh_turn_writes_rewritten_document(monkeypatch, tmp_path) -> None:
     service = _make_service(tmp_path)
-    monkeypatch.setattr("deeptutor.services.memory.service.llm_stream", _rewrite_stream)
+    monkeypatch.setattr("socartes.services.memory.service.llm_stream", _rewrite_stream)
 
     import asyncio
 
@@ -109,7 +109,7 @@ def test_memory_service_refresh_turn_skips_when_model_returns_no_change(
     tmp_path,
 ) -> None:
     service = _make_service(tmp_path)
-    monkeypatch.setattr("deeptutor.services.memory.service.llm_stream", _no_change_stream)
+    monkeypatch.setattr("socartes.services.memory.service.llm_stream", _no_change_stream)
 
     import asyncio
 
@@ -131,7 +131,7 @@ def test_memory_service_refresh_turn_skips_when_model_returns_no_change(
 
 def test_memory_service_refresh_strips_thinking_tags(monkeypatch, tmp_path) -> None:
     service = _make_service(tmp_path)
-    monkeypatch.setattr("deeptutor.services.memory.service.llm_stream", _thinking_rewrite_stream)
+    monkeypatch.setattr("socartes.services.memory.service.llm_stream", _thinking_rewrite_stream)
 
     import asyncio
 
@@ -157,7 +157,7 @@ def test_memory_service_refresh_strips_thinking_tags(monkeypatch, tmp_path) -> N
 
 def test_memory_service_refresh_strips_unclosed_thinking_tags(monkeypatch, tmp_path) -> None:
     service = _make_service(tmp_path)
-    monkeypatch.setattr("deeptutor.services.memory.service.llm_stream", _unclosed_thinking_stream)
+    monkeypatch.setattr("socartes.services.memory.service.llm_stream", _unclosed_thinking_stream)
 
     import asyncio
 
@@ -178,7 +178,7 @@ def test_memory_service_refresh_strips_unclosed_thinking_tags(monkeypatch, tmp_p
 
 def test_memory_service_rejects_invalid_profile_rewrite(monkeypatch, tmp_path) -> None:
     service = _make_service(tmp_path)
-    monkeypatch.setattr("deeptutor.services.memory.service.llm_stream", _invalid_profile_stream)
+    monkeypatch.setattr("socartes.services.memory.service.llm_stream", _invalid_profile_stream)
 
     import asyncio
 

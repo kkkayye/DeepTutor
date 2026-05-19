@@ -1,5 +1,5 @@
 # ============================================
-# DeepTutor Docker Ignore File
+# Socartes Docker Ignore File
 # ============================================
 # Excludes files and directories from the Docker build context
 # to improve build speed and reduce image size
@@ -58,7 +58,7 @@ ENV/
 .venv/
 env.bak/
 venv.bak/
-DeepTutor.env
+Socartes.env
 
 # Pytest cache
 .pytest_cache/

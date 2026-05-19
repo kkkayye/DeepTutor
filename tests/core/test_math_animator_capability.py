@@ -5,10 +5,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from deeptutor.capabilities.math_animator import MathAnimatorCapability
-from deeptutor.core.context import UnifiedContext
-from deeptutor.core.stream import StreamEvent, StreamEventType
-from deeptutor.core.stream_bus import StreamBus
+from socartes.capabilities.math_animator import MathAnimatorCapability
+from socartes.core.context import UnifiedContext
+from socartes.core.stream import StreamEvent, StreamEventType
+from socartes.core.stream_bus import StreamBus
 
 
 async def _collect_events(run_coro) -> list[StreamEvent]:
@@ -34,7 +34,7 @@ async def test_math_animator_capability_emits_summary_and_result(
 ) -> None:
     # Unit test should not require real optional dependency installation.
     monkeypatch.setattr(
-        "deeptutor.capabilities.math_animator.importlib.util.find_spec",
+        "socartes.capabilities.math_animator.importlib.util.find_spec",
         lambda name: object() if name == "manim" else None,
     )
 
@@ -88,10 +88,10 @@ async def test_math_animator_capability_emits_summary_and_result(
             )
 
     monkeypatch.setattr(
-        "deeptutor.agents.math_animator.pipeline.MathAnimatorPipeline", FakePipeline
+        "socartes.agents.math_animator.pipeline.MathAnimatorPipeline", FakePipeline
     )
     monkeypatch.setattr(
-        "deeptutor.services.llm.config.get_llm_config",
+        "socartes.services.llm.config.get_llm_config",
         lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 

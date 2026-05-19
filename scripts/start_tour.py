@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""DeepTutor Setup Tour - simplified CLI configuration wizard."""
+"""Socartes Setup Tour - simplified CLI configuration wizard."""
 
 from __future__ import annotations
 
@@ -121,7 +121,7 @@ def _load_runtime_deps():
         text_input,
     )
 
-    from deeptutor.services.config import get_env_store
+    from socartes.services.config import get_env_store
 
     return (
         accent,
@@ -186,7 +186,7 @@ NODE_MIN_VERSION = (20, 9, 0)
 
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
-        "banner_line_1": "Configure DeepTutor from the terminal.",
+        "banner_line_1": "Configure Socartes from the terminal.",
         "banner_line_2": "We will write ports and provider settings directly into .env.",
         "env_created": "Created `.env` from `.env.example`.",
         "env_exists": "Using existing `.env` file.",
@@ -228,7 +228,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "write_confirm": "Write these settings into `.env` now?",
         "write_success": "Updated `.env` successfully.",
         "no_changes": "No files changed.",
-        "next_steps": "Setup complete. You can now start DeepTutor with:",
+        "next_steps": "Setup complete. You can now start Socartes with:",
         "next_command": "python scripts/start_web.py",
         "summary_ports": "Ports",
         "summary_llm": "LLM",
@@ -275,7 +275,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "install_node_hint_winget": "Install with: winget install OpenJS.NodeJS",
         "install_node_hint_manual": "Download from https://nodejs.org",
         "install_node_abort": "Node.js is required for the frontend. Please install it and re-run this script.",
-        "install_node_too_old": "Node.js {version} is too old. DeepTutor web requires Node.js >=20.9.0.",
+        "install_node_too_old": "Node.js {version} is too old. Socartes web requires Node.js >=20.9.0.",
         "install_profile_prompt": "Choose installation profile",
         "install_profile_web_label": "Web app (recommended)",
         "install_profile_web_desc": "CLI + API server + RAG/document parsing",
@@ -294,15 +294,15 @@ MESSAGES: dict[str, dict[str, str]] = {
         "install_backend_done": "Python dependencies installed.",
         "install_frontend": "Installing frontend dependencies (npm install) ...",
         "install_frontend_done": "Frontend dependencies installed.",
-        "install_editable": "Installing DeepTutor package ...",
-        "install_editable_done": "DeepTutor package installed.",
+        "install_editable": "Installing Socartes package ...",
+        "install_editable_done": "Socartes package installed.",
         "install_failed": "Installation failed: {error}",
         "install_skipped": "Skipped dependency installation.",
         "install_all_done": "All dependencies installed successfully.",
         "install_retry_node": "Press Enter after installing Node.js to continue, or Ctrl-C to exit.",
     },
     "zh": {
-        "banner_line_1": "在命令行中完成 DeepTutor 配置。",
+        "banner_line_1": "在命令行中完成 Socartes 配置。",
         "banner_line_2": "我们会把端口和提供商配置直接写入 .env。",
         "env_created": "已根据 `.env.example` 创建 `.env`。",
         "env_exists": "检测到现有 `.env` 文件。",
@@ -344,7 +344,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "write_confirm": "现在将这些设置写入 `.env` 吗？",
         "write_success": "已成功更新 `.env`。",
         "no_changes": "未修改任何文件。",
-        "next_steps": "配置完成。你现在可以用下面的命令启动 DeepTutor：",
+        "next_steps": "配置完成。你现在可以用下面的命令启动 Socartes：",
         "next_command": "python scripts/start_web.py",
         "summary_ports": "端口",
         "summary_llm": "LLM",
@@ -391,7 +391,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "install_node_hint_winget": "请运行: winget install OpenJS.NodeJS",
         "install_node_hint_manual": "请前往 https://nodejs.org 下载安装",
         "install_node_abort": "前端运行需要 Node.js，请安装后重新运行本脚本。",
-        "install_node_too_old": "当前 Node.js {version} 版本过低。DeepTutor Web 需要 Node.js >=20.9.0。",
+        "install_node_too_old": "当前 Node.js {version} 版本过低。Socartes Web 需要 Node.js >=20.9.0。",
         "install_profile_prompt": "选择安装配置",
         "install_profile_web_label": "Web 应用（推荐）",
         "install_profile_web_desc": "CLI + API 服务 + RAG/文档解析",
@@ -408,8 +408,8 @@ MESSAGES: dict[str, dict[str, str]] = {
         "install_backend_done": "Python 依赖安装完成。",
         "install_frontend": "正在安装前端依赖（npm install）...",
         "install_frontend_done": "前端依赖安装完成。",
-        "install_editable": "正在安装 DeepTutor 包 ...",
-        "install_editable_done": "DeepTutor 包安装完成。",
+        "install_editable": "正在安装 Socartes 包 ...",
+        "install_editable_done": "Socartes 包安装完成。",
         "install_failed": "安装失败：{error}",
         "install_skipped": "已跳过依赖安装。",
         "install_all_done": "所有依赖安装成功。",
@@ -639,8 +639,8 @@ def _enum_options(
 
 
 def _load_provider_metadata():
-    from deeptutor.services.config.provider_runtime import EMBEDDING_PROVIDERS
-    from deeptutor.services.provider_registry import PROVIDERS, find_by_name
+    from socartes.services.config.provider_runtime import EMBEDDING_PROVIDERS
+    from socartes.services.provider_registry import PROVIDERS, find_by_name
 
     return EMBEDDING_PROVIDERS, find_by_name, PROVIDERS
 
@@ -1279,7 +1279,7 @@ def _write_env(values: dict[str, str]) -> None:
 
 def _tour_banner() -> None:
     banner(
-        "DeepTutor Setup Tour / DeepTutor 配置向导",
+        "Socartes Setup Tour / Socartes 配置向导",
         [
             "CLI-first setup wizard.",
             "命令行配置向导。",

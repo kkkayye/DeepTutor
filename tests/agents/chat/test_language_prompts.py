@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from deeptutor.agents.chat.agentic_pipeline import AgenticChatPipeline
-from deeptutor.agents.chat.chat_agent import ChatAgent
+from socartes.agents.chat.agentic_pipeline import AgenticChatPipeline
+from socartes.agents.chat.chat_agent import ChatAgent
 
 
 @pytest.fixture(autouse=True)
@@ -18,10 +18,10 @@ def _fake_llm_config(monkeypatch: pytest.MonkeyPatch) -> None:
         api_version=None,
     )
     monkeypatch.setattr(
-        "deeptutor.agents.chat.agentic_pipeline.get_llm_config",
+        "socartes.agents.chat.agentic_pipeline.get_llm_config",
         lambda: cfg,
     )
-    monkeypatch.setattr("deeptutor.agents.base_agent.get_llm_config", lambda: cfg)
+    monkeypatch.setattr("socartes.agents.base_agent.get_llm_config", lambda: cfg)
 
 
 def test_agentic_chat_final_prompt_uses_selected_language(
@@ -32,16 +32,16 @@ def test_agentic_chat_final_prompt_uses_selected_language(
             return "- tool"
 
     monkeypatch.setattr(
-        "deeptutor.agents.chat.agentic_pipeline.get_tool_registry",
+        "socartes.agents.chat.agentic_pipeline.get_tool_registry",
         lambda: FakeRegistry(),
     )
 
     zh_prompt = AgenticChatPipeline(language="zh")._responding_system_prompt([])
     en_prompt = AgenticChatPipeline(language="en")._responding_system_prompt([])
 
-    assert "你是 DeepTutor 的最终回答阶段" in zh_prompt
+    assert "你是 Socartes 的最终回答阶段" in zh_prompt
     assert "请严格使用中文" in zh_prompt
-    assert "You are DeepTutor's final response stage" in en_prompt
+    assert "You are Socartes's final response stage" in en_prompt
     assert "Write ALL reader-facing text" in en_prompt
 
 
@@ -55,7 +55,7 @@ def test_legacy_chat_agent_system_prompt_uses_selected_language() -> None:
         history=[],
     )
 
-    assert "你是 DeepTutor" in zh_messages[0]["content"]
+    assert "你是 Socartes" in zh_messages[0]["content"]
     assert "请严格使用中文" in zh_messages[0]["content"]
-    assert "You are DeepTutor" in en_messages[0]["content"]
+    assert "You are Socartes" in en_messages[0]["content"]
     assert "Write ALL reader-facing text" in en_messages[0]["content"]

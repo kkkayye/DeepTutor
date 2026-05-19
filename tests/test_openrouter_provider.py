@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from deeptutor.services.search.providers.openrouter import OpenRouterProvider
-from deeptutor.services.search.types import WebSearchResponse
+from socartes.services.search.providers.openrouter import OpenRouterProvider
+from socartes.services.search.types import WebSearchResponse
 
 
 class TestOpenRouterProvider(unittest.TestCase):

@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from deeptutor.services.config import model_catalog as model_catalog_module
-from deeptutor.services.config.env_store import EnvStore
-from deeptutor.services.config.model_catalog import ModelCatalogService
+from socartes.services.config import model_catalog as model_catalog_module
+from socartes.services.config.env_store import EnvStore
+from socartes.services.config.model_catalog import ModelCatalogService
 
 
 def test_load_hydrates_empty_catalog_from_env(tmp_path: Path, monkeypatch):

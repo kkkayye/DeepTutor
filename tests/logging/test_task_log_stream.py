@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from deeptutor.api.utils.task_log_stream import KnowledgeTaskStreamManager
+from socartes.api.utils.task_log_stream import KnowledgeTaskStreamManager
 
 
 @pytest.mark.asyncio

@@ -20,8 +20,8 @@ from typing import Any
 
 import pytest
 
-from deeptutor.agents.research.agents.decompose_agent import DecomposeAgent
-from deeptutor.agents.research.research_pipeline import ResearchPipeline
+from socartes.agents.research.agents.decompose_agent import DecomposeAgent
+from socartes.agents.research.research_pipeline import ResearchPipeline
 
 
 def _minimal_pipeline_config() -> dict[str, Any]:

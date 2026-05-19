@@ -27,8 +27,8 @@ load_dotenv(PROJECT_ROOT / ".env", override=False)
 
 
 def _load_llm_services():
-    from deeptutor.services.llm import factory
-    from deeptutor.services.llm.config import clear_llm_config_cache, get_llm_config
+    from socartes.services.llm import factory
+    from socartes.services.llm.config import clear_llm_config_cache, get_llm_config
 
     return factory, clear_llm_config_cache, get_llm_config
 

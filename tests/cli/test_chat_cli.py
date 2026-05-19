@@ -1,4 +1,4 @@
-"""CLI smoke tests for the standalone ``deeptutor-cli`` package."""
+"""CLI smoke tests for the standalone ``socartes-cli`` package."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from deeptutor.app import TurnRequest
-from deeptutor_cli.main import app
+from socartes.app import TurnRequest
+from socartes_cli.main import app
 
 runner = CliRunner()
 
@@ -27,8 +27,8 @@ def _install_fake_runtime(monkeypatch, captured_requests: list[TurnRequest]) -> 
         yield {"type": "result", "metadata": {"response": "response body"}}
         yield {"type": "done"}
 
-    monkeypatch.setattr("deeptutor.app.facade.DeepTutorApp.start_turn", _start_turn)
-    monkeypatch.setattr("deeptutor.app.facade.DeepTutorApp.stream_turn", _stream_turn)
+    monkeypatch.setattr("socartes.app.facade.SocartesApp.start_turn", _start_turn)
+    monkeypatch.setattr("socartes.app.facade.SocartesApp.stream_turn", _stream_turn)
 
 
 def test_run_command_json_mode(monkeypatch) -> None:
@@ -120,7 +120,7 @@ def test_session_list_command_uses_shared_store(monkeypatch) -> None:
             }
         ]
 
-    monkeypatch.setattr("deeptutor.app.facade.DeepTutorApp.list_sessions", _list_sessions)
+    monkeypatch.setattr("socartes.app.facade.SocartesApp.list_sessions", _list_sessions)
 
     result = runner.invoke(app, ["session", "list"])
 

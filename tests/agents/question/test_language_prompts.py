@@ -4,10 +4,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from deeptutor.agents.question.agents.followup_agent import FollowupAgent
-from deeptutor.agents.question.agents.generator import Generator
-from deeptutor.agents.question.agents.idea_agent import IdeaAgent
-from deeptutor.agents.question.models import QuestionTemplate
+from socartes.agents.question.agents.followup_agent import FollowupAgent
+from socartes.agents.question.agents.generator import Generator
+from socartes.agents.question.agents.idea_agent import IdeaAgent
+from socartes.agents.question.models import QuestionTemplate
 
 
 class CaptureIdeaAgent(IdeaAgent):

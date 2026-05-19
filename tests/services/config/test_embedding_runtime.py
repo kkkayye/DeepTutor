@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from deeptutor.services.config.env_store import EnvStore
-from deeptutor.services.config.provider_runtime import (
+from socartes.services.config.env_store import EnvStore
+from socartes.services.config.provider_runtime import (
     EMBEDDING_PROVIDERS,
     resolve_embedding_runtime_config,
 )

@@ -5,15 +5,15 @@ from typing import Any
 
 import pytest
 
-from deeptutor.api.routers import settings as settings_router
-from deeptutor.services.config.provider_runtime import (
+from socartes.api.routers import settings as settings_router
+from socartes.services.config.provider_runtime import (
     ResolvedEmbeddingConfig,
     ResolvedLLMConfig,
 )
-from deeptutor.services.embedding import client as embedding_client_module
-from deeptutor.services.embedding import config as embedding_config_module
-from deeptutor.services.llm import client as llm_client_module
-from deeptutor.services.llm import config as llm_config_module
+from socartes.services.embedding import client as embedding_client_module
+from socartes.services.embedding import config as embedding_config_module
+from socartes.services.llm import client as llm_client_module
+from socartes.services.llm import config as llm_config_module
 
 
 class _FakeEmbeddingAdapter:

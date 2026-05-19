@@ -1,4 +1,4 @@
-"""Tests for deeptutor.utils.document_extractor."""
+"""Tests for socartes.utils.document_extractor."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from pptx import Presentation
 from pptx.util import Inches
 import pytest
 
-from deeptutor.utils import document_extractor as document_extractor_module
-from deeptutor.utils.document_extractor import (
+from socartes.utils import document_extractor as document_extractor_module
+from socartes.utils.document_extractor import (
     MAX_DOC_BYTES,
     MAX_EXTRACTED_CHARS_PER_DOC,
     CorruptDocumentError,

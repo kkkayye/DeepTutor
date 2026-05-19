@@ -18,7 +18,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 if FastAPI is not None and TestClient is not None:
-    knowledge_router_module = importlib.import_module("deeptutor.api.routers.knowledge")
+    knowledge_router_module = importlib.import_module("socartes.api.routers.knowledge")
     router = knowledge_router_module.router
 else:  # pragma: no cover - optional dependency in lightweight envs
     knowledge_router_module = None
@@ -332,8 +332,8 @@ def test_reindex_accepts_default_alias(monkeypatch, tmp_path: Path) -> None:
         def hash(self) -> str:
             return "sig"
 
-    embedding_signature = importlib.import_module("deeptutor.services.rag.embedding_signature")
-    index_versioning = importlib.import_module("deeptutor.services.rag.index_versioning")
+    embedding_signature = importlib.import_module("socartes.services.rag.embedding_signature")
+    index_versioning = importlib.import_module("socartes.services.rag.index_versioning")
     monkeypatch.setattr(
         embedding_signature, "signature_from_embedding_config", lambda: _Signature()
     )
@@ -368,8 +368,8 @@ def test_reindex_error_status_bypasses_existing_match_noop(monkeypatch, tmp_path
         def hash(self) -> str:
             return "sig"
 
-    embedding_signature = importlib.import_module("deeptutor.services.rag.embedding_signature")
-    index_versioning = importlib.import_module("deeptutor.services.rag.index_versioning")
+    embedding_signature = importlib.import_module("socartes.services.rag.embedding_signature")
+    index_versioning = importlib.import_module("socartes.services.rag.index_versioning")
     monkeypatch.setattr(
         embedding_signature, "signature_from_embedding_config", lambda: _Signature()
     )
@@ -422,7 +422,7 @@ def test_reindex_bypasses_existing_match_when_vectors_are_invalid(
         encoding="utf-8",
     )
 
-    embedding_signature = importlib.import_module("deeptutor.services.rag.embedding_signature")
+    embedding_signature = importlib.import_module("socartes.services.rag.embedding_signature")
     monkeypatch.setattr(
         embedding_signature, "signature_from_embedding_config", lambda: _Signature()
     )
@@ -458,7 +458,7 @@ def test_update_config_coerces_legacy_provider_to_llamaindex() -> None:
 
     fake_service = _FakeConfigService()
 
-    config_module = importlib.import_module("deeptutor.services.config")
+    config_module = importlib.import_module("socartes.services.config")
     app = _build_app()
 
     with pytest.MonkeyPatch.context() as monkeypatch:

@@ -1,22 +1,22 @@
 <div align="center">
 
-<img src="../../assets/logo-ver2.png" alt="DeepTutor" width="140" style="border-radius: 15px;">
+<img src="../../assets/logo-ver2.png" alt="Socartes" width="140" style="border-radius: 15px;">
 
-# DeepTutor: ผู้ช่วยติวส่วนบุคคลแบบ Agent-Native
+# Socartes: ผู้ช่วยติวส่วนบุคคลแบบ Agent-Native
 
-<a href="https://trendshift.io/repositories/17099" target="_blank"><img src="https://trendshift.io/api/badge/repositories/17099" alt="HKUDS%2FDeepTutor | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/17099" target="_blank"><img src="https://trendshift.io/api/badge/repositories/17099" alt="HKUDS%2FSocartes | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](../../LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HKUDS/DeepTutor?style=flat-square&color=brightgreen)](https://github.com/HKUDS/DeepTutor/releases)
+[![GitHub release](https://img.shields.io/github/v/release/HKUDS/Socartes?style=flat-square&color=brightgreen)](https://github.com/HKUDS/Socartes/releases)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.26962-b31b1b?style=flat-square&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.26962)
 
 [![Discord](https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/eRsjPgMU4t)
 [![Feishu](https://img.shields.io/badge/Feishu-Group-00D4AA?style=flat-square&logo=feishu&logoColor=white)](../../Communication.md)
-[![WeChat](https://img.shields.io/badge/WeChat-Group-07C160?style=flat-square&logo=wechat&logoColor=white)](https://github.com/HKUDS/DeepTutor/issues/78)
+[![WeChat](https://img.shields.io/badge/WeChat-Group-07C160?style=flat-square&logo=wechat&logoColor=white)](https://github.com/HKUDS/Socartes/issues/78)
 
-[คุณสมบัติเด่น](#-คุณสมบัติเด่น) · [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งาน) · [สำรวจความสามารถ](#-สำรวจ-deeptutor) · [TutorBot](#-tutorbot--ติวเตอร์-ai-แบบถาวรและอัตโนมัติ) · [CLI](#%EF%B8%8F-deeptutor-cli--อินเทอร์เฟซแบบ-agent-native) · [ชุมชน](#-ชุมชนและระบบนิเวศ)
+[คุณสมบัติเด่น](#-คุณสมบัติเด่น) · [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งาน) · [สำรวจความสามารถ](#-สำรวจ-socartes) · [TutorBot](#-tutorbot--ติวเตอร์-ai-แบบถาวรและอัตโนมัติ) · [CLI](#%EF%B8%8F-socartes-cli--อินเทอร์เฟซแบบ-agent-native) · [ชุมชน](#-ชุมชนและระบบนิเวศ)
 
 [🇺🇸 English](../../README.md) · [🇨🇳 中文](README_CN.md) · [🇯🇵 日本語](README_JA.md) · [🇪🇸 Español](README_ES.md) · [🇫🇷 Français](README_FR.md) · [🇸🇦 العربية](README_AR.md) · [🇷🇺 Русский](README_RU.md) · [🇮🇳 हिन्दी](README_HI.md) · [🇵🇹 Português](README_PT.md) · [🇹🇭 ภาษาไทย](README_TH.md) · 🇵🇱 [Polski](README_PL.md)
 
@@ -28,74 +28,74 @@
 
 ### 📦 ประวัติการเผยแพร่
 
-> **[2026.5.9]** [v1.3.9](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.9) — TutorBot รองรับ Zulip และ NVIDIA NIM, routing ของ thinking-model ปลอดภัยขึ้น, `deeptutor start`, tooltip ใน sidebar, และ session-store parity
+> **[2026.5.9]** [v1.3.9](https://github.com/HKUDS/Socartes/releases/tag/v1.3.9) — TutorBot รองรับ Zulip และ NVIDIA NIM, routing ของ thinking-model ปลอดภัยขึ้น, `socartes start`, tooltip ใน sidebar, และ session-store parity
 
-> **[2026.5.8]** [v1.3.8](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.8) — deployment แบบ multi-user ที่เปิดได้ตามต้องการ พร้อม workspace แยกผู้ใช้, admin grants, auth routes, และ scoped runtime access
+> **[2026.5.8]** [v1.3.8](https://github.com/HKUDS/Socartes/releases/tag/v1.3.8) — deployment แบบ multi-user ที่เปิดได้ตามต้องการ พร้อม workspace แยกผู้ใช้, admin grants, auth routes, และ scoped runtime access
 
-> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.7) — แก้ไข thinking-model/provider, แสดงประวัติ Knowledge index, และ Co-Writer clear/template editing ปลอดภัยขึ้น
+> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/Socartes/releases/tag/v1.3.7) — แก้ไข thinking-model/provider, แสดงประวัติ Knowledge index, และ Co-Writer clear/template editing ปลอดภัยขึ้น
 
-> **[2026.5.3]** [v1.3.6](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.6) — เลือกโมเดลจากคาตาล็อกสำหรับแชตและ TutorBot, RAG re-indexing ปลอดภัยขึ้น, แก้ token-limit ของ OpenAI Responses, และตรวจสอบ Skills editor
+> **[2026.5.3]** [v1.3.6](https://github.com/HKUDS/Socartes/releases/tag/v1.3.6) — เลือกโมเดลจากคาตาล็อกสำหรับแชตและ TutorBot, RAG re-indexing ปลอดภัยขึ้น, แก้ token-limit ของ OpenAI Responses, และตรวจสอบ Skills editor
 
-> **[2026.5.2]** [v1.3.5](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.5) — ตั้งค่าการเปิดใช้งานในเครื่องราบรื่นขึ้น, RAG queries ปลอดภัยขึ้น, local embedding auth ชัดเจนขึ้น, และปรับแต่ง dark-mode ของ Settings
+> **[2026.5.2]** [v1.3.5](https://github.com/HKUDS/Socartes/releases/tag/v1.3.5) — ตั้งค่าการเปิดใช้งานในเครื่องราบรื่นขึ้น, RAG queries ปลอดภัยขึ้น, local embedding auth ชัดเจนขึ้น, และปรับแต่ง dark-mode ของ Settings
 
-> **[2026.5.1]** [v1.3.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.4) — Chat persistence บนหน้าหนังสือและ rebuild flows, อ้างอิงจากแชตไปหนังสือ, จัดการภาษา/การให้เหตุผลแข็งแกร่งขึ้น, เสริมความแข็งแกร่งการดึงเอกสาร RAG
+> **[2026.5.1]** [v1.3.4](https://github.com/HKUDS/Socartes/releases/tag/v1.3.4) — Chat persistence บนหน้าหนังสือและ rebuild flows, อ้างอิงจากแชตไปหนังสือ, จัดการภาษา/การให้เหตุผลแข็งแกร่งขึ้น, เสริมความแข็งแกร่งการดึงเอกสาร RAG
 
-> **[2026.4.30]** [v1.3.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.3) — รองรับ embedding NVIDIA NIM และ Gemini, Space context รวมสำหรับประวัติแชต / สกิล / หน่วยความจำ, snapshot ของเซสชัน, ความทนทานของการทำดัชนี RAG ใหม่
+> **[2026.4.30]** [v1.3.3](https://github.com/HKUDS/Socartes/releases/tag/v1.3.3) — รองรับ embedding NVIDIA NIM และ Gemini, Space context รวมสำหรับประวัติแชต / สกิล / หน่วยความจำ, snapshot ของเซสชัน, ความทนทานของการทำดัชนี RAG ใหม่
 
-> **[2026.4.29]** [v1.3.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.2) — URL ปลายทาง embedding โปร่งใส, ความทนทาน re-index RAG เมื่อเวกเตอร์ที่ persist ไม่ถูกต้อง, ทำความสะอาดหน่วยความจำสำหรับเอาต์พุตโมเดล thinking, แก้รันไทม์ Deep Solve
+> **[2026.4.29]** [v1.3.2](https://github.com/HKUDS/Socartes/releases/tag/v1.3.2) — URL ปลายทาง embedding โปร่งใส, ความทนทาน re-index RAG เมื่อเวกเตอร์ที่ persist ไม่ถูกต้อง, ทำความสะอาดหน่วยความจำสำหรับเอาต์พุตโมเดล thinking, แก้รันไทม์ Deep Solve
 
-> **[2026.4.28]** [v1.3.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.1) — เสถียรภาพ: RAG routing ปลอดภัยขึ้นและตรวจสอบ embedding, Docker persistence, อินพุตปลอดภัยกับ IME, ความทนทาน Windows/GBK
+> **[2026.4.28]** [v1.3.1](https://github.com/HKUDS/Socartes/releases/tag/v1.3.1) — เสถียรภาพ: RAG routing ปลอดภัยขึ้นและตรวจสอบ embedding, Docker persistence, อินพุตปลอดภัยกับ IME, ความทนทาน Windows/GBK
 
-> **[2026.4.27]** [v1.3.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.0) — ดัชนี KB แบบมีเวอร์ชันพร้อมเวิร์กโฟลว์ re-index, รีบิลด์ Knowledge workspace, embedding auto-discovery กับอะแดปเตอร์ใหม่, Space hub
+> **[2026.4.27]** [v1.3.0](https://github.com/HKUDS/Socartes/releases/tag/v1.3.0) — ดัชนี KB แบบมีเวอร์ชันพร้อมเวิร์กโฟลว์ re-index, รีบิลด์ Knowledge workspace, embedding auto-discovery กับอะแดปเตอร์ใหม่, Space hub
 
-> **[2026.4.25]** [v1.2.5](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.5) — แนบไฟล์ในแชตถาวรพร้อมลิ้นชักพรีวิว, pipeline ความสามารถที่รับรู้แนบไฟล์, ส่งออก Markdown ของ TutorBot
+> **[2026.4.25]** [v1.2.5](https://github.com/HKUDS/Socartes/releases/tag/v1.2.5) — แนบไฟล์ในแชตถาวรพร้อมลิ้นชักพรีวิว, pipeline ความสามารถที่รับรู้แนบไฟล์, ส่งออก Markdown ของ TutorBot
 
-> **[2026.4.25]** [v1.2.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.4) — แนบข้อความ / โค้ด / SVG, Setup Tour คำสั่งเดียว, ส่งออกแชต Markdown, UI จัดการ KB แบบกะทัดรัด
+> **[2026.4.25]** [v1.2.4](https://github.com/HKUDS/Socartes/releases/tag/v1.2.4) — แนบข้อความ / โค้ด / SVG, Setup Tour คำสั่งเดียว, ส่งออกแชต Markdown, UI จัดการ KB แบบกะทัดรัด
 
 <details>
 <summary><b>รุ่นที่ผ่านมา (มากกว่า 2 สัปดาห์ที่แล้ว)</b></summary>
 
-> **[2026.4.24]** [v1.2.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.3) — แนบเอกสาร (PDF/DOCX/XLSX/PPTX), แสดงบล็อกการคิดของโมเดลให้เหตุผล, ตัวแก้เทมเพลต Soul, บันทึก Co-Writer ลงสมุด
+> **[2026.4.24]** [v1.2.3](https://github.com/HKUDS/Socartes/releases/tag/v1.2.3) — แนบเอกสาร (PDF/DOCX/XLSX/PPTX), แสดงบล็อกการคิดของโมเดลให้เหตุผล, ตัวแก้เทมเพลต Soul, บันทึก Co-Writer ลงสมุด
 
-> **[2026.4.22]** [v1.2.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.2) — ระบบ Skills ที่ผู้ใช้สร้าง, ปรับประสิทธิ์อินพุตแชต, TutorBot สตาร์ทอัตโนมัติ, UI ห้องสมุดหนังสือ, โหมดเต็มจอของการแสดงผล
+> **[2026.4.22]** [v1.2.2](https://github.com/HKUDS/Socartes/releases/tag/v1.2.2) — ระบบ Skills ที่ผู้ใช้สร้าง, ปรับประสิทธิ์อินพุตแชต, TutorBot สตาร์ทอัตโนมัติ, UI ห้องสมุดหนังสือ, โหมดเต็มจอของการแสดงผล
 
-> **[2026.4.21]** [v1.2.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.1) — จำกัดโทเคนต่อขั้นตอน, สร้างคำตอบใหม่ได้ทุกจุดเข้า, แก้ความเข้ากันได้ของ RAG และ Gemma
+> **[2026.4.21]** [v1.2.1](https://github.com/HKUDS/Socartes/releases/tag/v1.2.1) — จำกัดโทเคนต่อขั้นตอน, สร้างคำตอบใหม่ได้ทุกจุดเข้า, แก้ความเข้ากันได้ของ RAG และ Gemma
 
-> **[2026.4.20]** [v1.2.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.0) — คอมไพเลอร์ Book Engine «หนังสือมีชีวิต», Co-Writer หลายเอกสาร, การแสดงผล HTML แบบโต้ตอบ, @-mention ธนาคารคำถามในแชต
+> **[2026.4.20]** [v1.2.0](https://github.com/HKUDS/Socartes/releases/tag/v1.2.0) — คอมไพเลอร์ Book Engine «หนังสือมีชีวิต», Co-Writer หลายเอกสาร, การแสดงผล HTML แบบโต้ตอบ, @-mention ธนาคารคำถามในแชต
 
-> **[2026.4.18]** [v1.1.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.2) — แท็บ Channels แบบ schema-driven, รวม RAG เป็น pipeline เดียว, แยก chat prompts ออกเป็นไฟล์ภายนอก
+> **[2026.4.18]** [v1.1.2](https://github.com/HKUDS/Socartes/releases/tag/v1.1.2) — แท็บ Channels แบบ schema-driven, รวม RAG เป็น pipeline เดียว, แยก chat prompts ออกเป็นไฟล์ภายนอก
 
-> **[2026.4.17]** [v1.1.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.1) — ปุ่ม "ตอบเลย" ครอบคลุมทุกความสามารถ, Co-Writer scroll sync, แผงตั้งค่ารวม, ปุ่ม Stop ระหว่างสตรีม
+> **[2026.4.17]** [v1.1.1](https://github.com/HKUDS/Socartes/releases/tag/v1.1.1) — ปุ่ม "ตอบเลย" ครอบคลุมทุกความสามารถ, Co-Writer scroll sync, แผงตั้งค่ารวม, ปุ่ม Stop ระหว่างสตรีม
 
-> **[2026.4.15]** [v1.1.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.0) — ปรับปรุงการ parse LaTeX block math, ตั้งค่า LLM probe ผ่าน agents.yaml, forward extra headers ใน LLM factory, แก้ UUID ของ SaveToNotebookModal, คำแนะนำ Docker + local LLM และขยาย test suite
+> **[2026.4.15]** [v1.1.0](https://github.com/HKUDS/Socartes/releases/tag/v1.1.0) — ปรับปรุงการ parse LaTeX block math, ตั้งค่า LLM probe ผ่าน agents.yaml, forward extra headers ใน LLM factory, แก้ UUID ของ SaveToNotebookModal, คำแนะนำ Docker + local LLM และขยาย test suite
 
-> **[2026.4.14]** [v1.1.0-beta](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.0-beta) — URL-based chat routing พร้อม bookmark ได้, ธีม Snow, WebSocket heartbeat & auto-reconnect พร้อม resume, ปรับ ChatComposer ให้เร็วขึ้น, overhaul embedding provider registry, Serper search provider, streaming idle timeout และขยาย test suite
+> **[2026.4.14]** [v1.1.0-beta](https://github.com/HKUDS/Socartes/releases/tag/v1.1.0-beta) — URL-based chat routing พร้อม bookmark ได้, ธีม Snow, WebSocket heartbeat & auto-reconnect พร้อม resume, ปรับ ChatComposer ให้เร็วขึ้น, overhaul embedding provider registry, Serper search provider, streaming idle timeout และขยาย test suite
 
-> **[2026.4.13]** [v1.0.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.3) — Question Notebook สำหรับทบทวนแบบทดสอบรวมศูนย์พร้อม bookmark & หมวดหมู่, รองรับ Mermaid diagram ใน Visualize, ตรวจจับ embedding model ไม่ตรง, รวม system message สำหรับ Qwen/vLLM, รองรับ LM Studio & llama.cpp และธีม Glass
+> **[2026.4.13]** [v1.0.3](https://github.com/HKUDS/Socartes/releases/tag/v1.0.3) — Question Notebook สำหรับทบทวนแบบทดสอบรวมศูนย์พร้อม bookmark & หมวดหมู่, รองรับ Mermaid diagram ใน Visualize, ตรวจจับ embedding model ไม่ตรง, รวม system message สำหรับ Qwen/vLLM, รองรับ LM Studio & llama.cpp และธีม Glass
 
-> **[2026.4.11]** [v1.0.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.2) — ปรับโครงสร้าง search consolidation ให้ง่ายขึ้นพร้อม SearXNG fallback, แก้ไข provider switch fix, ตั้ง runtime config ชัดเจนใน test runner และแก้ resource leak ฝั่ง frontend
+> **[2026.4.11]** [v1.0.2](https://github.com/HKUDS/Socartes/releases/tag/v1.0.2) — ปรับโครงสร้าง search consolidation ให้ง่ายขึ้นพร้อม SearXNG fallback, แก้ไข provider switch fix, ตั้ง runtime config ชัดเจนใน test runner และแก้ resource leak ฝั่ง frontend
 
-> **[2026.4.10]** [v1.0.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.1) — เพิ่ม Visualize capability ใหม่พร้อม Chart.js/SVG rendering pipeline, ป้องกัน quiz ซ้ำด้วย generation history, รองรับ o4-mini model และปรับปรุง server logging
+> **[2026.4.10]** [v1.0.1](https://github.com/HKUDS/Socartes/releases/tag/v1.0.1) — เพิ่ม Visualize capability ใหม่พร้อม Chart.js/SVG rendering pipeline, ป้องกัน quiz ซ้ำด้วย generation history, รองรับ o4-mini model และปรับปรุง server logging
 
-> **[2026.4.10]** [v1.0.0-beta.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.4) — แสดงความคืบหน้า Embedding พร้อม retry เมื่อเจอ HTTP 429, จัดการ dependency ข้ามแพลตฟอร์มใน start tour และแก้ MIME validation ให้ case-insensitive
+> **[2026.4.10]** [v1.0.0-beta.4](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.4) — แสดงความคืบหน้า Embedding พร้อม retry เมื่อเจอ HTTP 429, จัดการ dependency ข้ามแพลตฟอร์มใน start tour และแก้ MIME validation ให้ case-insensitive
 
-> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.3) — ลบ litellm dependency ใช้ native OpenAI/Anthropic SDK providers แทน, รองรับ Math Animator บน Windows, parse JSON จาก LLM ให้ robust ขึ้น, แก้ KaTeX & navigation ใน Guided Learning และ i18n ภาษาจีนครบ
+> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.3) — ลบ litellm dependency ใช้ native OpenAI/Anthropic SDK providers แทน, รองรับ Math Animator บน Windows, parse JSON จาก LLM ให้ robust ขึ้น, แก้ KaTeX & navigation ใน Guided Learning และ i18n ภาษาจีนครบ
 
-> **[2026.4.7]** [v1.0.0-beta.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.2) — ล้าง runtime cache สำหรับ hot settings reload, รองรับ MinerU nested output, แก้ mimic WebSocket, กำหนดขั้นต่ำ Python 3.11+ และปรับปรุง CI
+> **[2026.4.7]** [v1.0.0-beta.2](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.2) — ล้าง runtime cache สำหรับ hot settings reload, รองรับ MinerU nested output, แก้ mimic WebSocket, กำหนดขั้นต่ำ Python 3.11+ และปรับปรุง CI
 
-> **[2026.4.4]** [v1.0.0-beta.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.1) — เขียนสถาปัตยกรรมใหม่แบบ Agent-native (~200k บรรทัด) พร้อมโมเดลปลั๊กอิน 2 ชั้น (Tools + Capabilities), CLI & SDK entry points, TutorBot มัลติแชนแนล, Co-Writer, Guided Learning และ persistent memory
+> **[2026.4.4]** [v1.0.0-beta.1](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.1) — เขียนสถาปัตยกรรมใหม่แบบ Agent-native (~200k บรรทัด) พร้อมโมเดลปลั๊กอิน 2 ชั้น (Tools + Capabilities), CLI & SDK entry points, TutorBot มัลติแชนแนล, Co-Writer, Guided Learning และ persistent memory
 
-> **[2026.1.23]** [v0.6.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.6.0) — Session persistence, อัปโหลดเอกสารเพิ่มทีละไฟล์, import RAG pipeline ที่ยืดหยุ่น และ localization ภาษาจีนครบ
+> **[2026.1.23]** [v0.6.0](https://github.com/HKUDS/Socartes/releases/tag/v0.6.0) — Session persistence, อัปโหลดเอกสารเพิ่มทีละไฟล์, import RAG pipeline ที่ยืดหยุ่น และ localization ภาษาจีนครบ
 
-> **[2026.1.18]** [v0.5.2](https://github.com/HKUDS/DeepTutor/releases/tag/v0.5.2) — รองรับ Docling สำหรับ RAG-Anything, ปรับ logging system และแก้บั๊ก
+> **[2026.1.18]** [v0.5.2](https://github.com/HKUDS/Socartes/releases/tag/v0.5.2) — รองรับ Docling สำหรับ RAG-Anything, ปรับ logging system และแก้บั๊ก
 
-> **[2026.1.15]** [v0.5.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.5.0) — Unified service configuration, เลือก RAG pipeline ต่อ knowledge base, ปรับ question generation ใหม่ และปรับแต่ง sidebar
+> **[2026.1.15]** [v0.5.0](https://github.com/HKUDS/Socartes/releases/tag/v0.5.0) — Unified service configuration, เลือก RAG pipeline ต่อ knowledge base, ปรับ question generation ใหม่ และปรับแต่ง sidebar
 
-> **[2026.1.9]** [v0.4.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.4.0) — รองรับ Multi-provider LLM & embedding, หน้า home ใหม่, แยก RAG module และ refactor environment variable
+> **[2026.1.9]** [v0.4.0](https://github.com/HKUDS/Socartes/releases/tag/v0.4.0) — รองรับ Multi-provider LLM & embedding, หน้า home ใหม่, แยก RAG module และ refactor environment variable
 
-> **[2026.1.5]** [v0.3.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.3.0) — สถาปัตยกรรม PromptManager รวม, GitHub Actions CI/CD และ Docker image สำเร็จรูปบน GHCR
+> **[2026.1.5]** [v0.3.0](https://github.com/HKUDS/Socartes/releases/tag/v0.3.0) — สถาปัตยกรรม PromptManager รวม, GitHub Actions CI/CD และ Docker image สำเร็จรูปบน GHCR
 
-> **[2026.1.2]** [v0.2.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.2.0) — Docker deployment, อัปเกรด Next.js 16 & React 19, WebSocket security hardening และแก้ช่องโหว่สำคัญ
+> **[2026.1.2]** [v0.2.0](https://github.com/HKUDS/Socartes/releases/tag/v0.2.0) — Docker deployment, อัปเกรด Next.js 16 & React 19, WebSocket security hardening และแก้ช่องโหว่สำคัญ
 
 </details>
 
@@ -103,15 +103,15 @@
 
 > **[2026.4.19]** 🎉 ครบ 20k ดาวหลัง 111 วัน! ขอบคุณที่สนับสนุน — เราจะพัฒนาต่อเพื่อติวเตอร์เชิงบุคคลและฉลาดอย่างแท้จริง
 
-> **[2026.4.10]** 📄 งานวิจัยของเราลง arXiv แล้ว! อ่าน [พรีปรินต์](https://arxiv.org/abs/2604.26962) เพื่อทำความเข้าใจการออกแบบและแนวคิดของ DeepTutor
+> **[2026.4.10]** 📄 งานวิจัยของเราลง arXiv แล้ว! อ่าน [พรีปรินต์](https://arxiv.org/abs/2604.26962) เพื่อทำความเข้าใจการออกแบบและแนวคิดของ Socartes
 
-> **[2026.4.4]** นานมาแล้ว ✨ DeepTutor v1.0.0 มาถึงแล้ว — วิวัฒนาการแบบ agent-native ที่เขียนสถาปัตยกรรมใหม่ตั้งแต่ต้น พร้อม TutorBot และการสลับโหมดอย่างยืดหยุ่น ภายใต้สัญญาอนุญาต Apache-2.0 บทใหม่เริ่มต้นขึ้น เรื่องราวของเรายังดำเนินต่อไป!
+> **[2026.4.4]** นานมาแล้ว ✨ Socartes v1.0.0 มาถึงแล้ว — วิวัฒนาการแบบ agent-native ที่เขียนสถาปัตยกรรมใหม่ตั้งแต่ต้น พร้อม TutorBot และการสลับโหมดอย่างยืดหยุ่น ภายใต้สัญญาอนุญาต Apache-2.0 บทใหม่เริ่มต้นขึ้น เรื่องราวของเรายังดำเนินต่อไป!
 
 > **[2026.2.6]** 🚀 เราไปถึง 10,000 ดาวภายในเพียง 39 วัน! ขอบคุณชุมชนที่ยอดเยี่ยมของเราสำหรับการสนับสนุน!
 
-> **[2026.1.1]** สวัสดีปีใหม่! มาร่วม [Discord](https://discord.gg/eRsjPgMU4t), [WeChat](https://github.com/HKUDS/DeepTutor/issues/78) หรือ [Discussions](https://github.com/HKUDS/DeepTutor/discussions) ของเรา — มาร่วมกำหนดอนาคตของ DeepTutor กัน!
+> **[2026.1.1]** สวัสดีปีใหม่! มาร่วม [Discord](https://discord.gg/eRsjPgMU4t), [WeChat](https://github.com/HKUDS/Socartes/issues/78) หรือ [Discussions](https://github.com/HKUDS/Socartes/discussions) ของเรา — มาร่วมกำหนดอนาคตของ Socartes กัน!
 
-> **[2025.12.29]** DeepTutor เปิดตัวอย่างเป็นทางการ!
+> **[2025.12.29]** Socartes เปิดตัวอย่างเป็นทางการ!
 
 
 ## ✨ คุณสมบัติเด่น
@@ -120,7 +120,7 @@
 - **AI Co-Writer** — พื้นที่ Markdown หลายเอกสาร AI เป็นผู้ร่วมเขียนระดับแรก: Rewrite, Expand, Shorten ดึงบริบทจาก knowledge base และเว็บ
 - **Book Engine** — เปลี่ยนวัสดุของคุณเป็น «หนังสือมีชีวิต» แบบมีโครงสร้างและโต้ตอบได้ ไปป์ไลน์หลายเอเจนต์ 13 ประเภทบล็อก (แบบทดสอบ แฟลชการ์ด ไทม์ไลน์ กราฟแนวคิด ฯลฯ)
 - **Knowledge Hub** — สร้าง knowledge base แบบ RAG-ready สมุดบันทึกสีสัน ธนาคารคำถาม และ Skills กำหนดสไตล์การสอน
-- **Persistent Memory** — DeepTutor สร้างโปรไฟล์ผู้เรียนที่เติบโตอยู่ตลอดเวลา ใช้ร่วมกันข้ามทุกฟีเจอร์และทุก TutorBot ยิ่งใช้ยิ่งแม่นยำ
+- **Persistent Memory** — Socartes สร้างโปรไฟล์ผู้เรียนที่เติบโตอยู่ตลอดเวลา ใช้ร่วมกันข้ามทุกฟีเจอร์และทุก TutorBot ยิ่งใช้ยิ่งแม่นยำ
 - **TutorBot ส่วนตัว** — ไม่ใช่แค่ chatbot แต่เป็นติวเตอร์อัตโนมัติที่มี workspace, memory, บุคลิก และทักษะของตัวเอง ขับเคลื่อนโดย [nanobot](https://github.com/HKUDS/nanobot)
 - **Agent-Native CLI** — ทุกความสามารถ, knowledge base, session และ TutorBot ผ่านคำสั่งเดียว Rich และ JSON มอบ [`SKILL.md`](../../SKILL.md) ให้ agent
 
@@ -146,11 +146,11 @@
 **สคริปต์ CLI แบบโต้ตอบเพียงตัวเดียว** พาคุณจาก clone สดใหม่ไปจนถึงแอปที่รันได้ — ไม่ต้อง `pip install` หรือ `npm install` หรือแก้ `.env` เอง ทุกอย่างถูกตรวจหา ติดตั้ง และตั้งค่าในขั้นแนะนำ 7 ขั้น
 
 ```bash
-git clone https://github.com/HKUDS/DeepTutor.git
-cd DeepTutor
+git clone https://github.com/HKUDS/Socartes.git
+cd Socartes
 
 # สร้าง Python virtual environment (เลือกอย่างใดอย่างหนึ่ง):
-conda create -n deeptutor python=3.11 && conda activate deeptutor   # Anaconda/Miniconda
+conda create -n socartes python=3.11 && conda activate socartes   # Anaconda/Miniconda
 python -m venv .venv && source .venv/bin/activate                    # macOS/Linux
 python -m venv .venv && .venv\Scripts\activate                       # Windows
 
@@ -173,10 +173,10 @@ python scripts/start_web.py
 **1. ติดตั้ง dependency**
 
 ```bash
-git clone https://github.com/HKUDS/DeepTutor.git
-cd DeepTutor
+git clone https://github.com/HKUDS/Socartes.git
+cd Socartes
 
-conda create -n deeptutor python=3.11 && conda activate deeptutor
+conda create -n socartes python=3.11 && conda activate socartes
 pip install -e ".[server]"
 
 # Frontend
@@ -291,7 +291,7 @@ python scripts/start_web.py
 
 ```bash
 # Backend (FastAPI)
-python -m deeptutor.api.run_server
+python -m socartes.api.run_server
 
 # Frontend (Next.js) — เปิดอีกเทอร์มินัลหนึ่ง
 cd web && npm run dev -- -p 3782
@@ -311,8 +311,8 @@ Docker ช่วยรวม backend และ frontend ไว้ในคอน
 **1. ตั้งค่า environment variable** (จำเป็นสำหรับทุกตัวเลือก)
 
 ```bash
-git clone https://github.com/HKUDS/DeepTutor.git
-cd DeepTutor
+git clone https://github.com/HKUDS/Socartes.git
+cd Socartes
 cp .env.example .env
 ```
 
@@ -320,7 +320,7 @@ cp .env.example .env
 
 **2a. ดึง image ทางการ (แนะนำ)**
 
-Image ทางการเผยแพร่ที่ [GitHub Container Registry](https://github.com/HKUDS/DeepTutor/pkgs/container/deeptutor) ทุกครั้งที่ release สำหรับ `linux/amd64` และ `linux/arm64`
+Image ทางการเผยแพร่ที่ [GitHub Container Registry](https://github.com/HKUDS/Socartes/pkgs/container/socartes) ทุกครั้งที่ release สำหรับ `linux/amd64` และ `linux/arm64`
 
 ```bash
 docker compose -f docker-compose.ghcr.yml up -d
@@ -329,7 +329,7 @@ docker compose -f docker-compose.ghcr.yml up -d
 หากต้องการ pin เวอร์ชันเฉพาะ ให้แก้ image tag ใน `docker-compose.ghcr.yml`:
 
 ```yaml
-image: ghcr.io/hkuds/deeptutor:1.0.0  # หรือ :latest
+image: ghcr.io/hkuds/socartes:1.0.0  # หรือ :latest
 ```
 
 **2b. Build จาก source**
@@ -371,7 +371,7 @@ Frontend startup script จะใช้ค่านี้ตอน runtime — �
 **ผู้ใช้คนเดียวแบบ headless (ไม่มีขั้นตอน `/register`):** กำหนดค่าล่วงหน้าผ่าน env vars:
 
 ```bash
-python -c "from deeptutor.services.auth import hash_password; print(hash_password('yourpassword'))"
+python -c "from socartes.services.auth import hash_password; print(hash_password('yourpassword'))"
 ```
 
 ```dotenv
@@ -414,7 +414,7 @@ POCKETBASE_ADMIN_PASSWORD=your-admin-password
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
-การเปลี่ยนแปลงใน `deeptutor/`, `deeptutor_cli/`, `scripts/` และ `web/` จะมีผลทันที
+การเปลี่ยนแปลงใน `socartes/`, `socartes_cli/`, `scripts/` และ `web/` จะมีผลทันที
 
 </details>
 
@@ -480,20 +480,20 @@ Directory เหล่านี้จะอยู่หลังจาก `docke
 
 ```bash
 pip install -e ".[cli]"
-deeptutor chat                                   # Interactive REPL
-deeptutor run chat "Explain Fourier transform"   # เรียกใช้ capability แบบ one-shot
-deeptutor run deep_solve "Solve x^2 = 4"         # แก้ปัญหาแบบหลายเอเจนต์
-deeptutor kb create my-kb --doc textbook.pdf     # สร้าง knowledge base
+socartes chat                                   # Interactive REPL
+socartes run chat "Explain Fourier transform"   # เรียกใช้ capability แบบ one-shot
+socartes run deep_solve "Solve x^2 = 4"         # แก้ปัญหาแบบหลายเอเจนต์
+socartes kb create my-kb --doc textbook.pdf     # สร้าง knowledge base
 ```
 
-> ดูรายละเอียดเพิ่มเติมที่ [DeepTutor CLI](#%EF%B8%8F-deeptutor-cli--อินเทอร์เฟซแบบ-agent-native)
+> ดูรายละเอียดเพิ่มเติมที่ [Socartes CLI](#%EF%B8%8F-socartes-cli--อินเทอร์เฟซแบบ-agent-native)
 
 ---
 
-## 📖 สำรวจ DeepTutor
+## 📖 สำรวจ Socartes
 
 <div align="center">
-<img src="../../assets/figs/deeptutor-architecture.png" alt="สถาปัตยกรรม DeepTutor" width="800">
+<img src="../../assets/figs/socartes-architecture.png" alt="สถาปัตยกรรม Socartes" width="800">
 </div>
 
 ### 💬 Chat — พื้นที่ทำงานอัจฉริยะแบบรวม
@@ -502,7 +502,7 @@ deeptutor kb create my-kb --doc textbook.pdf     # สร้าง knowledge bas
 <img src="../../assets/figs/dt-chat.png" alt="พื้นที่ Chat" width="800">
 </div>
 
-DeepTutor รวม 6 โหมดหลักไว้ใน workspace เดียว โดยใช้ **ระบบจัดการบริบทร่วมกัน** ทำให้ประวัติการสนทนา knowledge base และแหล่งอ้างอิงต่อเนื่องข้ามโหมดได้ — สลับไปมาได้อิสระในหัวข้อเดียวกัน
+Socartes รวม 6 โหมดหลักไว้ใน workspace เดียว โดยใช้ **ระบบจัดการบริบทร่วมกัน** ทำให้ประวัติการสนทนา knowledge base และแหล่งอ้างอิงต่อเนื่องข้ามโหมดได้ — สลับไปมาได้อิสระในหัวข้อเดียวกัน
 
 | โหมด | หน้าที่ |
 |:---|:---|
@@ -552,18 +552,18 @@ DeepTutor รวม 6 โหมดหลักไว้ใน workspace เด�
 
 Knowledge base ของคุณไม่ใช่แค่ที่เก็บ — มันมีส่วนร่วมอย่างแข็งขันในทุกการสนทนา ทุกเซสชันวิจัย และทุกเส้นทางการเรียนรู้
 
-### 🧠 Memory — DeepTutor เรียนรู้ไปพร้อมกับคุณ
+### 🧠 Memory — Socartes เรียนรู้ไปพร้อมกับคุณ
 
 <div align="center">
 <img src="../../assets/figs/dt-memory.png" alt="Memory" width="800">
 </div>
 
-DeepTutor มี memory แบบถาวรที่เติบโตอยู่ตลอดเวลาผ่าน 2 มิติ:
+Socartes มี memory แบบถาวรที่เติบโตอยู่ตลอดเวลาผ่าน 2 มิติ:
 
 - **Summary** — สรุปว่าคุณเรียนอะไรไปแล้ว สำรวจประเด็นใดบ้าง และความเข้าใจพัฒนาอย่างไร
 - **Profile** — โปรไฟล์ผู้เรียน เช่น ระดับความรู้ เป้าหมาย สไตล์การสื่อสาร และความชอบ — ปรับปรุงอัตโนมัติผ่านทุกการโต้ตอบ
 
-Memory นี้ถูกใช้ร่วมกันข้ามทุกฟีเจอร์และทุก TutorBot ยิ่งคุณใช้ DeepTutor มากเท่าไร มันก็ยิ่งตอบได้เฉพาะตัวและมีประสิทธิภาพมากขึ้น
+Memory นี้ถูกใช้ร่วมกันข้ามทุกฟีเจอร์และทุก TutorBot ยิ่งคุณใช้ Socartes มากเท่าไร มันก็ยิ่งตอบได้เฉพาะตัวและมีประสิทธิภาพมากขึ้น
 
 ---
 
@@ -580,69 +580,69 @@ TutorBot ไม่ใช่ chatbot ธรรมดา แต่เป็น **�
 </div>
 
 - **Soul Templates** — กำหนดบุคลิก โทนการสอน และปรัชญาการสอนผ่านไฟล์ Soul ที่แก้ไขได้ เลือกจาก archetype ในตัว (โสเครติส, ให้กำลังใจ, เข้มงวด) หรือออกแบบเอง — soul กำหนดทุกการตอบ
-- **Independent Workspace** — แต่ละบอตมี directory ของตัวเองพร้อม memory, sessions, skills และ config แยกจากกัน — แยกตัวเต็มที่แต่ยังเข้าถึงชั้นความรู้ร่วมของ DeepTutor ได้
+- **Independent Workspace** — แต่ละบอตมี directory ของตัวเองพร้อม memory, sessions, skills และ config แยกจากกัน — แยกตัวเต็มที่แต่ยังเข้าถึงชั้นความรู้ร่วมของ Socartes ได้
 - **Proactive Heartbeat** — บอตไม่ใช่แค่ตอบ — มันริเริ่มเอง ระบบ Heartbeat ในตัวเปิดให้เช็กอินการเรียนซ้ำ เตือนทบทวน และจัดตารางงาน ติวเตอร์ของคุณมาหาแม้คุณไม่เริ่ม
-- **Full Tool Access** — ทุกบอตเข้าถึงเครื่องมือครบชุดของ DeepTutor: RAG retrieval, code execution, web search, academic paper search, deep reasoning และ brainstorming
+- **Full Tool Access** — ทุกบอตเข้าถึงเครื่องมือครบชุดของ Socartes: RAG retrieval, code execution, web search, academic paper search, deep reasoning และ brainstorming
 - **Skill Learning** — สอนบอตความสามารถใหม่โดยเพิ่มไฟล์ skill ลงใน workspace ของมัน เมื่อความต้องการของคุณเปลี่ยน ความสามารถของติวเตอร์ก็เปลี่ยนตาม
 - **Multi-Channel Presence** — เชื่อมต่อกับ Telegram, Discord, Slack, Feishu, WeChat Work, DingTalk, Email และช่องทางอื่น ๆ ติวเตอร์ไปหาคุณไม่ว่าคุณจะอยู่ที่ไหน
 - **Team & Sub-Agents** — สร้าง sub-agent ทำงานเบื้องหลังหรือจัด multi-agent team ภายในบอตเดียวสำหรับงานซับซ้อนและใช้เวลานาน
 
 ```bash
-deeptutor bot create math-tutor --persona "Socratic math teacher who uses probing questions"
-deeptutor bot create writing-coach --persona "Patient, detail-oriented writing mentor"
-deeptutor bot list                  # ดูติวเตอร์ทั้งหมดที่กำลังทำงาน
+socartes bot create math-tutor --persona "Socratic math teacher who uses probing questions"
+socartes bot create writing-coach --persona "Patient, detail-oriented writing mentor"
+socartes bot list                  # ดูติวเตอร์ทั้งหมดที่กำลังทำงาน
 ```
 
 ---
 
-### ⌨️ DeepTutor CLI — อินเทอร์เฟซแบบ Agent-Native
+### ⌨️ Socartes CLI — อินเทอร์เฟซแบบ Agent-Native
 
 <div align="center">
-<img src="../../assets/figs/cli-architecture.png" alt="สถาปัตยกรรม DeepTutor CLI" width="800">
+<img src="../../assets/figs/cli-architecture.png" alt="สถาปัตยกรรม Socartes CLI" width="800">
 </div>
 
-DeepTutor รองรับ CLI อย่างเต็มรูปแบบ ทุก capability, knowledge base, session, memory และ TutorBot อยู่ห่างแค่คำสั่งเดียว — ไม่ต้องเปิดเบราว์เซอร์ CLI ให้บริการทั้งมนุษย์ (แสดงผลสวยงามในเทอร์มินัล) และ AI agent (ส่งออกเป็น JSON ที่มีโครงสร้าง)
+Socartes รองรับ CLI อย่างเต็มรูปแบบ ทุก capability, knowledge base, session, memory และ TutorBot อยู่ห่างแค่คำสั่งเดียว — ไม่ต้องเปิดเบราว์เซอร์ CLI ให้บริการทั้งมนุษย์ (แสดงผลสวยงามในเทอร์มินัล) และ AI agent (ส่งออกเป็น JSON ที่มีโครงสร้าง)
 
-มอบ [`SKILL.md`](../../SKILL.md) ที่ root ของโปรเจกต์ให้ agent ที่ใช้เครื่องมือ ([nanobot](https://github.com/HKUDS/nanobot) หรือ LLM ใดก็ตามที่มี tool access) แล้วมันจะตั้งค่าและใช้งาน DeepTutor ได้เอง
+มอบ [`SKILL.md`](../../SKILL.md) ที่ root ของโปรเจกต์ให้ agent ที่ใช้เครื่องมือ ([nanobot](https://github.com/HKUDS/nanobot) หรือ LLM ใดก็ตามที่มี tool access) แล้วมันจะตั้งค่าและใช้งาน Socartes ได้เอง
 
 **One-shot execution** — เรียกใช้ capability ใดก็ได้จากเทอร์มินัล:
 
 ```bash
-deeptutor run chat "Explain the Fourier transform" -t rag --kb textbook
-deeptutor run deep_solve "Prove that √2 is irrational" -t reason
-deeptutor run deep_question "Linear algebra" --config num_questions=5
-deeptutor run deep_research "Attention mechanisms in transformers"
-deeptutor run visualize "Draw the architecture of a transformer"
+socartes run chat "Explain the Fourier transform" -t rag --kb textbook
+socartes run deep_solve "Prove that √2 is irrational" -t reason
+socartes run deep_question "Linear algebra" --config num_questions=5
+socartes run deep_research "Attention mechanisms in transformers"
+socartes run visualize "Draw the architecture of a transformer"
 ```
 
 **Interactive REPL** — เซสชันแชตแบบถาวรพร้อมสลับโหมดขณะใช้งาน:
 
 ```bash
-deeptutor chat --capability deep_solve --kb my-kb
+socartes chat --capability deep_solve --kb my-kb
 # ภายใน REPL: /cap, /tool, /kb, /history, /notebook, /config เพื่อสลับขณะใช้งาน
 ```
 
 **Knowledge base lifecycle** — สร้าง ค้นหา และจัดการคลัง RAG-ready ทั้งหมดจากเทอร์มินัล:
 
 ```bash
-deeptutor kb create my-kb --doc textbook.pdf       # สร้างจากเอกสาร
-deeptutor kb add my-kb --docs-dir ./papers/         # เพิ่มโฟลเดอร์เอกสาร
-deeptutor kb search my-kb "gradient descent"        # ค้นหาโดยตรง
-deeptutor kb set-default my-kb                      # ตั้งเป็น KB เริ่มต้น
+socartes kb create my-kb --doc textbook.pdf       # สร้างจากเอกสาร
+socartes kb add my-kb --docs-dir ./papers/         # เพิ่มโฟลเดอร์เอกสาร
+socartes kb search my-kb "gradient descent"        # ค้นหาโดยตรง
+socartes kb set-default my-kb                      # ตั้งเป็น KB เริ่มต้น
 ```
 
 **Dual output mode** — แสดงผลสวยงามสำหรับมนุษย์, JSON สำหรับ pipeline:
 
 ```bash
-deeptutor run chat "Summarize chapter 3" -f rich    # แสดงผลสี สวยงาม
-deeptutor run chat "Summarize chapter 3" -f json    # JSON events แบบ line-delimited
+socartes run chat "Summarize chapter 3" -f rich    # แสดงผลสี สวยงาม
+socartes run chat "Summarize chapter 3" -f json    # JSON events แบบ line-delimited
 ```
 
 **Session continuity** — กลับมาทำต่อจากจุดที่ค้างไว้:
 
 ```bash
-deeptutor session list                              # แสดงรายการเซสชัน
-deeptutor session open <id>                         # กลับมาทำต่อใน REPL
+socartes session list                              # แสดงรายการเซสชัน
+socartes session open <id>                         # กลับมาทำต่อใน REPL
 ```
 
 <details>
@@ -652,75 +652,75 @@ deeptutor session open <id>                         # กลับมาทำ�
 
 | คำสั่ง | คำอธิบาย |
 |:---|:---|
-| `deeptutor run <capability> <message>` | เรียกใช้ capability แบบ single turn (`chat`, `deep_solve`, `deep_question`, `deep_research`, `math_animator`, `visualize`) |
-| `deeptutor chat` | Interactive REPL พร้อมตัวเลือก `--capability`, `--tool`, `--kb`, `--language` |
-| `deeptutor serve` | เริ่ม DeepTutor API server |
+| `socartes run <capability> <message>` | เรียกใช้ capability แบบ single turn (`chat`, `deep_solve`, `deep_question`, `deep_research`, `math_animator`, `visualize`) |
+| `socartes chat` | Interactive REPL พร้อมตัวเลือก `--capability`, `--tool`, `--kb`, `--language` |
+| `socartes serve` | เริ่ม Socartes API server |
 
-**`deeptutor bot`**
-
-| คำสั่ง | คำอธิบาย |
-|:---|:---|
-| `deeptutor bot list` | แสดงรายการ TutorBot ทั้งหมด |
-| `deeptutor bot create <id>` | สร้างและเริ่มบอตใหม่ (`--name`, `--persona`, `--model`) |
-| `deeptutor bot start <id>` | เริ่มบอต |
-| `deeptutor bot stop <id>` | หยุดบอต |
-
-**`deeptutor kb`**
+**`socartes bot`**
 
 | คำสั่ง | คำอธิบาย |
 |:---|:---|
-| `deeptutor kb list` | แสดงรายการ knowledge base ทั้งหมด |
-| `deeptutor kb info <name>` | แสดงรายละเอียด knowledge base |
-| `deeptutor kb create <name>` | สร้างจากเอกสาร (`--doc`, `--docs-dir`) |
-| `deeptutor kb add <name>` | เพิ่มเอกสารทีละไฟล์ |
-| `deeptutor kb search <name> <query>` | ค้นหา knowledge base |
-| `deeptutor kb set-default <name>` | ตั้งเป็น KB เริ่มต้น |
-| `deeptutor kb delete <name>` | ลบ knowledge base (`--force`) |
+| `socartes bot list` | แสดงรายการ TutorBot ทั้งหมด |
+| `socartes bot create <id>` | สร้างและเริ่มบอตใหม่ (`--name`, `--persona`, `--model`) |
+| `socartes bot start <id>` | เริ่มบอต |
+| `socartes bot stop <id>` | หยุดบอต |
 
-**`deeptutor memory`**
+**`socartes kb`**
 
 | คำสั่ง | คำอธิบาย |
 |:---|:---|
-| `deeptutor memory show [file]` | ดู memory (`summary`, `profile` หรือ `all`) |
-| `deeptutor memory clear [file]` | ล้าง memory (`--force`) |
+| `socartes kb list` | แสดงรายการ knowledge base ทั้งหมด |
+| `socartes kb info <name>` | แสดงรายละเอียด knowledge base |
+| `socartes kb create <name>` | สร้างจากเอกสาร (`--doc`, `--docs-dir`) |
+| `socartes kb add <name>` | เพิ่มเอกสารทีละไฟล์ |
+| `socartes kb search <name> <query>` | ค้นหา knowledge base |
+| `socartes kb set-default <name>` | ตั้งเป็น KB เริ่มต้น |
+| `socartes kb delete <name>` | ลบ knowledge base (`--force`) |
 
-**`deeptutor session`**
-
-| คำสั่ง | คำอธิบาย |
-|:---|:---|
-| `deeptutor session list` | แสดงรายการเซสชัน (`--limit`) |
-| `deeptutor session show <id>` | ดูข้อความในเซสชัน |
-| `deeptutor session open <id>` | กลับมาทำต่อใน REPL |
-| `deeptutor session rename <id>` | เปลี่ยนชื่อเซสชัน (`--title`) |
-| `deeptutor session delete <id>` | ลบเซสชัน |
-
-**`deeptutor notebook`**
+**`socartes memory`**
 
 | คำสั่ง | คำอธิบาย |
 |:---|:---|
-| `deeptutor notebook list` | แสดงรายการ notebook |
-| `deeptutor notebook create <name>` | สร้าง notebook (`--description`) |
-| `deeptutor notebook show <id>` | ดูบันทึกใน notebook |
-| `deeptutor notebook add-md <id> <path>` | นำเข้า markdown เป็นบันทึก |
-| `deeptutor notebook replace-md <id> <rec> <path>` | เปลี่ยนบันทึก markdown |
-| `deeptutor notebook remove-record <id> <rec>` | ลบบันทึก |
+| `socartes memory show [file]` | ดู memory (`summary`, `profile` หรือ `all`) |
+| `socartes memory clear [file]` | ล้าง memory (`--force`) |
 
-**`deeptutor book`**
+**`socartes session`**
 
 | คำสั่ง | คำอธิบาย |
 |:---|:---|
-| `deeptutor book list` | แสดงรายการหนังสือทั้งหมดใน workspace |
-| `deeptutor book health <book_id>` | ตรวจ KB drift และสุขภาพของหนังสือ |
-| `deeptutor book refresh-fingerprints <book_id>` | รีเฟรช fingerprint ของ KB และล้างหน้าที่ล้าสมัย |
+| `socartes session list` | แสดงรายการเซสชัน (`--limit`) |
+| `socartes session show <id>` | ดูข้อความในเซสชัน |
+| `socartes session open <id>` | กลับมาทำต่อใน REPL |
+| `socartes session rename <id>` | เปลี่ยนชื่อเซสชัน (`--title`) |
+| `socartes session delete <id>` | ลบเซสชัน |
 
-**`deeptutor config` / `plugin` / `provider`**
+**`socartes notebook`**
 
 | คำสั่ง | คำอธิบาย |
 |:---|:---|
-| `deeptutor config show` | แสดงสรุป configuration ปัจจุบัน |
-| `deeptutor plugin list` | แสดงรายการ tools และ capabilities ที่ลงทะเบียน |
-| `deeptutor plugin info <name>` | แสดงรายละเอียด tool หรือ capability |
-| `deeptutor provider login <provider>` | ยืนยันตัวตนกับผู้ให้บริการ (OAuth กับ `openai-codex`; `github-copilot` ตรวจเซสชัน Copilot ที่มีอยู่) |
+| `socartes notebook list` | แสดงรายการ notebook |
+| `socartes notebook create <name>` | สร้าง notebook (`--description`) |
+| `socartes notebook show <id>` | ดูบันทึกใน notebook |
+| `socartes notebook add-md <id> <path>` | นำเข้า markdown เป็นบันทึก |
+| `socartes notebook replace-md <id> <rec> <path>` | เปลี่ยนบันทึก markdown |
+| `socartes notebook remove-record <id> <rec>` | ลบบันทึก |
+
+**`socartes book`**
+
+| คำสั่ง | คำอธิบาย |
+|:---|:---|
+| `socartes book list` | แสดงรายการหนังสือทั้งหมดใน workspace |
+| `socartes book health <book_id>` | ตรวจ KB drift และสุขภาพของหนังสือ |
+| `socartes book refresh-fingerprints <book_id>` | รีเฟรช fingerprint ของ KB และล้างหน้าที่ล้าสมัย |
+
+**`socartes config` / `plugin` / `provider`**
+
+| คำสั่ง | คำอธิบาย |
+|:---|:---|
+| `socartes config show` | แสดงสรุป configuration ปัจจุบัน |
+| `socartes plugin list` | แสดงรายการ tools และ capabilities ที่ลงทะเบียน |
+| `socartes plugin info <name>` | แสดงรายละเอียด tool หรือ capability |
+| `socartes provider login <provider>` | ยืนยันตัวตนกับผู้ให้บริการ (OAuth กับ `openai-codex`; `github-copilot` ตรวจเซสชัน Copilot ที่มีอยู่) |
 
 </details>
 
@@ -733,7 +733,7 @@ deeptutor session open <id>                         # กลับมาทำ�
 <img src="../../assets/figs/dt-multi-user.png" alt="มัลติยูเซอร์" width="800">
 </div>
 
-เปิดใช้การยืนยันตัวตน และ DeepTutor จะกลายเป็น deployment แบบ multi-tenant พร้อม **workspace แยกต่อผู้ใช้** และ **ทรัพยากรที่ผู้ดูแลจัดการ** ผู้ที่ลงทะเบียนคนแรกจะเป็นผู้ดูแล บัญชีถัดไปสร้างโดยผู้ดูแล (แบบ invite-only) แต่ละคนได้รับประวัติแชต/หน่วยความจำ/สมุดบันทึก/ฐานความรู้ของตนเอง
+เปิดใช้การยืนยันตัวตน และ Socartes จะกลายเป็น deployment แบบ multi-tenant พร้อม **workspace แยกต่อผู้ใช้** และ **ทรัพยากรที่ผู้ดูแลจัดการ** ผู้ที่ลงทะเบียนคนแรกจะเป็นผู้ดูแล บัญชีถัดไปสร้างโดยผู้ดูแล (แบบ invite-only) แต่ละคนได้รับประวัติแชต/หน่วยความจำ/สมุดบันทึก/ฐานความรู้ของตนเอง
 
 **เริ่มต้นด่วน (5 ขั้นตอน):**
 
@@ -812,15 +812,15 @@ multi-user/
 | 🔜 | **LightRAG Integration** — รวม [LightRAG](https://github.com/HKUDS/LightRAG) เป็น knowledge base engine ขั้นสูง |
 | 🔜 | **Documentation Site** — เว็บไซต์เอกสารที่ครบถ้วนขึ้น ทั้งคู่มือ, API reference และ tutorial |
 
-> หาก DeepTutor มีประโยชน์สำหรับคุณ [ฝากกดดาว](https://github.com/HKUDS/DeepTutor/stargazers) — มันช่วยให้เราพัฒนาต่อไปได้!
+> หาก Socartes มีประโยชน์สำหรับคุณ [ฝากกดดาว](https://github.com/HKUDS/Socartes/stargazers) — มันช่วยให้เราพัฒนาต่อไปได้!
 
 ---
 
 ## 🌐 ชุมชนและระบบนิเวศ
 
-DeepTutor สร้างขึ้นบนโครงการโอเพนซอร์สคุณภาพหลายตัว:
+Socartes สร้างขึ้นบนโครงการโอเพนซอร์สคุณภาพหลายตัว:
 
-| โครงการ | บทบาทใน DeepTutor |
+| โครงการ | บทบาทใน Socartes |
 |:---|:---|
 | [**nanobot**](https://github.com/HKUDS/nanobot) | เอนจินเอเจนต์น้ำหนักเบาที่ขับเคลื่อน TutorBot |
 | [**LlamaIndex**](https://github.com/run-llama/llama_index) | แกนหลักสำหรับ RAG pipeline และการทำดัชนีเอกสาร |
@@ -837,10 +837,10 @@ DeepTutor สร้างขึ้นบนโครงการโอเพน�
 
 <div align="center">
 
-เราหวังว่า DeepTutor จะเป็นของขวัญแก่ชุมชน 🎁
+เราหวังว่า Socartes จะเป็นของขวัญแก่ชุมชน 🎁
 
-<a href="https://github.com/HKUDS/DeepTutor/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HKUDS/DeepTutor&max=999" alt="Contributors" />
+<a href="https://github.com/HKUDS/Socartes/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HKUDS/Socartes&max=999" alt="Contributors" />
 </a>
 
 </div>
@@ -851,22 +851,22 @@ DeepTutor สร้างขึ้นบนโครงการโอเพน�
 
 <div align="center">
 
-<a href="https://www.star-history.com/#HKUDS/DeepTutor&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/#HKUDS/Socartes&type=timeline&legend=top-left">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepTutor&type=timeline&theme=dark&legend=top-left" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepTutor&type=timeline&legend=top-left" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/DeepTutor&type=timeline&legend=top-left" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&theme=dark&legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&legend=top-left" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&legend=top-left" />
   </picture>
 </a>
 
 </div>
 
 <p align="center">
- <a href="https://www.star-history.com/hkuds/deeptutor">
+ <a href="https://www.star-history.com/hkuds/socartes">
   <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=HKUDS/DeepTutor&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=HKUDS/DeepTutor" />
-   <img alt="Star History Rank" src="https://api.star-history.com/badge?repo=HKUDS/DeepTutor" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=HKUDS/Socartes&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=HKUDS/Socartes" />
+   <img alt="Star History Rank" src="https://api.star-history.com/badge?repo=HKUDS/Socartes" />
   </picture>
  </a>
 </p>
@@ -875,14 +875,14 @@ DeepTutor สร้างขึ้นบนโครงการโอเพน�
 
 **[Data Intelligence Lab @ HKU](https://github.com/HKUDS)**
 
-[⭐ กดดาว](https://github.com/HKUDS/DeepTutor/stargazers) · [🐛 รายงานบั๊ก](https://github.com/HKUDS/DeepTutor/issues) · [💬 Discussions](https://github.com/HKUDS/DeepTutor/discussions)
+[⭐ กดดาว](https://github.com/HKUDS/Socartes/stargazers) · [🐛 รายงานบั๊ก](https://github.com/HKUDS/Socartes/issues) · [💬 Discussions](https://github.com/HKUDS/Socartes/discussions)
 
 ---
 
 เผยแพร่ภายใต้สัญญาอนุญาต [Apache License 2.0](../../LICENSE)
 
 <p>
-  <img src="https://visitor-badge.laobi.icu/badge?page_id=HKUDS.DeepTutor&style=for-the-badge&color=00d4ff" alt="Views">
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=HKUDS.Socartes&style=for-the-badge&color=00d4ff" alt="Views">
 </p>
 
 </div>

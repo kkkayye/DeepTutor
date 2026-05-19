@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from deeptutor.tutorbot.config.schema import ProviderConfig, ProvidersConfig
-from deeptutor.tutorbot.providers.openai_compat_provider import OpenAICompatProvider
-from deeptutor.tutorbot.providers.registry import find_by_name, find_gateway
+from socartes.tutorbot.config.schema import ProviderConfig, ProvidersConfig
+from socartes.tutorbot.providers.openai_compat_provider import OpenAICompatProvider
+from socartes.tutorbot.providers.registry import find_by_name, find_gateway
 
 
 class _EmptyAsyncStream:

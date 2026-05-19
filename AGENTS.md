@@ -1,8 +1,8 @@
-# DeepTutor — Agent-Native Architecture
+# Socartes — Agent-Native Architecture
 
 ## Overview
 
-DeepTutor is an **agent-native** intelligent learning companion built around
+Socartes is an **agent-native** intelligent learning companion built around
 a two-layer plugin model (Tools + Capabilities) with three entry points:
 CLI, WebSocket API, and Python SDK.
 
@@ -49,7 +49,7 @@ Multi-step agent pipelines that take over the conversation:
 
 ### Playground Plugins
 
-Extended features in `deeptutor/plugins/`:
+Extended features in `socartes/plugins/`:
 
 | Plugin            | Type       | Description                          |
 | ----------------- | ---------- | ------------------------------------ |
@@ -62,49 +62,49 @@ Extended features in `deeptutor/plugins/`:
 pip install -e ".[cli]"
 
 # Run any capability (agent-first entry point)
-deeptutor run chat "Explain Fourier transform"
-deeptutor run deep_solve "Solve x^2=4" -t rag --kb my-kb
-deeptutor run deep_question "Linear algebra" --config num_questions=5
+socartes run chat "Explain Fourier transform"
+socartes run deep_solve "Solve x^2=4" -t rag --kb my-kb
+socartes run deep_question "Linear algebra" --config num_questions=5
 
 # Interactive REPL
-deeptutor chat
+socartes chat
 # (inside the REPL: /regenerate or /retry re-runs the last user message)
 
 # Knowledge bases
-deeptutor kb list
-deeptutor kb create my-kb --doc textbook.pdf
+socartes kb list
+socartes kb create my-kb --doc textbook.pdf
 
 # Plugins & memory
-deeptutor plugin list
-deeptutor memory show
+socartes plugin list
+socartes memory show
 
 # API server (requires .[server])
-deeptutor serve --port 8001
+socartes serve --port 8001
 ```
 
 ## Key Files
 
 | Path                          | Purpose                              |
 | ----------------------------- | ------------------------------------ |
-| `deeptutor/runtime/orchestrator.py` | ChatOrchestrator — unified entry     |
-| `deeptutor/core/stream.py`          | StreamEvent protocol                 |
-| `deeptutor/core/stream_bus.py`      | Async event fan-out                  |
-| `deeptutor/core/tool_protocol.py`   | BaseTool abstract class              |
-| `deeptutor/core/capability_protocol.py` | BaseCapability abstract class    |
-| `deeptutor/core/context.py`         | UnifiedContext dataclass             |
-| `deeptutor/runtime/registry/tool_registry.py` | Tool discovery & registration |
-| `deeptutor/runtime/registry/capability_registry.py` | Capability discovery & registration |
-| `deeptutor/runtime/mode.py`         | RunMode (CLI vs SERVER)              |
-| `deeptutor/capabilities/`           | Built-in capability wrappers         |
-| `deeptutor/tools/builtin/`          | Built-in tool wrappers               |
-| `deeptutor/plugins/`                | Playground plugins                   |
-| `deeptutor/plugins/loader.py`       | Plugin discovery from manifest.yaml  |
-| `deeptutor_cli/main.py`             | Typer CLI entry point                |
-| `deeptutor/api/routers/unified_ws.py` | Unified WebSocket endpoint         |
+| `socartes/runtime/orchestrator.py` | ChatOrchestrator — unified entry     |
+| `socartes/core/stream.py`          | StreamEvent protocol                 |
+| `socartes/core/stream_bus.py`      | Async event fan-out                  |
+| `socartes/core/tool_protocol.py`   | BaseTool abstract class              |
+| `socartes/core/capability_protocol.py` | BaseCapability abstract class    |
+| `socartes/core/context.py`         | UnifiedContext dataclass             |
+| `socartes/runtime/registry/tool_registry.py` | Tool discovery & registration |
+| `socartes/runtime/registry/capability_registry.py` | Capability discovery & registration |
+| `socartes/runtime/mode.py`         | RunMode (CLI vs SERVER)              |
+| `socartes/capabilities/`           | Built-in capability wrappers         |
+| `socartes/tools/builtin/`          | Built-in tool wrappers               |
+| `socartes/plugins/`                | Playground plugins                   |
+| `socartes/plugins/loader.py`       | Plugin discovery from manifest.yaml  |
+| `socartes_cli/main.py`             | Typer CLI entry point                |
+| `socartes/api/routers/unified_ws.py` | Unified WebSocket endpoint         |
 
 ## Plugin Development
 
-Create a directory under `deeptutor/plugins/<name>/` with:
+Create a directory under `socartes/plugins/<name>/` with:
 
 ```
 manifest.yaml     # name, version, type, description, stages
@@ -122,9 +122,9 @@ stages: [step1, step2]
 
 Minimal `capability.py`:
 ```python
-from deeptutor.core.capability_protocol import BaseCapability, CapabilityManifest
-from deeptutor.core.context import UnifiedContext
-from deeptutor.core.stream_bus import StreamBus
+from socartes.core.capability_protocol import BaseCapability, CapabilityManifest
+from socartes.core.context import UnifiedContext
+from socartes.core.stream_bus import StreamBus
 
 class MyPlugin(BaseCapability):
     manifest = CapabilityManifest(
@@ -149,7 +149,7 @@ lists in `requirements/*.txt` for Docker/CI installs without source code.
 .[server]         — .[cli] + FastAPI/uvicorn (for Web/API)
 .[tutorbot]       — .[server] + TutorBot agent engine + channel SDKs
 .[matrix]         — Matrix channel for TutorBot (matrix-nio[e2e]; needs libolm)
-.[math-animator]  — Manim addon (for `deeptutor animate`)
+.[math-animator]  — Manim addon (for `socartes animate`)
 .[dev]            — .[server] + test/lint tools
 .[all]            — Everything above
 ```

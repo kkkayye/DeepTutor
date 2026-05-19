@@ -8,7 +8,7 @@ import pytest
 
 
 def test_rag_search_no_kb_non_admin_raises(mu_isolated_root, as_user):
-    from deeptutor.tools import rag_tool
+    from socartes.tools import rag_tool
 
     with as_user("u_alice", role="user"):
         with pytest.raises(ValueError, match="No knowledge base selected"):
@@ -19,7 +19,7 @@ def test_rag_search_no_kb_admin_does_not_raise_for_missing_kb(
     mu_isolated_root, as_user, monkeypatch
 ):
     """Admin path keeps the legacy single-user fallback semantics."""
-    from deeptutor.tools import rag_tool
+    from socartes.tools import rag_tool
 
     sentinel = object()
 
@@ -27,7 +27,7 @@ def test_rag_search_no_kb_admin_does_not_raise_for_missing_kb(
         return {"answer": "stubbed", "kb_name": kb_name, "kb_base_dir": self.kb_base_dir}
 
     monkeypatch.setattr(
-        "deeptutor.services.rag.service.RAGService.search",
+        "socartes.services.rag.service.RAGService.search",
         _stub_search,
     )
 

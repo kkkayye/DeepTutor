@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from deeptutor.api.routers import system as system_router
+from socartes.api.routers import system as system_router
 
 
 @pytest.mark.asyncio

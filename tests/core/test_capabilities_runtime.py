@@ -10,15 +10,15 @@ from typing import Any
 
 import pytest
 
-import deeptutor.agents.visualize.pipeline as visualize_pipeline
-from deeptutor.capabilities.chat import ChatCapability
-from deeptutor.capabilities.deep_question import DeepQuestionCapability
-from deeptutor.capabilities.deep_research import DeepResearchCapability
-from deeptutor.capabilities.deep_solve import DeepSolveCapability
-from deeptutor.capabilities.visualize import VisualizeCapability
-from deeptutor.core.context import Attachment, UnifiedContext
-from deeptutor.core.stream import StreamEvent, StreamEventType
-from deeptutor.core.stream_bus import StreamBus
+import socartes.agents.visualize.pipeline as visualize_pipeline
+from socartes.capabilities.chat import ChatCapability
+from socartes.capabilities.deep_question import DeepQuestionCapability
+from socartes.capabilities.deep_research import DeepResearchCapability
+from socartes.capabilities.deep_solve import DeepSolveCapability
+from socartes.capabilities.visualize import VisualizeCapability
+from socartes.core.context import Attachment, UnifiedContext
+from socartes.core.stream import StreamEvent, StreamEventType
+from socartes.core.stream_bus import StreamBus
 
 
 def _install_module(
@@ -93,7 +93,7 @@ async def test_chat_capability_streams_content_and_geogebra_context(
             )
             await stream.content("assistant output", source="chat", stage="responding")
 
-    monkeypatch.setattr("deeptutor.capabilities.chat.AgenticChatPipeline", FakePipeline)
+    monkeypatch.setattr("socartes.capabilities.chat.AgenticChatPipeline", FakePipeline)
 
     context = UnifiedContext(
         user_message="analyze triangle",
@@ -153,10 +153,10 @@ async def test_deep_solve_capability_bridges_solver_output(
                 "metadata": {"steps": 2},
             }
 
-    _install_module(monkeypatch, "deeptutor.agents.solve.main_solver", MainSolver=FakeMainSolver)
+    _install_module(monkeypatch, "socartes.agents.solve.main_solver", MainSolver=FakeMainSolver)
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 
@@ -233,10 +233,10 @@ async def test_deep_solve_capability_bridges_observation_and_retrieve_events(
                 "metadata": {"steps": 1},
             }
 
-    _install_module(monkeypatch, "deeptutor.agents.solve.main_solver", MainSolver=FakeMainSolver)
+    _install_module(monkeypatch, "socartes.agents.solve.main_solver", MainSolver=FakeMainSolver)
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 
@@ -295,12 +295,12 @@ async def test_deep_question_capability_uses_user_message_as_topic(
 
     _install_module(
         monkeypatch,
-        "deeptutor.agents.question.coordinator",
+        "socartes.agents.question.coordinator",
         AgentCoordinator=FakeCoordinator,
     )
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 
@@ -354,12 +354,12 @@ async def test_deep_question_mimic_uses_extracted_attachment_text_when_pdf_was_s
 
     _install_module(
         monkeypatch,
-        "deeptutor.agents.question.coordinator",
+        "socartes.agents.question.coordinator",
         AgentCoordinator=FakeCoordinator,
     )
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 
@@ -430,17 +430,17 @@ async def test_deep_question_capability_uses_single_call_followup_agent(
 
     _install_module(
         monkeypatch,
-        "deeptutor.agents.question.coordinator",
+        "socartes.agents.question.coordinator",
         AgentCoordinator=FakeCoordinator,
     )
     _install_module(
         monkeypatch,
-        "deeptutor.agents.question.agents.followup_agent",
+        "socartes.agents.question.agents.followup_agent",
         FollowupAgent=FakeFollowupAgent,
     )
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 
@@ -505,7 +505,7 @@ def test_deep_question_capability_humanizes_question_progress_labels() -> None:
 async def test_deep_research_capability_requires_explicit_config_and_streams_trace(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import deeptutor.agents.research.request_config  # noqa: F401
+    import socartes.agents.research.request_config  # noqa: F401
 
     captured: dict[str, Any] = {}
 
@@ -557,17 +557,17 @@ async def test_deep_research_capability_requires_explicit_config_and_streams_tra
 
     _install_module(
         monkeypatch,
-        "deeptutor.agents.research.research_pipeline",
+        "socartes.agents.research.research_pipeline",
         ResearchPipeline=FakeResearchPipeline,
     )
     _install_module(
         monkeypatch,
-        "deeptutor.services.config",
+        "socartes.services.config",
         load_config_with_main=fake_load_config_with_main,
     )
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 
@@ -670,7 +670,7 @@ async def test_visualize_capability_passes_attachments_to_analysis_agent(
     )
     _install_module(
         monkeypatch,
-        "deeptutor.services.llm.config",
+        "socartes.services.llm.config",
         get_llm_config=lambda: SimpleNamespace(api_key="k", base_url="u", api_version="v1"),
     )
 

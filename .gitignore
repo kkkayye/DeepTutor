@@ -9,8 +9,8 @@
 data/
 /multi-user/
 run_code_workspace/
-deeptutor/agents/question/reference_papers/
-deeptutor/services/rag/eg_only_for_analysis/
+socartes/agents/question/reference_papers/
+socartes/services/rag/eg_only_for_analysis/
 docs/
 .github
 

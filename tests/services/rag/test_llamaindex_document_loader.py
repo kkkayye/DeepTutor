@@ -51,7 +51,7 @@ def _make_pptx(texts: list[str]) -> bytes:
 
 def test_loader_extracts_chat_supported_office_files(tmp_path: Path) -> None:
     pytest.importorskip("llama_index.core")
-    from deeptutor.services.rag.pipelines.llamaindex.document_loader import (
+    from socartes.services.rag.pipelines.llamaindex.document_loader import (
         LlamaIndexDocumentLoader,
     )
 

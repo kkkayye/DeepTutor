@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from deeptutor.services.session.context_builder import (
+from socartes.services.session.context_builder import (
     ContextBuilder,
     ContextBuildResult,
     build_history_text,

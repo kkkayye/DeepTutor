@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 import pytest
 
-from deeptutor.api.routers import settings as settings_router
-from deeptutor.multi_user.context import reset_current_user, set_current_user
-from deeptutor.multi_user.grants import save_grant
-from deeptutor.multi_user.models import CurrentUser, UserScope
+from socartes.api.routers import settings as settings_router
+from socartes.multi_user.context import reset_current_user, set_current_user
+from socartes.multi_user.grants import save_grant
+from socartes.multi_user.models import CurrentUser, UserScope
 
 
 def make_user(tmp_path, role="user"):
@@ -20,7 +20,7 @@ def make_user(tmp_path, role="user"):
 
 
 def test_grants_reject_secret_material(tmp_path, monkeypatch):
-    from deeptutor.multi_user import grants, identity
+    from socartes.multi_user import grants, identity
 
     monkeypatch.setattr(grants, "GRANTS_DIR", tmp_path / "grants")
     monkeypatch.setattr(
@@ -35,7 +35,7 @@ def test_grants_reject_secret_material(tmp_path, monkeypatch):
 
 
 def test_grants_reject_admin_users(tmp_path, monkeypatch):
-    from deeptutor.multi_user import grants
+    from socartes.multi_user import grants
 
     monkeypatch.setattr(grants, "GRANTS_DIR", tmp_path / "grants")
     monkeypatch.setattr(

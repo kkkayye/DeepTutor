@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from deeptutor.services.config.loader import (
+from socartes.services.config.loader import (
     PROJECT_ROOT,
     load_config_with_main,
     resolve_config_path,

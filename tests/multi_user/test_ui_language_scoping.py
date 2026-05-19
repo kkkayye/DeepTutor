@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from deeptutor.services.settings.interface_settings import (
+from socartes.services.settings.interface_settings import (
     get_ui_language,
     get_ui_settings,
 )

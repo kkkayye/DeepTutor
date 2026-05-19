@@ -11,8 +11,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from deeptutor.tutorbot.bus.queue import MessageBus
-from deeptutor.tutorbot.channels.zulip import ZulipChannel, ZulipConfig
+from socartes.tutorbot.bus.queue import MessageBus
+from socartes.tutorbot.channels.zulip import ZulipChannel, ZulipConfig
 
 
 def _make_channel(**overrides) -> ZulipChannel:
@@ -250,7 +250,7 @@ class TestDownloadAttachments:
             "_extract_upload_links",
             return_value=[("img.png", "/user_uploads/2/ce/abc/img.png")],
         ):
-            with patch("deeptutor.tutorbot.channels.zulip.requests.get") as mock_get:
+            with patch("socartes.tutorbot.channels.zulip.requests.get") as mock_get:
                 mock_resp = MagicMock()
                 mock_resp.raise_for_status = MagicMock()
                 mock_resp.content = b"fake-image-data"
@@ -616,7 +616,7 @@ class TestSend:
         mock_client.call_endpoint.return_value = {"result": "success"}
         ch._client = mock_client
 
-        from deeptutor.tutorbot.bus.events import OutboundMessage
+        from socartes.tutorbot.bus.events import OutboundMessage
 
         msg = OutboundMessage(
             channel="zulip",
@@ -641,7 +641,7 @@ class TestSend:
         typing_task = asyncio.create_task(asyncio.sleep(100))
         ch._typing_tasks["pm:42"] = typing_task
 
-        from deeptutor.tutorbot.bus.events import OutboundMessage
+        from socartes.tutorbot.bus.events import OutboundMessage
 
         msg = OutboundMessage(
             channel="zulip",
@@ -662,7 +662,7 @@ class TestSend:
         typing_task = asyncio.create_task(asyncio.sleep(100))
         ch._typing_tasks["pm:42"] = typing_task
 
-        from deeptutor.tutorbot.bus.events import OutboundMessage
+        from socartes.tutorbot.bus.events import OutboundMessage
 
         msg = OutboundMessage(
             channel="zulip",
@@ -678,7 +678,7 @@ class TestSend:
         ch = _make_channel()
         ch._client = None
 
-        from deeptutor.tutorbot.bus.events import OutboundMessage
+        from socartes.tutorbot.bus.events import OutboundMessage
 
         msg = OutboundMessage(
             channel="zulip",
@@ -703,7 +703,7 @@ class TestUploadAndSend:
         mock_client.call_endpoint.side_effect = fake_call_endpoint
         ch._client = mock_client
 
-        from deeptutor.tutorbot.bus.events import OutboundMessage
+        from socartes.tutorbot.bus.events import OutboundMessage
 
         msg = OutboundMessage(
             channel="zulip",
@@ -825,7 +825,7 @@ class TestStart:
         ch = _make_channel()
         fake_zulip = SimpleNamespace(Client=MagicMock())
         monkeypatch.setitem(sys.modules, "zulip", fake_zulip)
-        with patch("deeptutor.tutorbot.channels.zulip.ZulipChannel._call_with_retry") as mock_retry:
+        with patch("socartes.tutorbot.channels.zulip.ZulipChannel._call_with_retry") as mock_retry:
             mock_retry.return_value = {"result": "error"}
             await ch.start()
 

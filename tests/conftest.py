@@ -9,9 +9,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from deeptutor.core.capability_protocol import BaseCapability, CapabilityManifest
-from deeptutor.core.context import Attachment, UnifiedContext
-from deeptutor.core.stream_bus import StreamBus
+from socartes.core.capability_protocol import BaseCapability, CapabilityManifest
+from socartes.core.context import Attachment, UnifiedContext
+from socartes.core.stream_bus import StreamBus
 
 # ---------------------------------------------------------------------------
 # StreamBus
@@ -73,7 +73,7 @@ def tmp_db_path(tmp_path: Path) -> Path:
 @pytest.fixture
 def sqlite_store(tmp_db_path: Path):
     """SQLiteSessionStore backed by a temp file."""
-    from deeptutor.services.session.sqlite_store import SQLiteSessionStore
+    from socartes.services.session.sqlite_store import SQLiteSessionStore
 
     return SQLiteSessionStore(db_path=tmp_db_path)
 

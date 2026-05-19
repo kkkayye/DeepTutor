@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from deeptutor.services.path_service import PathService
-from deeptutor.tools.code_executor import _resolve_task_workspace
+from socartes.services.path_service import PathService
+from socartes.tools.code_executor import _resolve_task_workspace
 
 
 def test_resolve_task_workspace_uses_feature_and_turn_id(tmp_path: Path) -> None:

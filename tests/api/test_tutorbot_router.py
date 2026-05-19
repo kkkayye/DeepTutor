@@ -37,7 +37,7 @@ def _make_fake_manager(existing: dict | None = None):
         partial override on top of sensible defaults to construct an existing
         ``BotConfig``.
     """
-    from deeptutor.services.tutorbot.manager import BotConfig
+    from socartes.services.tutorbot.manager import BotConfig
 
     saved: dict = {}
 
@@ -94,7 +94,7 @@ def _make_client(monkeypatch, existing: dict | None = None):
     """Build a TestClient with the tutorbot router and a patched manager."""
     manager, saved = _make_fake_manager(existing)
 
-    tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+    tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
     monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: manager)
 
     app = FastAPI()
@@ -145,7 +145,7 @@ def _catalog_with_llm_options() -> dict[str, Any]:
 
 
 def _patch_llm_catalog(monkeypatch) -> None:
-    config_mod = importlib.import_module("deeptutor.services.config")
+    config_mod = importlib.import_module("socartes.services.config")
     monkeypatch.setattr(
         config_mod,
         "get_model_catalog_service",
@@ -354,7 +354,7 @@ class TestGetBotStoppedSecretHandling:
     }
 
     def _client(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         class FakeMgr:
             def get_bot(self, bot_id: str):
@@ -367,7 +367,7 @@ class TestGetBotStoppedSecretHandling:
                     llm_selection={"profile_id": "p-default", "model_id": "m-default"},
                 )
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -400,7 +400,7 @@ class TestPatchBotStoppedAndRunning:
     """PATCH must work when the bot is stopped; running + channels triggers reload."""
 
     def test_patch_stopped_saves_and_masks_response(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         saved_cfg: list[BotConfig | None] = []
 
@@ -419,7 +419,7 @@ class TestPatchBotStoppedAndRunning:
             ) -> None:
                 saved_cfg.append(config)
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -438,7 +438,7 @@ class TestPatchBotStoppedAndRunning:
         assert body["channels"]["telegram"]["enabled"] is True
 
     def test_patch_stopped_can_clear_llm_selection(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         saved_cfg: list[BotConfig | None] = []
 
@@ -457,7 +457,7 @@ class TestPatchBotStoppedAndRunning:
             ) -> None:
                 saved_cfg.append(config)
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -471,7 +471,7 @@ class TestPatchBotStoppedAndRunning:
         assert resp.json()["llm_selection"] is None
 
     def test_patch_running_channels_calls_reload(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         reloaded: list[bool] = []
 
@@ -510,7 +510,7 @@ class TestPatchBotStoppedAndRunning:
             async def reload_channels(self, bot_id: str) -> None:
                 reloaded.append(True)
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -524,7 +524,7 @@ class TestPatchBotStoppedAndRunning:
         assert reloaded == [True]
 
     def test_patch_running_llm_selection_calls_reload_llm(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         _patch_llm_catalog(monkeypatch)
         reloaded: list[str] = []
@@ -562,7 +562,7 @@ class TestPatchBotStoppedAndRunning:
             async def reload_llm(self, bot_id: str) -> None:
                 reloaded.append(bot_id)
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -578,7 +578,7 @@ class TestPatchBotStoppedAndRunning:
 
     def test_patch_invalid_channels_rejected_422(self, monkeypatch):
         """Malformed channels must be rejected at the boundary, not after disk write."""
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         saved_cfg: list[BotConfig] = []
 
@@ -594,7 +594,7 @@ class TestPatchBotStoppedAndRunning:
             ) -> None:
                 saved_cfg.append(config)
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -614,7 +614,7 @@ class TestPatchBotStoppedAndRunning:
 
     def test_patch_running_reload_failure_returns_500(self, monkeypatch):
         """If reload_channels raises, PATCH responds with 500 and a hint."""
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         class FakeInst:
             def __init__(self):
@@ -640,7 +640,7 @@ class TestPatchBotStoppedAndRunning:
             async def reload_channels(self, bot_id: str) -> None:
                 raise RuntimeError("telegram bind failed")
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -661,7 +661,7 @@ class TestBotChatWebSocketStartup:
     """WebSocket endpoint should auto-start stopped configured bots."""
 
     def test_ws_autostarts_stopped_bot(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         class FakeInstance:
             running = True
@@ -684,7 +684,7 @@ class TestBotChatWebSocketStartup:
                 return FakeInstance()
 
         mgr = FakeMgr()
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: mgr)
 
         app = FastAPI()
@@ -704,7 +704,7 @@ class TestBotChatWebSocketStartup:
             def load_bot_config(self, bot_id: str):
                 return None
 
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: FakeMgr())
 
         app = FastAPI()
@@ -718,7 +718,7 @@ class TestBotChatWebSocketStartup:
 
     def test_ws_reuses_running_bot_on_reconnect(self, monkeypatch):
         """A second WS connect must not re-trigger start_bot if bot is running."""
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         class FakeInstance:
             running = True
@@ -743,7 +743,7 @@ class TestBotChatWebSocketStartup:
                 return self._instance
 
         mgr = FakeMgr()
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: mgr)
         # Ensure no leftover lock from a prior test affects this one.
         tutorbot_router_mod._start_locks.clear()
@@ -764,7 +764,7 @@ class TestStartLockDedup:
     """Direct test that the per-bot start lock serializes concurrent starts."""
 
     def test_get_start_lock_serializes_concurrent_blocks(self):
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         tutorbot_router_mod._start_locks.clear()
 
         async def runner():
@@ -794,7 +794,7 @@ class TestBotChatWebSocketResilience:
     """The WS handler must tolerate client disconnects during a turn."""
 
     def test_ws_loop_breaks_on_client_disconnect_before_message(self, monkeypatch):
-        from deeptutor.services.tutorbot.manager import BotConfig
+        from socartes.services.tutorbot.manager import BotConfig
 
         class FakeInstance:
             running = True
@@ -820,7 +820,7 @@ class TestBotChatWebSocketResilience:
                 return "should not be reached"
 
         mgr = FakeMgr()
-        tutorbot_router_mod = importlib.import_module("deeptutor.api.routers.tutorbot")
+        tutorbot_router_mod = importlib.import_module("socartes.api.routers.tutorbot")
         monkeypatch.setattr(tutorbot_router_mod, "get_tutorbot_manager", lambda: mgr)
         tutorbot_router_mod._start_locks.clear()
 

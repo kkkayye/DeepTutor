@@ -6,14 +6,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from deeptutor.services.llm.provider_core.openai_compat_provider import (
+from socartes.services.llm.provider_core.openai_compat_provider import (
     OpenAICompatProvider as ServicesOpenAICompatProvider,
 )
-from deeptutor.services.provider_registry import find_by_name as find_service_provider
-from deeptutor.tutorbot.providers.openai_compat_provider import (
+from socartes.services.provider_registry import find_by_name as find_service_provider
+from socartes.tutorbot.providers.openai_compat_provider import (
     OpenAICompatProvider as TutorBotOpenAICompatProvider,
 )
-from deeptutor.tutorbot.providers.registry import find_by_name as find_tutorbot_provider
+from socartes.tutorbot.providers.registry import find_by_name as find_tutorbot_provider
 
 
 def _response_with_reasoning_only():

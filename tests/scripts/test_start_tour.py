@@ -32,26 +32,26 @@ def _load_start_tour_module():
     ):
         setattr(cli_kit, name, lambda *args, **kwargs: None)
 
-    deeptutor_pkg = types.ModuleType("deeptutor")
-    services_pkg = types.ModuleType("deeptutor.services")
-    config_module = types.ModuleType("deeptutor.services.config")
+    socartes_pkg = types.ModuleType("socartes")
+    services_pkg = types.ModuleType("socartes.services")
+    config_module = types.ModuleType("socartes.services.config")
     config_module.get_config_test_runner = lambda: None
     config_module.get_env_store = lambda: None
     config_module.get_model_catalog_service = lambda: None
 
     original_modules = {
         "_cli_kit": sys.modules.get("_cli_kit"),
-        "deeptutor": sys.modules.get("deeptutor"),
-        "deeptutor.services": sys.modules.get("deeptutor.services"),
-        "deeptutor.services.config": sys.modules.get("deeptutor.services.config"),
+        "socartes": sys.modules.get("socartes"),
+        "socartes.services": sys.modules.get("socartes.services"),
+        "socartes.services.config": sys.modules.get("socartes.services.config"),
     }
 
     services_pkg.config = config_module
-    deeptutor_pkg.services = services_pkg
+    socartes_pkg.services = services_pkg
     sys.modules["_cli_kit"] = cli_kit
-    sys.modules["deeptutor"] = deeptutor_pkg
-    sys.modules["deeptutor.services"] = services_pkg
-    sys.modules["deeptutor.services.config"] = config_module
+    sys.modules["socartes"] = socartes_pkg
+    sys.modules["socartes.services"] = services_pkg
+    sys.modules["socartes.services.config"] = config_module
 
     try:
         spec = importlib.util.spec_from_file_location("start_tour_under_test", module_path)

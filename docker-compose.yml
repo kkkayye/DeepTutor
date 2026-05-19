@@ -1,7 +1,7 @@
 # ============================================
-# DeepTutor Docker Compose Configuration
+# Socartes Docker Compose Configuration
 # ============================================
-# This file provides orchestration for DeepTutor services
+# This file provides orchestration for Socartes services
 #
 # Usage:
 #   Production:  docker compose up -d
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./data/pocketbase:/pb/pb_data
     networks:
-      - deeptutor-network
+      - socartes-network
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8090/api/health"]
       interval: 10s
@@ -41,9 +41,9 @@ services:
       start_period: 10s
 
   # ============================================
-  # All-in-One DeepTutor Service
+  # All-in-One Socartes Service
   # ============================================
-  deeptutor:
+  socartes:
     build:
       context: .
       dockerfile: Dockerfile
@@ -51,7 +51,7 @@ services:
       args:
         # Pass backend port at build time for Next.js static optimization
         - BACKEND_PORT=${BACKEND_PORT:-8001}
-    container_name: deeptutor
+    container_name: socartes
     restart: unless-stopped
     ports:
       - "${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
@@ -124,11 +124,11 @@ services:
         condition: service_healthy
 
     networks:
-      - deeptutor-network
+      - socartes-network
 
 # ============================================
 # Networks
 # ============================================
 networks:
-  deeptutor-network:
+  socartes-network:
     driver: bridge

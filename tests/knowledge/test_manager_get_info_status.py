@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from deeptutor.knowledge.manager import KnowledgeBaseManager
+from socartes.knowledge.manager import KnowledgeBaseManager
 
 ACTIVE_SIGNATURE = "active-signature"
 
@@ -52,8 +52,8 @@ def _create_ready_version(
 def _patch_active_embedding(
     monkeypatch: pytest.MonkeyPatch, sig_hash: str = ACTIVE_SIGNATURE
 ) -> None:
-    from deeptutor.knowledge import manager as manager_module
-    from deeptutor.services.rag import embedding_signature
+    from socartes.knowledge import manager as manager_module
+    from socartes.services.rag import embedding_signature
 
     monkeypatch.setattr(
         manager_module, "_get_embedding_fingerprint", lambda: ("embed-active", 4096)

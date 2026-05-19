@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from deeptutor.services.config.env_store import EnvStore
-from deeptutor.services.config.provider_runtime import ResolvedLLMConfig
-from deeptutor.services.llm import config as config_module
-from deeptutor.services.llm.config import LLMConfig
-from deeptutor.services.llm.exceptions import LLMConfigError
+from socartes.services.config.env_store import EnvStore
+from socartes.services.config.provider_runtime import ResolvedLLMConfig
+from socartes.services.llm import config as config_module
+from socartes.services.llm.config import LLMConfig
+from socartes.services.llm.exceptions import LLMConfigError
 
 
 def _reset_config_cache() -> None:

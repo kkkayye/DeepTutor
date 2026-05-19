@@ -1,22 +1,22 @@
 <div align="center">
 
-<img src="../../assets/logo-ver2.png" alt="DeepTutor" width="140" style="border-radius: 15px;">
+<img src="../../assets/logo-ver2.png" alt="Socartes" width="140" style="border-radius: 15px;">
 
-# DeepTutor: агентно-нативное персонализированное обучение
+# Socartes: агентно-нативное персонализированное обучение
 
-<a href="https://trendshift.io/repositories/17099" target="_blank"><img src="https://trendshift.io/api/badge/repositories/17099" alt="HKUDS%2FDeepTutor | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/17099" target="_blank"><img src="https://trendshift.io/api/badge/repositories/17099" alt="HKUDS%2FSocartes | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](../../LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HKUDS/DeepTutor?style=flat-square&color=brightgreen)](https://github.com/HKUDS/DeepTutor/releases)
+[![GitHub release](https://img.shields.io/github/v/release/HKUDS/Socartes?style=flat-square&color=brightgreen)](https://github.com/HKUDS/Socartes/releases)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.26962-b31b1b?style=flat-square&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.26962)
 
 [![Discord](https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/eRsjPgMU4t)
 [![Feishu](https://img.shields.io/badge/Feishu-Group-00D4AA?style=flat-square&logo=feishu&logoColor=white)](../../Communication.md)
-[![WeChat](https://img.shields.io/badge/WeChat-Group-07C160?style=flat-square&logo=wechat&logoColor=white)](https://github.com/HKUDS/DeepTutor/issues/78)
+[![WeChat](https://img.shields.io/badge/WeChat-Group-07C160?style=flat-square&logo=wechat&logoColor=white)](https://github.com/HKUDS/Socartes/issues/78)
 
-[Возможности](#key-features) · [Быстрый старт](#get-started) · [Обзор](#explore-deeptutor) · [TutorBot](#tutorbot) · [CLI](#deeptutor-cli-guide) · [Дорожная карта](#roadmap) · [Сообщество](#community)
+[Возможности](#key-features) · [Быстрый старт](#get-started) · [Обзор](#explore-socartes) · [TutorBot](#tutorbot) · [CLI](#socartes-cli-guide) · [Дорожная карта](#roadmap) · [Сообщество](#community)
 
 [🇬🇧 English](../../README.md) · [🇨🇳 中文](README_CN.md) · [🇯🇵 日本語](README_JA.md) · [🇪🇸 Español](README_ES.md) · [🇫🇷 Français](README_FR.md) · [🇸🇦 العربية](README_AR.md) · [🇮🇳 हिन्दी](README_HI.md) · [🇵🇹 Português](README_PT.md) · [🇹🇭 ภาษาไทย](README_TH.md) · 🇵🇱 [Polski](README_PL.md)
 
@@ -28,74 +28,74 @@
 
 ### 📦 Релизы
 
-> **[2026.5.9]** [v1.3.9](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.9) — TutorBot получил Zulip и NVIDIA NIM, более безопасный роутинг thinking-моделей, `deeptutor start`, подсказки сайдбара и паритет хранилищ сессий.
+> **[2026.5.9]** [v1.3.9](https://github.com/HKUDS/Socartes/releases/tag/v1.3.9) — TutorBot получил Zulip и NVIDIA NIM, более безопасный роутинг thinking-моделей, `socartes start`, подсказки сайдбара и паритет хранилищ сессий.
 
-> **[2026.5.8]** [v1.3.8](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.8) — Опциональные multi-user развёртывания с изолированными рабочими пространствами, admin grants, auth routes и scoped runtime access.
+> **[2026.5.8]** [v1.3.8](https://github.com/HKUDS/Socartes/releases/tag/v1.3.8) — Опциональные multi-user развёртывания с изолированными рабочими пространствами, admin grants, auth routes и scoped runtime access.
 
-> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.7) — Исправления для thinking-моделей/провайдеров, видимая история индекса знаний, более безопасные очистка Co-Writer и редактирование шаблонов.
+> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/Socartes/releases/tag/v1.3.7) — Исправления для thinking-моделей/провайдеров, видимая история индекса знаний, более безопасные очистка Co-Writer и редактирование шаблонов.
 
-> **[2026.5.3]** [v1.3.6](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.6) — Выбор моделей через каталог в чате и TutorBot, более безопасная переиндексация RAG, исправления лимита токенов OpenAI Responses, валидация редактора Skills.
+> **[2026.5.3]** [v1.3.6](https://github.com/HKUDS/Socartes/releases/tag/v1.3.6) — Выбор моделей через каталог в чате и TutorBot, более безопасная переиндексация RAG, исправления лимита токенов OpenAI Responses, валидация редактора Skills.
 
-> **[2026.5.2]** [v1.3.5](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.5) — Более плавные настройки локального запуска, более безопасные запросы RAG, более чёткая аутентификация локальных эмбеддингов, улучшение тёмной темы настроек.
+> **[2026.5.2]** [v1.3.5](https://github.com/HKUDS/Socartes/releases/tag/v1.3.5) — Более плавные настройки локального запуска, более безопасные запросы RAG, более чёткая аутентификация локальных эмбеддингов, улучшение тёмной темы настроек.
 
-> **[2026.5.1]** [v1.3.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.4) — Персистентность чата на странице книги и потоки пересборки, ссылки из чата в книгу, более надёжная обработка языка/рассуждений, укрепление извлечения документов RAG.
+> **[2026.5.1]** [v1.3.4](https://github.com/HKUDS/Socartes/releases/tag/v1.3.4) — Персистентность чата на странице книги и потоки пересборки, ссылки из чата в книгу, более надёжная обработка языка/рассуждений, укрепление извлечения документов RAG.
 
-> **[2026.4.30]** [v1.3.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.3) — Поддержка эмбеддингов NVIDIA NIM и Gemini, единый контекст Space для истории чата / навыков / памяти, снимки сессий, устойчивость повторной индексации RAG.
+> **[2026.4.30]** [v1.3.3](https://github.com/HKUDS/Socartes/releases/tag/v1.3.3) — Поддержка эмбеддингов NVIDIA NIM и Gemini, единый контекст Space для истории чата / навыков / памяти, снимки сессий, устойчивость повторной индексации RAG.
 
-> **[2026.4.29]** [v1.3.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.2) — Прозрачные URL эндпоинтов эмбеддингов, устойчивость повторной индексации RAG при неверных сохранённых векторах, очистка памяти для вывода thinking-моделей, исправление рантайма Deep Solve.
+> **[2026.4.29]** [v1.3.2](https://github.com/HKUDS/Socartes/releases/tag/v1.3.2) — Прозрачные URL эндпоинтов эмбеддингов, устойчивость повторной индексации RAG при неверных сохранённых векторах, очистка памяти для вывода thinking-моделей, исправление рантайма Deep Solve.
 
-> **[2026.4.28]** [v1.3.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.1) — Стабильность: более безопасный роутинг RAG и проверка эмбеддингов, персистентность Docker, ввод безопасный для IME, устойчивость Windows/GBK.
+> **[2026.4.28]** [v1.3.1](https://github.com/HKUDS/Socartes/releases/tag/v1.3.1) — Стабильность: более безопасный роутинг RAG и проверка эмбеддингов, персистентность Docker, ввод безопасный для IME, устойчивость Windows/GBK.
 
-> **[2026.4.27]** [v1.3.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.0) — Версионированные индексы KB с процессом переиндексации, перестроенное рабочее пространство знаний, автообнаружение эмбеддингов с новыми адаптерами, хаб Space.
+> **[2026.4.27]** [v1.3.0](https://github.com/HKUDS/Socartes/releases/tag/v1.3.0) — Версионированные индексы KB с процессом переиндексации, перестроенное рабочее пространство знаний, автообнаружение эмбеддингов с новыми адаптерами, хаб Space.
 
-> **[2026.4.25]** [v1.2.5](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.5) — Постоянные вложения в чате с ящиком предпросмотра, пайплайны возможностей с учётом вложений, экспорт Markdown для TutorBot.
+> **[2026.4.25]** [v1.2.5](https://github.com/HKUDS/Socartes/releases/tag/v1.2.5) — Постоянные вложения в чате с ящиком предпросмотра, пайплайны возможностей с учётом вложений, экспорт Markdown для TutorBot.
 
-> **[2026.4.25]** [v1.2.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.4) — Вложения текста / кода / SVG, тур настройки одной командой, экспорт чата в Markdown, компактный UI управления KB.
+> **[2026.4.25]** [v1.2.4](https://github.com/HKUDS/Socartes/releases/tag/v1.2.4) — Вложения текста / кода / SVG, тур настройки одной командой, экспорт чата в Markdown, компактный UI управления KB.
 
 <details>
 <summary><b>Прошлые релизы (более 2 недель назад)</b></summary>
 
-> **[2026.4.24]** [v1.2.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.3) — Вложения документов (PDF/DOCX/XLSX/PPTX), блок размышлений модели рассуждений, редактор шаблонов Soul, сохранение из Co-Writer в блокнот.
+> **[2026.4.24]** [v1.2.3](https://github.com/HKUDS/Socartes/releases/tag/v1.2.3) — Вложения документов (PDF/DOCX/XLSX/PPTX), блок размышлений модели рассуждений, редактор шаблонов Soul, сохранение из Co-Writer в блокнот.
 
-> **[2026.4.22]** [v1.2.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.2) — Пользовательские Skills, оптимизация ввода в чате, авто-старт TutorBot, UI библиотеки книг, полноэкранные визуализации.
+> **[2026.4.22]** [v1.2.2](https://github.com/HKUDS/Socartes/releases/tag/v1.2.2) — Пользовательские Skills, оптимизация ввода в чате, авто-старт TutorBot, UI библиотеки книг, полноэкранные визуализации.
 
-> **[2026.4.21]** [v1.2.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.1) — Лимиты токенов по этапам, повторная генерация ответа во всех точках входа, исправления совместимости RAG и Gemma.
+> **[2026.4.21]** [v1.2.1](https://github.com/HKUDS/Socartes/releases/tag/v1.2.1) — Лимиты токенов по этапам, повторная генерация ответа во всех точках входа, исправления совместимости RAG и Gemma.
 
-> **[2026.4.20]** [v1.2.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.0) — Компилятор Book Engine «живых книг», многодокументный Co-Writer, интерактивные HTML-визуализации, @-упоминания банка вопросов в чате.
+> **[2026.4.20]** [v1.2.0](https://github.com/HKUDS/Socartes/releases/tag/v1.2.0) — Компилятор Book Engine «живых книг», многодокументный Co-Writer, интерактивные HTML-визуализации, @-упоминания банка вопросов в чате.
 
-> **[2026.4.18]** [v1.1.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.2) — Вкладка Channels на схеме, единый конвейер RAG, вынесенные промпты чата.
+> **[2026.4.18]** [v1.1.2](https://github.com/HKUDS/Socartes/releases/tag/v1.1.2) — Вкладка Channels на схеме, единый конвейер RAG, вынесенные промпты чата.
 
-> **[2026.4.17]** [v1.1.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.1) — Универсальный «Ответить сейчас», синхронизация прокрутки Co-Writer, единая панель настроек, кнопка Stop при стриминге.
+> **[2026.4.17]** [v1.1.1](https://github.com/HKUDS/Socartes/releases/tag/v1.1.1) — Универсальный «Ответить сейчас», синхронизация прокрутки Co-Writer, единая панель настроек, кнопка Stop при стриминге.
 
-> **[2026.4.15]** [v1.1.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.0) — переработка разбора блочных формул LaTeX; LLM-диагностика через `agents.yaml`; исправление пересылки дополнительных заголовков; исправление UUID в SaveToNotebook; руководство по Docker и локальным LLM.
+> **[2026.4.15]** [v1.1.0](https://github.com/HKUDS/Socartes/releases/tag/v1.1.0) — переработка разбора блочных формул LaTeX; LLM-диагностика через `agents.yaml`; исправление пересылки дополнительных заголовков; исправление UUID в SaveToNotebook; руководство по Docker и локальным LLM.
 
-> **[2026.4.14]** [v1.1.0-beta](https://github.com/HKUDS/DeepTutor/releases/tag/v1.1.0-beta) — сессии с URL-закладками; тема Snow; heartbeat WebSocket и авто-переподключение; ускорение ChatComposer; переработка реестра провайдеров эмбеддингов; провайдер поиска Serper.
+> **[2026.4.14]** [v1.1.0-beta](https://github.com/HKUDS/Socartes/releases/tag/v1.1.0-beta) — сессии с URL-закладками; тема Snow; heartbeat WebSocket и авто-переподключение; ускорение ChatComposer; переработка реестра провайдеров эмбеддингов; провайдер поиска Serper.
 
-> **[2026.4.13]** [v1.0.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.3) — блокнот вопросов с закладками и категориями; Mermaid в Visualize; обнаружение несоответствия эмбеддингов; совместимость Qwen/vLLM; поддержка LM Studio и llama.cpp; тема Glass.
+> **[2026.4.13]** [v1.0.3](https://github.com/HKUDS/Socartes/releases/tag/v1.0.3) — блокнот вопросов с закладками и категориями; Mermaid в Visualize; обнаружение несоответствия эмбеддингов; совместимость Qwen/vLLM; поддержка LM Studio и llama.cpp; тема Glass.
 
-> **[2026.4.11]** [v1.0.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.2) — консолидация поиска с резервом SearXNG; исправление переключения провайдера; утечки ресурсов на фронтенде.
+> **[2026.4.11]** [v1.0.2](https://github.com/HKUDS/Socartes/releases/tag/v1.0.2) — консолидация поиска с резервом SearXNG; исправление переключения провайдера; утечки ресурсов на фронтенде.
 
-> **[2026.4.10]** [v1.0.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.1) — возможность Visualize (Chart.js/SVG); защита от дубликатов тестов; поддержка модели o4-mini.
+> **[2026.4.10]** [v1.0.1](https://github.com/HKUDS/Socartes/releases/tag/v1.0.1) — возможность Visualize (Chart.js/SVG); защита от дубликатов тестов; поддержка модели o4-mini.
 
-> **[2026.4.10]** [v1.0.0-beta.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.4) — прогресс эмбеддингов с повтором при лимите; кроссплатформенные зависимости; проверка MIME.
+> **[2026.4.10]** [v1.0.0-beta.4](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.4) — прогресс эмбеддингов с повтором при лимите; кроссплатформенные зависимости; проверка MIME.
 
-> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.3) — нативные SDK OpenAI/Anthropic (без litellm); Math Animator на Windows; более устойчичный разбор JSON; полная китайская i18n.
+> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.3) — нативные SDK OpenAI/Anthropic (без litellm); Math Animator на Windows; более устойчичный разбор JSON; полная китайская i18n.
 
-> **[2026.4.7]** [v1.0.0-beta.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.2) — горячая перезагрузка настроек; вложенный вывод MinerU; исправление WebSocket; минимум Python 3.11+.
+> **[2026.4.7]** [v1.0.0-beta.2](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.2) — горячая перезагрузка настроек; вложенный вывод MinerU; исправление WebSocket; минимум Python 3.11+.
 
-> **[2026.4.4]** [v1.0.0-beta.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.1) — агентно-нативная переработка (~200k строк): плагины Tools + Capabilities, CLI и SDK, TutorBot, Co-Writer, Guided Learning и постоянная память.
+> **[2026.4.4]** [v1.0.0-beta.1](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.1) — агентно-нативная переработка (~200k строк): плагины Tools + Capabilities, CLI и SDK, TutorBot, Co-Writer, Guided Learning и постоянная память.
 
-> **[2026.1.23]** [v0.6.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.6.0) — сессии, инкрементальная загрузка, гибкий RAG, полная китайская локализация.
+> **[2026.1.23]** [v0.6.0](https://github.com/HKUDS/Socartes/releases/tag/v0.6.0) — сессии, инкрементальная загрузка, гибкий RAG, полная китайская локализация.
 
-> **[2026.1.18]** [v0.5.2](https://github.com/HKUDS/DeepTutor/releases/tag/v0.5.2) — Docling, логи, исправления.
+> **[2026.1.18]** [v0.5.2](https://github.com/HKUDS/Socartes/releases/tag/v0.5.2) — Docling, логи, исправления.
 
-> **[2026.1.15]** [v0.5.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.5.0) — единая конфигурация, RAG по KB, генерация вопросов, боковая панель.
+> **[2026.1.15]** [v0.5.0](https://github.com/HKUDS/Socartes/releases/tag/v0.5.0) — единая конфигурация, RAG по KB, генерация вопросов, боковая панель.
 
-> **[2026.1.9]** [v0.4.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.4.0) — мульти-провайдеры LLM/эмбеддинги, новая главная, разделение RAG, переменные окружения.
+> **[2026.1.9]** [v0.4.0](https://github.com/HKUDS/Socartes/releases/tag/v0.4.0) — мульти-провайдеры LLM/эмбеддинги, новая главная, разделение RAG, переменные окружения.
 
-> **[2026.1.5]** [v0.3.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.3.0) — PromptManager, CI/CD, образы GHCR.
+> **[2026.1.5]** [v0.3.0](https://github.com/HKUDS/Socartes/releases/tag/v0.3.0) — PromptManager, CI/CD, образы GHCR.
 
-> **[2026.1.2]** [v0.2.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.2.0) — Docker, Next.js 16 и React 19, WebSocket, уязвимости.
+> **[2026.1.2]** [v0.2.0](https://github.com/HKUDS/Socartes/releases/tag/v0.2.0) — Docker, Next.js 16 и React 19, WebSocket, уязвимости.
 
 </details>
 
@@ -103,15 +103,15 @@
 
 > **[2026.4.19]** 🎉 20k звёзд за 111 дней! Спасибо за поддержку — продолжим итерации к по-настоящему персональному и умному обучению.
 
-> **[2026.4.10]** 📄 Наша статья опубликована на arXiv! Читайте [препринт](https://arxiv.org/abs/2604.26962), чтобы узнать о дизайне и идеях DeepTutor.
+> **[2026.4.10]** 📄 Наша статья опубликована на arXiv! Читайте [препринт](https://arxiv.org/abs/2604.26962), чтобы узнать о дизайне и идеях Socartes.
 
-> **[2026.4.4]** Давно не виделись! ✨ Вышел DeepTutor v1.0.0 — агентно-нативная эволюция: архитектура переписана с нуля, TutorBot и гибкие режимы под Apache-2.0. Начинается новая глава!
+> **[2026.4.4]** Давно не виделись! ✨ Вышел Socartes v1.0.0 — агентно-нативная эволюция: архитектура переписана с нуля, TutorBot и гибкие режимы под Apache-2.0. Начинается новая глава!
 
 > **[2026.2.6]** 🚀 10k звёзд за 39 дней — спасибо сообществу!
 
-> **[2026.1.1]** С Новым годом! [Discord](https://discord.gg/eRsjPgMU4t), [WeChat](https://github.com/HKUDS/DeepTutor/issues/78), [Discussions](https://github.com/HKUDS/DeepTutor/discussions).
+> **[2026.1.1]** С Новым годом! [Discord](https://discord.gg/eRsjPgMU4t), [WeChat](https://github.com/HKUDS/Socartes/issues/78), [Discussions](https://github.com/HKUDS/Socartes/discussions).
 
-> **[2025.12.29]** Официальный релиз DeepTutor.
+> **[2025.12.29]** Официальный релиз Socartes.
 
 <a id="key-features"></a>
 ## ✨ Ключевые возможности
@@ -147,11 +147,11 @@
 **Один интерактивный CLI-скрипт** ведёт от свежего клона к запущенному приложению — без ручного `pip install`, `npm install` и правки `.env`. В пошаговом сценарии из 7 этапов всё определяется, устанавливается и настраивается.
 
 ```bash
-git clone https://github.com/HKUDS/DeepTutor.git
-cd DeepTutor
+git clone https://github.com/HKUDS/Socartes.git
+cd Socartes
 
 # Виртуальное окружение Python (выберите одно):
-conda create -n deeptutor python=3.11 && conda activate deeptutor   # Anaconda / Miniconda
+conda create -n socartes python=3.11 && conda activate socartes   # Anaconda / Miniconda
 python -m venv .venv && source .venv/bin/activate                    # macOS / Linux
 python -m venv .venv && .venv\Scripts\activate                       # Windows
 
@@ -175,13 +175,13 @@ python scripts/start_web.py
 **1. Установка зависимостей**
 
 ```bash
-git clone https://github.com/HKUDS/DeepTutor.git
-cd DeepTutor
+git clone https://github.com/HKUDS/Socartes.git
+cd Socartes
 
 # Создать и активировать окружение (как в варианте A)
-conda create -n deeptutor python=3.11 && conda activate deeptutor
+conda create -n socartes python=3.11 && conda activate socartes
 
-# DeepTutor с зависимостями backend + web-сервера
+# Socartes с зависимостями backend + web-сервера
 pip install -e ".[server]"
 
 # Фронтенд (нужен Node.js 18+)
@@ -296,7 +296,7 @@ python scripts/start_web.py
 
 ```bash
 # Backend (FastAPI)
-python -m deeptutor.api.run_server
+python -m socartes.api.run_server
 
 # Frontend (Next.js) — другой терминал
 cd web && npm run dev -- -p 3782
@@ -316,8 +316,8 @@ Docker упаковывает backend и frontend в один контейнер
 **1. Переменные окружения** (нужны для обоих вариантов ниже)
 
 ```bash
-git clone https://github.com/HKUDS/DeepTutor.git
-cd DeepTutor
+git clone https://github.com/HKUDS/Socartes.git
+cd Socartes
 cp .env.example .env
 ```
 
@@ -325,7 +325,7 @@ cp .env.example .env
 
 **2a. Официальный образ (рекомендуется)**
 
-Официальные образы публикуются в [GitHub Container Registry](https://github.com/HKUDS/DeepTutor/pkgs/container/deeptutor) для `linux/amd64` и `linux/arm64`.
+Официальные образы публикуются в [GitHub Container Registry](https://github.com/HKUDS/Socartes/pkgs/container/socartes) для `linux/amd64` и `linux/arm64`.
 
 ```bash
 docker compose -f docker-compose.ghcr.yml up -d
@@ -334,7 +334,7 @@ docker compose -f docker-compose.ghcr.yml up -d
 Чтобы зафиксировать версию, измените тег образа в `docker-compose.ghcr.yml`:
 
 ```yaml
-image: ghcr.io/hkuds/deeptutor:1.0.0  # или :latest
+image: ghcr.io/hkuds/socartes:1.0.0  # или :latest
 ```
 
 **2b. Сборка из исходников**
@@ -376,7 +376,7 @@ NEXT_PUBLIC_API_BASE_EXTERNAL=https://your-server.com:8001
 **Одиночный пользователь без браузера (без `/register`):** предварительная настройка через env-переменные:
 
 ```bash
-python -c "from deeptutor.services.auth import hash_password; print(hash_password('yourpassword'))"
+python -c "from socartes.services.auth import hash_password; print(hash_password('yourpassword'))"
 ```
 
 ```dotenv
@@ -419,7 +419,7 @@ POCKETBASE_ADMIN_PASSWORD=your-admin-password
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
-Изменения в `deeptutor/`, `deeptutor_cli/`, `scripts/` и `web/` применяются сразу.
+Изменения в `socartes/`, `socartes_cli/`, `scripts/` и `web/` применяются сразу.
 
 </details>
 
@@ -496,21 +496,21 @@ cp .env.example .env   # затем отредактируйте .env и ука�
 После настройки:
 
 ```bash
-deeptutor chat
-deeptutor run chat "Explain Fourier transform"
-deeptutor run deep_solve "Solve x^2 = 4"
-deeptutor kb create my-kb --doc textbook.pdf
+socartes chat
+socartes run chat "Explain Fourier transform"
+socartes run deep_solve "Solve x^2 = 4"
+socartes kb create my-kb --doc textbook.pdf
 ```
 
-> Полное руководство: [DeepTutor CLI](#deeptutor-cli-guide).
+> Полное руководство: [Socartes CLI](#socartes-cli-guide).
 
 ---
 
-<a id="explore-deeptutor"></a>
-## 📖 Обзор DeepTutor
+<a id="explore-socartes"></a>
+## 📖 Обзор Socartes
 
 <div align="center">
-<img src="../../assets/figs/deeptutor-architecture.png" alt="Архитектура DeepTutor" width="800">
+<img src="../../assets/figs/socartes-architecture.png" alt="Архитектура Socartes" width="800">
 </div>
 
 ### 💬 Чат — единое интеллектуальное пространство
@@ -590,7 +590,7 @@ deeptutor kb create my-kb --doc textbook.pdf
 </div>
 
 - **Шаблоны Soul** — личность и педагогика.  
-- **Отдельный workspace** — память, сессии, навыки; общий слой DeepTutor.  
+- **Отдельный workspace** — память, сессии, навыки; общий слой Socartes.  
 - **Проактивный Heartbeat** — напоминания и задачи.  
 - **Полный набор инструментов** — RAG, код, веб, статьи, рассуждения, мозговой штурм.  
 - **Навыки** — файлы skill.  
@@ -598,15 +598,15 @@ deeptutor kb create my-kb --doc textbook.pdf
 - **Команды и субагенты**.
 
 ```bash
-deeptutor bot create math-tutor --persona "Socratic math teacher who uses probing questions"
-deeptutor bot create writing-coach --persona "Patient, detail-oriented writing mentor"
-deeptutor bot list
+socartes bot create math-tutor --persona "Socratic math teacher who uses probing questions"
+socartes bot create writing-coach --persona "Patient, detail-oriented writing mentor"
+socartes bot list
 ```
 
 ---
 
-<a id="deeptutor-cli-guide"></a>
-### ⌨️ DeepTutor CLI — интерфейс для агентов
+<a id="socartes-cli-guide"></a>
+### ⌨️ Socartes CLI — интерфейс для агентов
 
 <div align="center">
 <img src="../../assets/figs/cli-architecture.png" alt="CLI" width="800">
@@ -615,33 +615,33 @@ deeptutor bot list
 Без браузера: возможности, KB, сессии, память, TutorBot. Rich + JSON. [`SKILL.md`](../../SKILL.md).
 
 ```bash
-deeptutor run chat "Explain the Fourier transform" -t rag --kb textbook
-deeptutor run deep_solve "Prove that √2 is irrational" -t reason
-deeptutor run deep_question "Linear algebra" --config num_questions=5
-deeptutor run deep_research "Attention mechanisms in transformers"
-deeptutor run visualize "Draw the architecture of a transformer"
+socartes run chat "Explain the Fourier transform" -t rag --kb textbook
+socartes run deep_solve "Prove that √2 is irrational" -t reason
+socartes run deep_question "Linear algebra" --config num_questions=5
+socartes run deep_research "Attention mechanisms in transformers"
+socartes run visualize "Draw the architecture of a transformer"
 ```
 
 ```bash
-deeptutor chat --capability deep_solve --kb my-kb
+socartes chat --capability deep_solve --kb my-kb
 # В REPL: /cap, /tool, /kb, /history, /notebook, /config для переключения на лету
 ```
 
 ```bash
-deeptutor kb create my-kb --doc textbook.pdf
-deeptutor kb add my-kb --docs-dir ./papers/
-deeptutor kb search my-kb "gradient descent"
-deeptutor kb set-default my-kb
+socartes kb create my-kb --doc textbook.pdf
+socartes kb add my-kb --docs-dir ./papers/
+socartes kb search my-kb "gradient descent"
+socartes kb set-default my-kb
 ```
 
 ```bash
-deeptutor run chat "Summarize chapter 3" -f rich
-deeptutor run chat "Summarize chapter 3" -f json
+socartes run chat "Summarize chapter 3" -f rich
+socartes run chat "Summarize chapter 3" -f json
 ```
 
 ```bash
-deeptutor session list
-deeptutor session open <id>
+socartes session list
+socartes session open <id>
 ```
 
 <details>
@@ -651,75 +651,75 @@ deeptutor session open <id>
 
 | Команда | Описание |
 |:---|:---|
-| `deeptutor run <capability> <message>` | Запуск возможности за один ход (`chat`, `deep_solve`, `deep_question`, `deep_research`, `math_animator`, `visualize`) |
-| `deeptutor chat` | Интерактивный REPL с `--capability`, `--tool`, `--kb`, `--language` и др. |
-| `deeptutor serve` | Запуск сервера API DeepTutor |
+| `socartes run <capability> <message>` | Запуск возможности за один ход (`chat`, `deep_solve`, `deep_question`, `deep_research`, `math_animator`, `visualize`) |
+| `socartes chat` | Интерактивный REPL с `--capability`, `--tool`, `--kb`, `--language` и др. |
+| `socartes serve` | Запуск сервера API Socartes |
 
-**`deeptutor bot`**
-
-| Команда | Описание |
-|:---|:---|
-| `deeptutor bot list` | Список экземпляров TutorBot |
-| `deeptutor bot create <id>` | Создать и запустить бота (`--name`, `--persona`, `--model`) |
-| `deeptutor bot start <id>` | Запустить бота |
-| `deeptutor bot stop <id>` | Остановить бота |
-
-**`deeptutor kb`**
+**`socartes bot`**
 
 | Команда | Описание |
 |:---|:---|
-| `deeptutor kb list` | Список баз знаний |
-| `deeptutor kb info <name>` | Детали базы |
-| `deeptutor kb create <name>` | Создать из документов (`--doc`, `--docs-dir`) |
-| `deeptutor kb add <name>` | Добавить документы |
-| `deeptutor kb search <name> <query>` | Поиск по базе |
-| `deeptutor kb set-default <name>` | База по умолчанию |
-| `deeptutor kb delete <name>` | Удалить (`--force`) |
+| `socartes bot list` | Список экземпляров TutorBot |
+| `socartes bot create <id>` | Создать и запустить бота (`--name`, `--persona`, `--model`) |
+| `socartes bot start <id>` | Запустить бота |
+| `socartes bot stop <id>` | Остановить бота |
 
-**`deeptutor memory`**
+**`socartes kb`**
 
 | Команда | Описание |
 |:---|:---|
-| `deeptutor memory show [file]` | Просмотр (`summary`, `profile`, `all`) |
-| `deeptutor memory clear [file]` | Очистить (`--force`) |
+| `socartes kb list` | Список баз знаний |
+| `socartes kb info <name>` | Детали базы |
+| `socartes kb create <name>` | Создать из документов (`--doc`, `--docs-dir`) |
+| `socartes kb add <name>` | Добавить документы |
+| `socartes kb search <name> <query>` | Поиск по базе |
+| `socartes kb set-default <name>` | База по умолчанию |
+| `socartes kb delete <name>` | Удалить (`--force`) |
 
-**`deeptutor session`**
-
-| Команда | Описание |
-|:---|:---|
-| `deeptutor session list` | Список сессий (`--limit`) |
-| `deeptutor session show <id>` | Сообщения сессии |
-| `deeptutor session open <id>` | Продолжить в REPL |
-| `deeptutor session rename <id>` | Переименовать (`--title`) |
-| `deeptutor session delete <id>` | Удалить |
-
-**`deeptutor notebook`**
+**`socartes memory`**
 
 | Команда | Описание |
 |:---|:---|
-| `deeptutor notebook list` | Список блокнотов |
-| `deeptutor notebook create <name>` | Создать (`--description`) |
-| `deeptutor notebook show <id>` | Записи |
-| `deeptutor notebook add-md <id> <path>` | Импорт Markdown |
-| `deeptutor notebook replace-md <id> <rec> <path>` | Заменить запись |
-| `deeptutor notebook remove-record <id> <rec>` | Удалить запись |
+| `socartes memory show [file]` | Просмотр (`summary`, `profile`, `all`) |
+| `socartes memory clear [file]` | Очистить (`--force`) |
 
-**`deeptutor book`**
+**`socartes session`**
 
 | Команда | Описание |
 |:---|:---|
-| `deeptutor book list` | Список всех книг в рабочей области |
-| `deeptutor book health <book_id>` | Дрейф KB и состояние книги |
-| `deeptutor book refresh-fingerprints <book_id>` | Обновить отпечатки KB и очистить устаревшие страницы |
+| `socartes session list` | Список сессий (`--limit`) |
+| `socartes session show <id>` | Сообщения сессии |
+| `socartes session open <id>` | Продолжить в REPL |
+| `socartes session rename <id>` | Переименовать (`--title`) |
+| `socartes session delete <id>` | Удалить |
 
-**`deeptutor config` / `plugin` / `provider`**
+**`socartes notebook`**
 
 | Команда | Описание |
 |:---|:---|
-| `deeptutor config show` | Сводка конфигурации |
-| `deeptutor plugin list` | Зарегистрированные инструменты и возможности |
-| `deeptutor plugin info <name>` | Детали инструмента или возможности |
-| `deeptutor provider login <provider>` | Аутентификация у провайдера (OAuth для `openai-codex`; `github-copilot` проверяет существующую сессию Copilot) |
+| `socartes notebook list` | Список блокнотов |
+| `socartes notebook create <name>` | Создать (`--description`) |
+| `socartes notebook show <id>` | Записи |
+| `socartes notebook add-md <id> <path>` | Импорт Markdown |
+| `socartes notebook replace-md <id> <rec> <path>` | Заменить запись |
+| `socartes notebook remove-record <id> <rec>` | Удалить запись |
+
+**`socartes book`**
+
+| Команда | Описание |
+|:---|:---|
+| `socartes book list` | Список всех книг в рабочей области |
+| `socartes book health <book_id>` | Дрейф KB и состояние книги |
+| `socartes book refresh-fingerprints <book_id>` | Обновить отпечатки KB и очистить устаревшие страницы |
+
+**`socartes config` / `plugin` / `provider`**
+
+| Команда | Описание |
+|:---|:---|
+| `socartes config show` | Сводка конфигурации |
+| `socartes plugin list` | Зарегистрированные инструменты и возможности |
+| `socartes plugin info <name>` | Детали инструмента или возможности |
+| `socartes provider login <provider>` | Аутентификация у провайдера (OAuth для `openai-codex`; `github-copilot` проверяет существующую сессию Copilot) |
 
 </details>
 
@@ -732,7 +732,7 @@ deeptutor session open <id>
 <img src="../../assets/figs/dt-multi-user.png" alt="Мультипользователь" width="800">
 </div>
 
-Включите аутентификацию — и DeepTutor превращается в мультитенантный деплой с **изолированными рабочими пространствами** и **ресурсами, курируемыми администратором**. Первый зарегистрировавшийся становится администратором и настраивает модели, API-ключи и базы знаний для всех. Последующие аккаунты создаёт администратор (только по приглашению).
+Включите аутентификацию — и Socartes превращается в мультитенантный деплой с **изолированными рабочими пространствами** и **ресурсами, курируемыми администратором**. Первый зарегистрировавшийся становится администратором и настраивает модели, API-ключи и базы знаний для всех. Последующие аккаунты создаёт администратор (только по приглашению).
 
 **Быстрый старт (5 шагов):**
 
@@ -812,7 +812,7 @@ multi-user/
 | 🔜 | **Интеграция LightRAG** — подключение [LightRAG](https://github.com/HKUDS/LightRAG) как продвинутого движка баз знаний |
 | 🔜 | **Сайт документации** — полная документация: руководства, справочник API и учебные материалы |
 
-> Если DeepTutor вам полезен, [поставьте звезду](https://github.com/HKUDS/DeepTutor/stargazers) — это помогает проекту!
+> Если Socartes вам полезен, [поставьте звезду](https://github.com/HKUDS/Socartes/stargazers) — это помогает проекту!
 
 ---
 
@@ -833,10 +833,10 @@ multi-user/
 
 <div align="center">
 
-Надеемся, что DeepTutor станет подарком сообществу. 🎁
+Надеемся, что Socartes станет подарком сообществу. 🎁
 
-<a href="https://github.com/HKUDS/DeepTutor/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HKUDS/DeepTutor&max=999" alt="Contributors" />
+<a href="https://github.com/HKUDS/Socartes/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HKUDS/Socartes&max=999" alt="Contributors" />
 </a>
 </div>
 
@@ -845,21 +845,21 @@ multi-user/
 ## ⭐ История звёзд
 
 <div align="center">
-<a href="https://www.star-history.com/#HKUDS/DeepTutor&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/#HKUDS/Socartes&type=timeline&legend=top-left">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepTutor&type=timeline&theme=dark&legend=top-left" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepTutor&type=timeline&legend=top-left" />
-    <img alt="Star History" src="https://api.star-history.com/svg?repos=HKUDS/DeepTutor&type=timeline&legend=top-left" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&theme=dark&legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&legend=top-left" />
+    <img alt="Star History" src="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&legend=top-left" />
   </picture>
 </a>
 </div>
 
 <p align="center">
- <a href="https://www.star-history.com/hkuds/deeptutor">
+ <a href="https://www.star-history.com/hkuds/socartes">
   <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=HKUDS/DeepTutor&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=HKUDS/DeepTutor" />
-   <img alt="Star History Rank" src="https://api.star-history.com/badge?repo=HKUDS/DeepTutor" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=HKUDS/Socartes&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=HKUDS/Socartes" />
+   <img alt="Star History Rank" src="https://api.star-history.com/badge?repo=HKUDS/Socartes" />
   </picture>
  </a>
 </p>
@@ -868,14 +868,14 @@ multi-user/
 
 **[Data Intelligence Lab @ HKU](https://github.com/HKUDS)**
 
-[⭐ Star](https://github.com/HKUDS/DeepTutor/stargazers) · [🐛 Issues](https://github.com/HKUDS/DeepTutor/issues) · [💬 Discussions](https://github.com/HKUDS/DeepTutor/discussions)
+[⭐ Star](https://github.com/HKUDS/Socartes/stargazers) · [🐛 Issues](https://github.com/HKUDS/Socartes/issues) · [💬 Discussions](https://github.com/HKUDS/Socartes/discussions)
 
 ---
 
 [Apache License 2.0](../../LICENSE)
 
 <p>
-  <img src="https://visitor-badge.laobi.icu/badge?page_id=HKUDS.DeepTutor&style=for-the-badge&color=00d4ff" alt="Views">
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=HKUDS.Socartes&style=for-the-badge&color=00d4ff" alt="Views">
 </p>
 
 </div>

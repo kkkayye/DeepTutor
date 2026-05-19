@@ -2,7 +2,7 @@
 
 import pytest
 
-from deeptutor.services.llm.traffic_control import TrafficController
+from socartes.services.llm.traffic_control import TrafficController
 
 
 @pytest.mark.asyncio

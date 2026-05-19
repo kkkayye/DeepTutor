@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 
-page_agent = importlib.import_module("deeptutor.api.routers.page_agent")
+page_agent = importlib.import_module("socartes.api.routers.page_agent")
 
 
 def _build_app() -> FastAPI:

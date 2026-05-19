@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from deeptutor.book.context import build_book_context, normalize_book_references
-from deeptutor.book.models import (
+from socartes.book.context import build_book_context, normalize_book_references
+from socartes.book.models import (
     Block,
     BlockStatus,
     BlockType,
