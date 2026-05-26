@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 
 from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, ValidationError
@@ -15,6 +16,7 @@ from socartes.services.tutorbot import get_tutorbot_manager
 from socartes.services.tutorbot.manager import (
     BotConfig,
     TutorBotInstance,
+    merge_masked_channel_secrets,
     mask_channel_secrets,
 )
 
@@ -29,6 +31,10 @@ router = APIRouter()
 # avoids the duplicated work and noisy logs.
 _start_locks: dict[str, asyncio.Lock] = {}
 _start_locks_mutex = asyncio.Lock()
+
+
+def _secret_reveal_enabled() -> bool:
+    return os.getenv("ALLOW_SECRET_REVEAL", "").lower() in {"1", "true", "yes", "on"}
 
 
 async def _get_start_lock(bot_id: str) -> asyncio.Lock:
@@ -177,8 +183,8 @@ async def create_and_start_bot(payload: CreateBotRequest):
         instance = await mgr.start_bot(payload.bot_id, config)
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
-    # Response is masked — secrets are only revealed via the explicit
-    # GET /{bot_id}?include_secrets=true edit-form route.
+    # Response is masked; public deployments should never return raw channel
+    # tokens to the browser.
     return instance.to_dict(mask_secrets=True)
 
 
@@ -213,21 +219,22 @@ async def get_bot(
     include_secrets: bool = Query(
         False,
         description=(
-            "Return raw channel secrets (tokens, passwords). Required by the "
-            "admin edit form; default response masks all secret-looking fields."
+            "Return raw channel secrets only when ALLOW_SECRET_REVEAL=true. "
+            "Default response masks all secret-looking fields."
         ),
     ),
 ):
     mgr = get_tutorbot_manager()
+    reveal_secrets = include_secrets and _secret_reveal_enabled()
     instance = mgr.get_bot(bot_id)
     if instance:
         return instance.to_dict(
-            include_secrets=include_secrets,
-            mask_secrets=not include_secrets,
+            include_secrets=reveal_secrets,
+            mask_secrets=not reveal_secrets,
         )
     cfg = mgr.load_bot_config(bot_id)
     if cfg:
-        return _stopped_bot_dict(bot_id, cfg, include_secrets=include_secrets)
+        return _stopped_bot_dict(bot_id, cfg, include_secrets=reveal_secrets)
     raise HTTPException(status_code=404, detail="Bot not found")
 
 
@@ -297,7 +304,7 @@ def _apply_payload(target: BotConfig | TutorBotInstance, payload: UpdateBotReque
     if payload.persona is not None:
         cfg.persona = payload.persona
     if payload.channels is not None:
-        cfg.channels = payload.channels
+        cfg.channels = merge_masked_channel_secrets(payload.channels, cfg.channels)
     if payload.model is not None:
         cfg.model = payload.model
     if "llm_selection" in payload.model_fields_set:

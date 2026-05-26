@@ -1,8 +1,8 @@
 const FENCE = "```";
 
-export const CO_WRITER_SAMPLE_TEMPLATE = `# DeepTutor Co-Writer
+export const CO_WRITER_SAMPLE_TEMPLATE = `# Socartes Co-Writer
 
-> DeepTutor's built-in writing canvas for notes, reports, tutorials, and AI-assisted drafts.
+> Socartes's built-in writing canvas for notes, reports, tutorials, and AI-assisted drafts.
 
 ### Features
 
@@ -10,7 +10,7 @@ export const CO_WRITER_SAMPLE_TEMPLATE = `# DeepTutor Co-Writer
 - Real-time preview for headings, tables, code, math, flowchart, and sequence diagrams
 - AI editing workflows for rewrite, shorten, and expand
 - HTML tag decoding for tags like <sub>, <sup>, <abbr>, and <mark>
-- A practical starter draft for DeepTutor product docs and learning content
+- A practical starter draft for Socartes product docs and learning content
 
 ## Table of Contents
 
@@ -18,23 +18,23 @@ export const CO_WRITER_SAMPLE_TEMPLATE = `# DeepTutor Co-Writer
 
 [TOC]
 
-#DeepTutor Mission
-##DeepTutor Product Surface
-###DeepTutor Learning Experience
-####DeepTutor Co-Writer
-#####DeepTutor Knowledge Layer
-######DeepTutor Agent Runtime
+#Socartes Mission
+##Socartes Product Surface
+###Socartes Learning Experience
+####Socartes Co-Writer
+#####Socartes Knowledge Layer
+######Socartes Agent Runtime
 
-#DeepTutor Docs [Project Overview](#deeptutor-mission "Jump to project overview")
-##DeepTutor Authoring [Co-Writer Section](#deeptutor-co-writer "Jump to co-writer section")
-###DeepTutor Research [Learning Note](#deeptutor-learning-note "Jump to learning note")
+#Socartes Docs [Project Overview](#socartes-mission "Jump to project overview")
+##Socartes Authoring [Co-Writer Section](#socartes-co-writer "Jump to co-writer section")
+###Socartes Research [Learning Note](#socartes-learning-note "Jump to learning note")
 
 ## Headers (Underline)
 
-DeepTutor Learning Note
+Socartes Learning Note
 =============
 
-DeepTutor Study Outline
+Socartes Study Outline
 -------------
 
 ### Characters
@@ -50,43 +50,43 @@ Superscript: X<sub>2</sub>, Subscript: O<sup>2</sup>
 
 **Abbreviation(link HTML abbr tag)**
 
-The <abbr title="Large Language Model">LLM</abbr> layer powers DeepTutor while the <abbr title="Retrieval Augmented Generation">RAG</abbr> layer provides grounded knowledge support.
+The <abbr title="Large Language Model">LLM</abbr> layer powers Socartes while the <abbr title="Retrieval Augmented Generation">RAG</abbr> layer provides grounded knowledge support.
 
 ### Blockquotes
 
-> DeepTutor helps students turn questions into structured understanding.
+> Socartes helps students turn questions into structured understanding.
 >
-> "Learn deeply, write clearly.", [DeepTutor](#deeptutor-co-writer)
+> "Learn deeply, write clearly.", [Socartes](#socartes-co-writer)
 
 ### Links
 
-[DeepTutor Overview](#deeptutor-mission)
+[Socartes Overview](#socartes-mission)
 
-[DeepTutor Co-Writer](#deeptutor-co-writer "co-writer section")
+[Socartes Co-Writer](#socartes-co-writer "co-writer section")
 
-[DeepTutor Runtime](#deeptutor-agent-runtime)
+[Socartes Runtime](#socartes-agent-runtime)
 
-[Reference link][deeptutor-doc]
+[Reference link][socartes-doc]
 
-[deeptutor-doc]: #deeptutor-learning-note
+[socartes-doc]: #socartes-learning-note
 
 ### Code Blocks
 
 #### Inline code
 
-\`deeptutor chat --once "Summarize this section"\`
+\`socartes chat --once "Summarize this section"\`
 
 #### Code Blocks (Indented style)
 
-    from deeptutor.runtime.orchestrator import ChatOrchestrator
+    from socartes.runtime.orchestrator import ChatOrchestrator
     orchestrator = ChatOrchestrator()
-    print("DeepTutor is ready.")
+    print("Socartes is ready.")
 
 #### Python
 
 ${FENCE}python
-from deeptutor.runtime.orchestrator import ChatOrchestrator
-from deeptutor.core.context import UnifiedContext
+from socartes.runtime.orchestrator import ChatOrchestrator
+from socartes.core.context import UnifiedContext
 
 
 async def run_demo() -> str:
@@ -103,7 +103,7 @@ ${FENCE}
 
 ${FENCE}json
 {
-  "app_name": "DeepTutor",
+  "app_name": "Socartes",
   "default_capability": "chat",
   "enabled_tools": ["rag", "web_search", "code_execution", "reason"],
   "ui": {
@@ -115,8 +115,8 @@ ${FENCE}
 #### HTML code
 
 ${FENCE}html
-<section class="deeptutor-card">
-  <h1>DeepTutor</h1>
+<section class="socartes-card">
+  <h1>Socartes</h1>
   <p>Write, revise, and organize learning content with AI.</p>
 </section>
 ${FENCE}
@@ -125,13 +125,13 @@ ${FENCE}
 
 ![](/logo-ver2.png)
 
-> DeepTutor brand mark used inside the co-writer template.
+> Socartes brand mark used inside the co-writer template.
 
 ### Lists
 
-- DeepTutor Chat
-- DeepTutor Co-Writer
-- DeepTutor Research
+- Socartes Chat
+- Socartes Co-Writer
+- Socartes Research
 
 1. Draft a concept note
 2. Ask AI to refine it
@@ -153,7 +153,7 @@ Research      | Build structured multi-step reports
 
 ### Markdown extras
 
-- [x] Draft a DeepTutor product note
+- [x] Draft a Socartes product note
 - [x] Add references and structure
 - [ ] Polish the final explanation
   - [ ] Check headings
@@ -173,7 +173,7 @@ $$ \sin(\alpha)^{\theta}=\sum_{i=0}^{n}(x^i + \cos(f))$$
 
 ${FENCE}flow
 st=>start: Student asks a question
-op=>operation: DeepTutor analyzes intent
+op=>operation: Socartes analyzes intent
 cond=>condition: Need deep workflow?
 chat=>operation: Answer with chat capability
 solve=>operation: Route to deep solve
@@ -189,11 +189,11 @@ ${FENCE}
 ### Sequence Diagram
 
 ${FENCE}seq
-Student->DeepTutor: Ask for help
-DeepTutor->KnowledgeBase: Load context
-Note right of DeepTutor: Collect memory\nand relevant knowledge
-DeepTutor-->Student: Return guided response
-Student->>DeepTutor: Request rewrite in co-writer
+Student->Socartes: Ask for help
+Socartes->KnowledgeBase: Load context
+Note right of Socartes: Collect memory\nand relevant knowledge
+Socartes-->Student: Return guided response
+Student->>Socartes: Request rewrite in co-writer
 ${FENCE}
 
 ### End

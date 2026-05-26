@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 // Must be set before importing the module under test, since API_BASE_URL is
-// read at module-load time and the module throws if it's missing.
-process.env.NEXT_PUBLIC_API_BASE = "http://localhost:8001/api";
+// read at module-load time.
+process.env.INTERNAL_API_BASE = "http://127.0.0.1:8001";
 
 let apiModulePromise: Promise<typeof import("../lib/api")> | null = null;
 
@@ -12,57 +12,70 @@ async function loadApiModule(): Promise<typeof import("../lib/api")> {
   return apiModulePromise;
 }
 
-function setWindow(hostname: string | undefined): void {
-  if (hostname === undefined) {
+function setWindow(location?: {
+  hostname: string;
+  host: string;
+  protocol: "http:" | "https:";
+}): void {
+  if (location === undefined) {
     delete (globalThis as { window?: unknown }).window;
     return;
   }
   (globalThis as { window?: unknown }).window = {
-    location: { hostname },
+    location,
   } as unknown;
 }
 
-test("resolveBase returns the build-time base in SSR (no window)", async () => {
+test("resolveBase returns the internal backend base in SSR (no window)", async () => {
   const { resolveBase } = await loadApiModule();
   setWindow(undefined);
-  assert.equal(resolveBase(), "http://localhost:8001/api");
+  assert.equal(resolveBase(), "http://127.0.0.1:8001");
 });
 
-test("resolveBase returns base unchanged when client is also on localhost", async () => {
+test("resolveBase returns same-origin mode in the browser", async () => {
   const { resolveBase } = await loadApiModule();
-  setWindow("localhost");
-  assert.equal(resolveBase(), "http://localhost:8001/api");
+  setWindow({
+    hostname: "localhost",
+    host: "localhost:3000",
+    protocol: "http:",
+  });
+  assert.equal(resolveBase(), "");
 });
 
-test("resolveBase rewrites loopback hostname to remote LAN host and preserves path", async () => {
-  const { resolveBase } = await loadApiModule();
-  setWindow("192.168.1.10");
-  assert.equal(resolveBase(), "http://192.168.1.10:8001/api");
-});
-
-test("resolveBase treats IPv6 loopback as loopback (no swap when client is also ::1)", async () => {
-  const { resolveBase } = await loadApiModule();
-  setWindow("::1");
-  assert.equal(resolveBase(), "http://localhost:8001/api");
-});
-
-test("apiUrl composes correctly after rewrite, without losing the base path", async () => {
+test("apiUrl composes a private absolute URL during SSR", async () => {
   const { apiUrl } = await loadApiModule();
-  setWindow("10.0.0.5");
+  setWindow(undefined);
   assert.equal(
     apiUrl("/api/v1/knowledge/list"),
-    "http://10.0.0.5:8001/api/api/v1/knowledge/list",
+    "http://127.0.0.1:8001/api/v1/knowledge/list",
   );
 });
 
-test("wsUrl converts http to ws and respects rewritten host", async () => {
-  const { wsUrl } = await loadApiModule();
-  setWindow("10.0.0.5");
-  assert.equal(wsUrl("/api/v1/ws"), "ws://10.0.0.5:8001/api/api/v1/ws");
+test("apiUrl keeps browser requests same-origin", async () => {
+  const { apiUrl } = await loadApiModule();
+  setWindow({
+    hostname: "10.0.0.5",
+    host: "10.0.0.5:3000",
+    protocol: "http:",
+  });
+  assert.equal(
+    apiUrl("/api/v1/knowledge/list"),
+    "/api/v1/knowledge/list",
+  );
 });
 
-test("wsUrl keeps original loopback when client is also loopback", async () => {
+test("wsUrl converts the internal SSR base from http to ws", async () => {
   const { wsUrl } = await loadApiModule();
-  setWindow("127.0.0.1");
-  assert.equal(wsUrl("/api/v1/ws"), "ws://localhost:8001/api/api/v1/ws");
+  setWindow(undefined);
+  assert.equal(wsUrl("/api/v1/ws"), "ws://127.0.0.1:8001/api/v1/ws");
+});
+
+test("wsUrl uses the current browser origin and upgrades https to wss", async () => {
+  const { wsUrl } = await loadApiModule();
+  setWindow({
+    hostname: "sc.tckr.top",
+    host: "sc.tckr.top",
+    protocol: "https:",
+  });
+  assert.equal(wsUrl("/api/v1/ws"), "wss://sc.tckr.top/api/v1/ws");
 });

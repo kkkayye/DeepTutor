@@ -63,6 +63,10 @@ class AnimationGenerator(BlockGenerator):
             from socartes.agents.math_animator.request_config import (
                 MathAnimatorRequestConfig,
             )
+            from socartes.agents.math_animator.voiceover import (
+                add_edge_voiceover_to_render_result,
+                compose_voiceover_script,
+            )
             from socartes.services.llm.config import get_llm_config
 
             llm_config = get_llm_config()
@@ -92,6 +96,22 @@ class AnimationGenerator(BlockGenerator):
         render_result = result["render_result"]
         summary_payload = result["summary"]
         analysis = result["analysis"]
+        design = result.get("design")
+        voiceover_added = False
+        if request_config.output_mode == "video":
+            artifact_count = len(render_result.artifacts)
+            render_result = await add_edge_voiceover_to_render_result(
+                render_result=render_result,
+                narration_text=compose_voiceover_script(
+                    user_input=user_input,
+                    summary=summary_payload,
+                    analysis=analysis,
+                    design=design,
+                ),
+                language=ctx.language,
+            )
+            voiceover_added = len(render_result.artifacts) != artifact_count
+
         artifacts = [artifact.model_dump() for artifact in render_result.artifacts]
         primary = next(
             (
@@ -116,6 +136,7 @@ class AnimationGenerator(BlockGenerator):
             {
                 "retry_attempts": render_result.retry_attempts,
                 "quality": request_config.quality,
+                "voiceover_added": voiceover_added,
             },
         )
 

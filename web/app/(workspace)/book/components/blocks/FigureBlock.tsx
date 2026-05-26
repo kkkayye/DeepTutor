@@ -17,6 +17,7 @@ const FIGURE_RENDER_TYPES: ReadonlySet<VisualizeRenderType> = new Set([
   "svg",
   "chartjs",
   "mermaid",
+  "html",
 ]);
 
 function coerceRenderType(
@@ -31,6 +32,7 @@ function coerceRenderType(
   }
   if (language === "javascript" || language === "js") return "chartjs";
   if (language === "mermaid") return "mermaid";
+  if (language === "html" || language === "htm") return "html";
   return "svg";
 }
 
@@ -80,7 +82,7 @@ export default function FigureBlock({ block }: FigureBlockProps) {
 
   return (
     <figure className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-sm">
-      <VisualizationViewer result={result} />
+      <VisualizationViewer result={result} htmlAutoHeight={renderType === "html"} />
       {description && (
         <figcaption className="mt-3 text-xs leading-snug text-[var(--muted-foreground)]">
           <MarkdownRenderer content={description} variant="default" />

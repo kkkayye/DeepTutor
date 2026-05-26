@@ -8,6 +8,7 @@ UI preferences, configuration catalog management, and detailed streamed tests.
 from __future__ import annotations
 
 import asyncio
+from copy import deepcopy
 import json
 import logging
 import time
@@ -18,6 +19,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
+MASKED_SECRET = "********"
 
 from socartes.multi_user.context import get_current_user
 from socartes.multi_user.model_access import allowed_llm_options, redacted_model_access
@@ -30,12 +32,16 @@ from socartes.services.path_service import get_path_service
 
 router = APIRouter()
 
+TOUR_CACHE = None
+
 
 def _settings_file():
     return get_path_service().get_settings_file("interface")
 
 
 def _tour_cache_file():
+    if TOUR_CACHE is not None:
+        return TOUR_CACHE
     return get_path_service().get_settings_dir() / ".tour_cache.json"
 
 
@@ -59,7 +65,7 @@ class SidebarNavOrder(BaseModel):
 
 class UISettings(BaseModel):
     theme: Literal["light", "dark", "glass", "snow"] = "light"
-    language: Literal["zh", "en"] = "en"
+    language: Literal["zh", "en", "ko"] = "en"
     sidebar_description: Optional[str] = None
     sidebar_nav_order: Optional[SidebarNavOrder] = None
 
@@ -69,7 +75,7 @@ class ThemeUpdate(BaseModel):
 
 
 class LanguageUpdate(BaseModel):
-    language: Literal["zh", "en"]
+    language: Literal["zh", "en", "ko"]
 
 
 class SidebarDescriptionUpdate(BaseModel):
@@ -99,6 +105,62 @@ def _invalidate_runtime_caches() -> None:
     clear_llm_config_cache()
     reset_llm_client()
     reset_embedding_client()
+
+
+def _redact_catalog(catalog: dict[str, Any]) -> dict[str, Any]:
+    redacted = deepcopy(catalog)
+    services = redacted.get("services") or {}
+    for service in services.values():
+        if not isinstance(service, dict):
+            continue
+        profiles = service.get("profiles") or []
+        for profile in profiles:
+            if isinstance(profile, dict) and profile.get("api_key"):
+                profile["api_key"] = MASKED_SECRET
+    return redacted
+
+
+def _restore_masked_catalog_secrets(
+    incoming_catalog: dict[str, Any],
+    current_catalog: dict[str, Any],
+) -> dict[str, Any]:
+    restored = deepcopy(incoming_catalog)
+    current_services = current_catalog.get("services") or {}
+    restored_services = restored.get("services") or {}
+
+    for service_name, restored_service in restored_services.items():
+        if not isinstance(restored_service, dict):
+            continue
+        current_service = current_services.get(service_name) or {}
+        current_profiles = {
+            profile.get("id"): profile
+            for profile in (current_service.get("profiles") or [])
+            if isinstance(profile, dict)
+        }
+        for profile in restored_service.get("profiles") or []:
+            if not isinstance(profile, dict):
+                continue
+            current_profile = current_profiles.get(profile.get("id"))
+            if (
+                current_profile
+                and profile.get("api_key") == MASKED_SECRET
+                and current_profile.get("api_key")
+            ):
+                profile["api_key"] = current_profile["api_key"]
+    return restored
+
+
+def _catalog_for_write(catalog: dict[str, Any]) -> dict[str, Any]:
+    return _restore_masked_catalog_secrets(catalog, get_model_catalog_service().load())
+
+
+def _redact_env(values: dict[str, str]) -> dict[str, str]:
+    redacted = dict(values)
+    secret_hints = ("API_KEY", "TOKEN", "SECRET", "PASSWORD")
+    for key, value in list(redacted.items()):
+        if value and any(hint in key.upper() for hint in secret_hints):
+            redacted[key] = MASKED_SECRET
+    return redacted
 
 
 def load_ui_settings() -> dict[str, Any]:
@@ -184,7 +246,7 @@ async def get_settings():
         }
     return {
         "ui": load_ui_settings(),
-        "catalog": get_model_catalog_service().load(),
+        "catalog": _redact_catalog(get_model_catalog_service().load()),
         "providers": _provider_choices(),
     }
 
@@ -192,7 +254,7 @@ async def get_settings():
 @router.get("/catalog")
 async def get_catalog():
     _require_settings_admin()
-    return {"catalog": get_model_catalog_service().load()}
+    return {"catalog": _redact_catalog(get_model_catalog_service().load())}
 
 
 @router.get("/llm-options")
@@ -205,21 +267,25 @@ async def get_llm_options():
 @router.put("/catalog")
 async def update_catalog(payload: CatalogPayload):
     _require_settings_admin()
-    catalog = get_model_catalog_service().save(payload.catalog)
+    catalog = get_model_catalog_service().save(_catalog_for_write(payload.catalog))
     _invalidate_runtime_caches()
-    return {"catalog": catalog}
+    return {"catalog": _redact_catalog(catalog)}
 
 
 @router.post("/apply")
 async def apply_catalog(payload: CatalogPayload | None = None):
     _require_settings_admin()
-    catalog = payload.catalog if payload is not None else get_model_catalog_service().load()
+    catalog = (
+        _catalog_for_write(payload.catalog)
+        if payload is not None
+        else get_model_catalog_service().load()
+    )
     rendered = get_model_catalog_service().apply(catalog)
     _invalidate_runtime_caches()
     return {
         "message": "Catalog applied to the active .env configuration.",
-        "catalog": get_model_catalog_service().load(),
-        "env": rendered,
+        "catalog": _redact_catalog(get_model_catalog_service().load()),
+        "env": _redact_env(rendered),
     }
 
 
@@ -295,7 +361,8 @@ async def update_sidebar_nav_order(update: SidebarNavOrderUpdate):
 @router.post("/tests/{service}/start")
 async def start_service_test(service: str, payload: CatalogPayload | None = None):
     _require_settings_admin()
-    run = get_config_test_runner().start(service, payload.catalog if payload else None)
+    catalog = _catalog_for_write(payload.catalog) if payload else None
+    run = get_config_test_runner().start(service, catalog)
     return {"run_id": run.id}
 
 
@@ -356,7 +423,11 @@ class TourCompletePayload(BaseModel):
 @router.post("/tour/complete")
 async def complete_tour(payload: TourCompletePayload | None = None):
     _require_settings_admin()
-    catalog = payload.catalog if payload and payload.catalog else get_model_catalog_service().load()
+    catalog = (
+        _catalog_for_write(payload.catalog)
+        if payload and payload.catalog
+        else get_model_catalog_service().load()
+    )
     rendered = get_model_catalog_service().apply(catalog)
     _invalidate_runtime_caches()
     now = int(time.time())
@@ -381,7 +452,7 @@ async def complete_tour(payload: TourCompletePayload | None = None):
         "message": "Configuration saved. Socartes will restart shortly.",
         "launch_at": launch_at,
         "redirect_at": redirect_at,
-        "env": rendered,
+        "env": _redact_env(rendered),
     }
 
 

@@ -24,6 +24,7 @@ WORKDIR /app/web
 
 # Accept build argument for backend port
 ARG BACKEND_PORT=8001
+ENV INTERNAL_API_BASE=http://127.0.0.1:${BACKEND_PORT}
 
 # Application version (e.g. "v1.2.3"). Passed by CI from the release tag
 # and inlined into the Next.js bundle via NEXT_PUBLIC_APP_VERSION so the
@@ -42,9 +43,9 @@ RUN npm config set fetch-timeout 600000 && \
 # Copy frontend source code
 COPY web/ ./
 
-# Create .env.local with placeholder that will be replaced at runtime
-# Use a unique placeholder that can be safely replaced
-RUN echo "NEXT_PUBLIC_API_BASE=__NEXT_PUBLIC_API_BASE_PLACEHOLDER__" > .env.local
+# Keep backend routing server-side; public browser bundles must not include a
+# backend API origin.
+RUN echo "INTERNAL_API_BASE=${INTERNAL_API_BASE}" > .env.local
 
 # Build Next.js for production with standalone output
 # This allows runtime environment variable injection
@@ -79,11 +80,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     build-essential \
+    ffmpeg \
+    ghostscript \
+    dvisvgm \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-science \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender1 \
+    libcairo2-dev \
+    libpango1.0-dev \
     pkg-config \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/* \
@@ -96,7 +107,8 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 COPY requirements/ ./requirements/
 COPY requirements.txt ./
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r requirements.txt && \
+    pip install -r requirements/math-animator.txt
 
 # ============================================
 # Stage 3: Production Image
@@ -130,11 +142,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     bash \
     supervisor \
+    ffmpeg \
+    ghostscript \
+    dvisvgm \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-science \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender1 \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libpangoft2-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Node.js from node-runtime stage (platform-matched binary)
@@ -244,31 +268,10 @@ set -e
 BACKEND_PORT=${BACKEND_PORT:-8001}
 FRONTEND_PORT=${FRONTEND_PORT:-3782}
 
-# Determine the API base URL with multiple fallback options
-# Priority: NEXT_PUBLIC_API_BASE_EXTERNAL > NEXT_PUBLIC_API_BASE > auto-detect
-if [ -n "$NEXT_PUBLIC_API_BASE_EXTERNAL" ]; then
-    # Explicit external URL for cloud deployments
-    API_BASE="$NEXT_PUBLIC_API_BASE_EXTERNAL"
-    echo "[Frontend] 📌 Using external API URL: ${API_BASE}"
-elif [ -n "$NEXT_PUBLIC_API_BASE" ]; then
-    # Custom API base URL
-    API_BASE="$NEXT_PUBLIC_API_BASE"
-    echo "[Frontend] 📌 Using custom API URL: ${API_BASE}"
-else
-    # Default: localhost with configured backend port
-    # Note: This only works for local development, not cloud deployments
-    API_BASE="http://localhost:${BACKEND_PORT}"
-    echo "[Frontend] 📌 Using default API URL: ${API_BASE}"
-    echo "[Frontend] ⚠️  For cloud deployment, set NEXT_PUBLIC_API_BASE_EXTERNAL to your server's public URL"
-    echo "[Frontend]    Example: -e NEXT_PUBLIC_API_BASE_EXTERNAL=https://your-server.com:${BACKEND_PORT}"
-fi
-
+export INTERNAL_API_BASE=${INTERNAL_API_BASE:-http://127.0.0.1:${BACKEND_PORT}}
+echo "[Frontend] 📌 Browser API: same-origin /api/v1/*"
+echo "[Frontend] 📌 Internal API proxy target: ${INTERNAL_API_BASE}"
 echo "[Frontend] 🚀 Starting Next.js frontend on port ${FRONTEND_PORT}..."
-
-# Replace placeholder in built Next.js files
-# This is necessary because NEXT_PUBLIC_* vars are inlined at build time
-find /app/web/.next -type f \( -name "*.js" -o -name "*.json" \) -exec \
-    sed -i "s|__NEXT_PUBLIC_API_BASE_PLACEHOLDER__|${API_BASE}|g" {} \; 2>/dev/null || true
 
 # Start Next.js standalone server
 # The standalone server reads PORT and HOSTNAME from environment variables

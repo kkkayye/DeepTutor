@@ -256,7 +256,8 @@ async def test_update_catalog_invalidates_runtime_caches(monkeypatch: pytest.Mon
     new_llm_client = llm_client_module.get_llm_client()
     new_embedding_client = embedding_client_module.get_embedding_client()
 
-    assert response == {"catalog": updated_catalog}
+    assert response == {"catalog": settings_router._redact_catalog(updated_catalog)}
+    assert service.load() == updated_catalog
     assert old_llm_config.model == "gpt-old"
     assert new_llm_config.model == "gpt-new"
     assert new_llm_config.base_url == "https://new-llm.example/v1"
@@ -301,7 +302,8 @@ async def test_apply_catalog_invalidates_runtime_caches(monkeypatch: pytest.Monk
     new_llm_client = llm_client_module.get_llm_client()
     new_embedding_client = embedding_client_module.get_embedding_client()
 
-    assert response["catalog"] == applied_catalog
+    assert response["catalog"] == settings_router._redact_catalog(applied_catalog)
+    assert service.load() == applied_catalog
     assert response["env"]["LLM_MODEL"] == "gpt-after-apply"
     assert response["env"]["EMBEDDING_MODEL"] == "text-embedding-after-apply"
     assert new_llm_config.model == "gpt-after-apply"

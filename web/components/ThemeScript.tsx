@@ -11,7 +11,7 @@ export default function ThemeScript() {
   const themeScript = `
     (function() {
       try {
-        const stored = localStorage.getItem('deeptutor-theme');
+        const stored = localStorage.getItem('socartes-theme');
 
         document.documentElement.classList.remove('dark', 'theme-glass', 'theme-snow');
 
@@ -26,9 +26,9 @@ export default function ThemeScript() {
         } else {
           if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.classList.add('dark');
-            localStorage.setItem('deeptutor-theme', 'dark');
+            localStorage.setItem('socartes-theme', 'dark');
           } else {
-            localStorage.setItem('deeptutor-theme', 'light');
+            localStorage.setItem('socartes-theme', 'light');
           }
         }
       } catch (e) {

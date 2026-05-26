@@ -118,7 +118,7 @@ export default function BookChatPanel({
   const isComposingRef = useRef(false);
 
   useEffect(() => {
-    const raw = window.localStorage.getItem("deeptutor.bookChat.width");
+    const raw = window.localStorage.getItem("socartes.bookChat.width");
     const parsed = Number(raw);
     if (Number.isFinite(parsed) && parsed >= 300 && parsed <= 720) {
       setWidth(parsed);
@@ -126,7 +126,7 @@ export default function BookChatPanel({
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem("deeptutor.bookChat.width", String(width));
+    window.localStorage.setItem("socartes.bookChat.width", String(width));
   }, [width]);
 
   useEffect(() => {

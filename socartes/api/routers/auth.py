@@ -2,6 +2,7 @@
 
 import logging
 import os
+from typing import AsyncIterator
 
 from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Response, status
 from pydantic import BaseModel, field_validator
@@ -146,10 +147,10 @@ def _extract_token(authorization: str | None, dt_token: str | None) -> str | Non
 # ---------------------------------------------------------------------------
 
 
-def require_auth(
+async def require_auth(
     authorization: str | None = Header(default=None, alias="Authorization"),
     dt_token: str | None = Cookie(default=None),
-) -> TokenPayload | None:
+) -> AsyncIterator[TokenPayload | None]:
     """
     FastAPI dependency that enforces authentication when AUTH_ENABLED=true.
 
@@ -163,12 +164,17 @@ def require_auth(
     Returns the authenticated TokenPayload, or None if auth is disabled.
     Raises HTTP 401 if auth is enabled but the token is missing or invalid.
     """
+    from socartes.multi_user.context import reset_current_user, set_current_user
+
     if not AUTH_ENABLED:
-        from socartes.multi_user.context import set_current_user
         from socartes.multi_user.paths import local_admin_user
 
-        set_current_user(local_admin_user())
-        return None
+        user_token = set_current_user(local_admin_user())
+        try:
+            yield None
+        finally:
+            reset_current_user(user_token)
+        return
 
     token = _extract_token(authorization, dt_token)
 
@@ -187,10 +193,13 @@ def require_auth(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    from socartes.multi_user.context import set_current_user, user_from_token_payload
+    from socartes.multi_user.context import user_from_token_payload
 
-    set_current_user(user_from_token_payload(payload))
-    return payload
+    user_token = set_current_user(user_from_token_payload(payload))
+    try:
+        yield payload
+    finally:
+        reset_current_user(user_token)
 
 
 def require_admin(

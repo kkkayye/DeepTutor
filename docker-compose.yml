@@ -17,6 +17,8 @@
 #   See .env.example for details.
 # ============================================
 
+name: socartes
+
 services:
   # ============================================
   # PocketBase — optional auth + storage sidecar
@@ -40,6 +42,30 @@ services:
       retries: 3
       start_period: 10s
 
+  embedding-local:
+    image: socartes-socartes:latest
+    container_name: socartes-embedding-local
+    restart: unless-stopped
+    entrypoint: ["python", "/app/local_embedding_server/app.py"]
+    environment:
+      - EMBEDDING_SERVER_MODEL=text-embedding-3-large
+      - EMBEDDING_SERVER_DIMENSION=3072
+      - EMBEDDING_SERVER_PORT=8320
+    volumes:
+      - ./scripts/local_embedding_server:/app/local_embedding_server:ro
+    ports:
+      - "127.0.0.1:8320:8320"
+    networks:
+      socartes-network:
+        aliases:
+          - embedding-local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8320/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
   # ============================================
   # All-in-One Socartes Service
   # ============================================
@@ -54,8 +80,8 @@ services:
     container_name: socartes
     restart: unless-stopped
     ports:
-      - "${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
-      - "${FRONTEND_PORT:-3782}:${FRONTEND_PORT:-3782}"
+      - "${BACKEND_BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
+      - "${FRONTEND_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-3782}:${FRONTEND_PORT:-3782}"
 
     # Load environment variables from .env file
     env_file:
@@ -88,22 +114,17 @@ services:
       # Frontend web port (default: 3782)
       - FRONTEND_PORT=${FRONTEND_PORT:-3782}
       # ============================================
-      # API URL Configuration (Important for Remote Deployment)
+      # API URL Configuration
       # ============================================
-      # The frontend runs in the USER'S BROWSER — "localhost" means the user's machine,
-      # not the Docker host. This matters when Docker runs on a remote server.
-      #
-      # LOCAL (browsing from the same machine running Docker):
-      #   Leave blank — defaults to http://localhost:8001, which works via port mapping.
-      #
-      # REMOTE SERVER (Docker on a server, accessed from another machine):
-      #   Set to the server's public IP or hostname, e.g.:
-      #     NEXT_PUBLIC_API_BASE_EXTERNAL=http://203.0.113.10:8001
-      #   Without this the browser tries localhost:8001 on the user's laptop and all
-      #   API calls (including WebSocket) will fail.
+      # Public traffic should stay same-origin through sc.tckr.top/api/v1/*.
+      # Keep legacy NEXT_PUBLIC_* values blank for public deployment.
       - NEXT_PUBLIC_API_BASE_EXTERNAL=${NEXT_PUBLIC_API_BASE_EXTERNAL:-}
-      # Alternative: Direct API base URL (same priority as NEXT_PUBLIC_API_BASE_EXTERNAL)
       - NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE:-}
+      - INTERNAL_API_BASE=${INTERNAL_API_BASE:-http://127.0.0.1:8001}
+      - ALLOW_SECRET_REVEAL=${ALLOW_SECRET_REVEAL:-false}
+      # Extra frontend origin(s) allowed by FastAPI CORS when auth is enabled.
+      - CORS_ORIGIN=${CORS_ORIGIN:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
 
     volumes:
       # Mount local data directory for persistence (read-write)
@@ -131,4 +152,5 @@ services:
 # ============================================
 networks:
   socartes-network:
+    name: socartes-network
     driver: bridge

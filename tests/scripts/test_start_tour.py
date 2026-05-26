@@ -133,16 +133,19 @@ class TestResolvePython:
         assert "python" in Path(result).name.lower()
 
     def test_install_commands_use_resolved_python(self) -> None:
-        """_install_commands should embed _PYTHON, not raw sys.executable."""
+        """_install_commands should bind pip installs to _PYTHON."""
         start_tour = _load_start_tour_module()
         python_used = start_tour._PYTHON
         catalog: dict = {"services": {}}
         cmds = start_tour._install_commands("cli-core", catalog)
         for cmd, _cwd in cmds:
             if cmd[0] != "npm":
-                assert cmd[0] == python_used, (
-                    f"Expected resolved python {python_used!r}, got {cmd[0]!r}"
-                )
+                assert cmd[: len(start_tour._PIP_CMD)] == start_tour._PIP_CMD
+                if start_tour._PIP_CMD[0].endswith("uv"):
+                    assert "--python" in cmd
+                    assert cmd[cmd.index("--python") + 1] == python_used
+                else:
+                    assert cmd[0] == python_used
 
     def test_install_commands_support_web_addon_profiles(self) -> None:
         start_tour = _load_start_tour_module()

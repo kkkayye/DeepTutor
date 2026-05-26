@@ -4,19 +4,19 @@
 
 # Socartes: Agent-Native Personalized Tutoring
 
-<a href="https://trendshift.io/repositories/17099" target="_blank"><img src="https://trendshift.io/api/badge/repositories/17099" alt="HKUDS%2FSocartes | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/17099" target="_blank"><img src="https://trendshift.io/api/badge/repositories/17099" alt="kkkayye%2FSocartes | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/HKUDS/Socartes?style=flat-square&color=brightgreen)](https://github.com/HKUDS/Socartes/releases)
+[![GitHub release](https://img.shields.io/github/v/release/kkkayye/Socartes?style=flat-square&color=brightgreen)](https://github.com/kkkayye/Socartes/releases)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.26962-b31b1b?style=flat-square&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.26962)
 
 [![Discord](https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/eRsjPgMU4t)
 [![Feishu](https://img.shields.io/badge/Feishu-Group-00D4AA?style=flat-square&logo=feishu&logoColor=white)](./Communication.md)
-[![WeChat](https://img.shields.io/badge/WeChat-Group-07C160?style=flat-square&logo=wechat&logoColor=white)](https://github.com/HKUDS/Socartes/issues/78)
+[![WeChat](https://img.shields.io/badge/WeChat-Group-07C160?style=flat-square&logo=wechat&logoColor=white)](https://github.com/kkkayye/Socartes/issues/78)
 
-[Features](#-key-features) · [Get Started](#-get-started) · [Explore](#-explore-socartes) · [TutorBot](#-tutorbot--persistent-autonomous-ai-tutors) · [CLI](#%EF%B8%8F-socartes-cli--agent-native-interface) · [Multi-User](#-multi-user--shared-deployments-with-per-user-workspaces) · [Roadmap](#%EF%B8%8F-roadmap) · [Community](#-community--ecosystem)
+[Overview](#project-overview) · [Architecture](#core-agentic-architecture) · [Screenshots](#project-screenshots) · [Features](#-key-features) · [Get Started](#-get-started) · [Explore](#-explore-socartes) · [TutorBot](#-tutorbot--persistent-autonomous-ai-tutors) · [CLI](#%EF%B8%8F-socartes-cli--agent-native-interface) · [Multi-User](#-multi-user--shared-deployments-with-per-user-workspaces) · [Roadmap](#%EF%B8%8F-roadmap) · [Community](#-community--ecosystem)
 
 [🇨🇳 中文](assets/README/README_CN.md) · [🇯🇵 日本語](assets/README/README_JA.md) · [🇪🇸 Español](assets/README/README_ES.md) · [🇫🇷 Français](assets/README/README_FR.md) · [🇸🇦 العربية](assets/README/README_AR.md) · [🇷🇺 Русский](assets/README/README_RU.md) · [🇮🇳 हिन्दी](assets/README/README_HI.md) · [🇵🇹 Português](assets/README/README_PT.md) · [🇹🇭 ภาษาไทย](assets/README/README_TH.md)  · 🇵🇱 [Polski](assets/README/README_PL.md)
 
@@ -26,76 +26,107 @@
 
 > 🤝 **We welcome any kinds of contributing!** See our [Contributing Guide](CONTRIBUTING.md) for branching strategy, coding standards, and how to get started.
 
+## Project Overview
+
+Socartes is an agent-native personalized tutoring platform for learners, educators, and research teams who want a single workspace for chat, structured problem solving, document-grounded study, co-writing, interactive books, and autonomous tutor bots. It combines a Python/FastAPI backend, a Next.js web app, a Typer CLI, persistent learner memory, and extensible agent capabilities so the same context can move across conversation, research, writing, visualization, and assessment workflows.
+
+The project is designed around grounded reasoning rather than plain chatbot output. Socartes can retrieve from user knowledge bases, call external tools, execute multi-step agent pipelines, validate intermediate results, and turn source material into study artifacts such as quizzes, reports, notebooks, and living books.
+
+## Core Agentic Architecture
+
+| Concept | How Socartes Implements It |
+|:---|:---|
+| **Multi-Agent: Planner / Executor / Critic role separation (역할 분담 구조)** | Deep Solve, Deep Research, Book Engine, and TutorBot workflows split work into planning, execution, synthesis, and validation stages. Planner-style agents decompose the goal, executor agents call tools and generate artifacts, and critic/reflection stages check quality before the result is returned. |
+| **RAG (Retrieval-Augmented Generation): external domain knowledge reference (도메인 지식 외부 참조)** | Knowledge bases index PDFs, Office files, Markdown, text, and code through the RAG service. Chat, Co-Writer, Book Engine, Deep Research, and TutorBots can retrieve relevant chunks so answers cite the user's own domain knowledge instead of relying only on model memory. |
+| **MCP / Tool Use: external API, DB, and file system integration (외부 API, DB, 파일 시스템 연동)** | Socartes exposes a tool layer for RAG, web search, code execution, paper search, reasoning, visualization, and TutorBot actions. TutorBot can also connect to configured MCP servers and wrap external tools as native agent tools. |
+| **Reflection / Self-Correction: agent self-evaluation and revision loop (자체 평가 및 수정 루프)** | Agent pipelines include validation and retry paths such as reflection stages, answer regeneration, citation checks, quiz validation, and visual command correction. The system is built to inspect intermediate outputs, revise weak results, and surface safer final responses. |
+
+<div align="center">
+<img src="assets/figs/socartes-architecture.png" alt="Socartes agent-native architecture" width="820">
+</div>
+
+## Project Screenshots
+
+| Chat Workspace | Living Book |
+|:---:|:---:|
+| <img src="assets/figs/dt-chat.png" alt="Socartes chat workspace" width="420"> | <img src="assets/figs/dt-book-1.png" alt="Socartes living book reader" width="420"> |
+
+| Knowledge Hub | Co-Writer |
+|:---:|:---:|
+| <img src="assets/figs/dt-knowledge.png" alt="Socartes knowledge hub" width="420"> | <img src="assets/figs/dt-cowriter.png" alt="Socartes co-writer workspace" width="420"> |
+
 ### 📦 Releases
 
-> **[2026.5.9]** [v1.3.9](https://github.com/HKUDS/Socartes/releases/tag/v1.3.9) — TutorBot Zulip and NVIDIA NIM support, safer thinking-model routing, `socartes start`, sidebar tooltips, and session-store parity.
+> **[2026.5.10]** [v1.3.10](https://github.com/kkkayye/Socartes/releases/tag/v1.3.10) — Remote Docker CORS recovery, `DISABLE_SSL_VERIFY` across SDK providers, safer code-block citations, and optional Matrix E2EE add-on.
 
-> **[2026.5.8]** [v1.3.8](https://github.com/HKUDS/Socartes/releases/tag/v1.3.8) — Optional multi-user deployments with isolated user workspaces, admin grants, auth routes, and scoped runtime access.
+> **[2026.5.9]** [v1.3.9](https://github.com/kkkayye/Socartes/releases/tag/v1.3.9) — TutorBot Zulip and NVIDIA NIM support, safer thinking-model routing, `socartes start`, sidebar tooltips, and session-store parity.
 
-> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/Socartes/releases/tag/v1.3.7) — Thinking-model/provider fixes, visible Knowledge index history, and safer Co-Writer clear/template editing.
+> **[2026.5.8]** [v1.3.8](https://github.com/kkkayye/Socartes/releases/tag/v1.3.8) — Optional multi-user deployments with isolated user workspaces, admin grants, auth routes, and scoped runtime access.
 
-> **[2026.5.3]** [v1.3.6](https://github.com/HKUDS/Socartes/releases/tag/v1.3.6) — Catalog-based model selection for chat and TutorBot, safer RAG re-indexing, OpenAI Responses token-limit fixes, and Skills editor validation.
+> **[2026.5.4]** [v1.3.7](https://github.com/kkkayye/Socartes/releases/tag/v1.3.7) — Thinking-model/provider fixes, visible Knowledge index history, and safer Co-Writer clear/template editing.
 
-> **[2026.5.2]** [v1.3.5](https://github.com/HKUDS/Socartes/releases/tag/v1.3.5) — Smoother local launch settings, safer RAG queries, cleaner local embedding auth, and Settings dark-mode polish.
+> **[2026.5.3]** [v1.3.6](https://github.com/kkkayye/Socartes/releases/tag/v1.3.6) — Catalog-based model selection for chat and TutorBot, safer RAG re-indexing, OpenAI Responses token-limit fixes, and Skills editor validation.
 
-> **[2026.5.1]** [v1.3.4](https://github.com/HKUDS/Socartes/releases/tag/v1.3.4) — Book page chat persistence and rebuild flows, chat-to-book references, stronger language/reasoning handling, RAG document extraction hardening.
+> **[2026.5.2]** [v1.3.5](https://github.com/kkkayye/Socartes/releases/tag/v1.3.5) — Smoother local launch settings, safer RAG queries, cleaner local embedding auth, and Settings dark-mode polish.
 
-> **[2026.4.30]** [v1.3.3](https://github.com/HKUDS/Socartes/releases/tag/v1.3.3) — NVIDIA NIM + Gemini embedding support, unified Space context for chat history/skills/memory, session snapshots, RAG re-index resilience.
+> **[2026.5.1]** [v1.3.4](https://github.com/kkkayye/Socartes/releases/tag/v1.3.4) — Book page chat persistence and rebuild flows, chat-to-book references, stronger language/reasoning handling, RAG document extraction hardening.
 
-> **[2026.4.29]** [v1.3.2](https://github.com/HKUDS/Socartes/releases/tag/v1.3.2) — Transparent embedding endpoint URLs, RAG re-index resilience for invalid persisted vectors, memory cleanup for thinking-model output, Deep Solve runtime fix.
+> **[2026.4.30]** [v1.3.3](https://github.com/kkkayye/Socartes/releases/tag/v1.3.3) — NVIDIA NIM + Gemini embedding support, unified Space context for chat history/skills/memory, session snapshots, RAG re-index resilience.
 
-> **[2026.4.28]** [v1.3.1](https://github.com/HKUDS/Socartes/releases/tag/v1.3.1) — Stability: safer RAG routing & embedding validation, Docker persistence, IME-safe input, Windows/GBK robustness.
+> **[2026.4.29]** [v1.3.2](https://github.com/kkkayye/Socartes/releases/tag/v1.3.2) — Transparent embedding endpoint URLs, RAG re-index resilience for invalid persisted vectors, memory cleanup for thinking-model output, Deep Solve runtime fix.
 
-> **[2026.4.27]** [v1.3.0](https://github.com/HKUDS/Socartes/releases/tag/v1.3.0) — Versioned KB indexes with re-index workflow, rebuilt Knowledge workspace, embedding auto-discovery with new adapters, Space hub.
+> **[2026.4.28]** [v1.3.1](https://github.com/kkkayye/Socartes/releases/tag/v1.3.1) — Stability: safer RAG routing & embedding validation, Docker persistence, IME-safe input, Windows/GBK robustness.
 
-> **[2026.4.25]** [v1.2.5](https://github.com/HKUDS/Socartes/releases/tag/v1.2.5) — Persistent chat attachments with file-preview drawer, attachment-aware capability pipelines, TutorBot Markdown export.
-
-> **[2026.4.25]** [v1.2.4](https://github.com/HKUDS/Socartes/releases/tag/v1.2.4) — Text/code/SVG attachments, one-command Setup Tour, Markdown chat export, compact KB management UI.
+> **[2026.4.27]** [v1.3.0](https://github.com/kkkayye/Socartes/releases/tag/v1.3.0) — Versioned KB indexes with re-index workflow, rebuilt Knowledge workspace, embedding auto-discovery with new adapters, Space hub.
 
 <details>
 <summary><b>Past releases (more than 2 weeks ago)</b></summary>
 
-> **[2026.4.24]** [v1.2.3](https://github.com/HKUDS/Socartes/releases/tag/v1.2.3) — Document attachments (PDF/DOCX/XLSX/PPTX), reasoning thinking-block display, Soul template editor, Co-Writer save-to-notebook.
+> **[2026.4.25]** [v1.2.5](https://github.com/kkkayye/Socartes/releases/tag/v1.2.5) — Persistent chat attachments with file-preview drawer, attachment-aware capability pipelines, TutorBot Markdown export.
 
-> **[2026.4.22]** [v1.2.2](https://github.com/HKUDS/Socartes/releases/tag/v1.2.2) — User-authored Skills system, chat input performance overhaul, TutorBot auto-start, Book Library UI, visualization fullscreen.
+> **[2026.4.25]** [v1.2.4](https://github.com/kkkayye/Socartes/releases/tag/v1.2.4) — Text/code/SVG attachments, one-command Setup Tour, Markdown chat export, compact KB management UI.
 
-> **[2026.4.21]** [v1.2.1](https://github.com/HKUDS/Socartes/releases/tag/v1.2.1) — Per-stage token limits, Regenerate response across all entry points, RAG & Gemma compatibility fixes.
+> **[2026.4.24]** [v1.2.3](https://github.com/kkkayye/Socartes/releases/tag/v1.2.3) — Document attachments (PDF/DOCX/XLSX/PPTX), reasoning thinking-block display, Soul template editor, Co-Writer save-to-notebook.
 
-> **[2026.4.20]** [v1.2.0](https://github.com/HKUDS/Socartes/releases/tag/v1.2.0) — Book Engine "living book" compiler, multi-document Co-Writer, interactive HTML visualizations, Question Bank @-mention.
+> **[2026.4.22]** [v1.2.2](https://github.com/kkkayye/Socartes/releases/tag/v1.2.2) — User-authored Skills system, chat input performance overhaul, TutorBot auto-start, Book Library UI, visualization fullscreen.
 
-> **[2026.4.18]** [v1.1.2](https://github.com/HKUDS/Socartes/releases/tag/v1.1.2) — Schema-driven Channels tab, RAG single-pipeline consolidation, externalized chat prompts.
+> **[2026.4.21]** [v1.2.1](https://github.com/kkkayye/Socartes/releases/tag/v1.2.1) — Per-stage token limits, Regenerate response across all entry points, RAG & Gemma compatibility fixes.
 
-> **[2026.4.17]** [v1.1.1](https://github.com/HKUDS/Socartes/releases/tag/v1.1.1) — Universal "Answer now", Co-Writer scroll sync, unified settings panel, streaming Stop button.
+> **[2026.4.20]** [v1.2.0](https://github.com/kkkayye/Socartes/releases/tag/v1.2.0) — Book Engine "living book" compiler, multi-document Co-Writer, interactive HTML visualizations, Question Bank @-mention.
 
-> **[2026.4.15]** [v1.1.0](https://github.com/HKUDS/Socartes/releases/tag/v1.1.0) — LaTeX block math overhaul, LLM diagnostic probe, Docker + local LLM guidance.
+> **[2026.4.18]** [v1.1.2](https://github.com/kkkayye/Socartes/releases/tag/v1.1.2) — Schema-driven Channels tab, RAG single-pipeline consolidation, externalized chat prompts.
 
-> **[2026.4.14]** [v1.1.0-beta](https://github.com/HKUDS/Socartes/releases/tag/v1.1.0-beta) — Bookmarkable sessions, Snow theme, WebSocket heartbeat & auto-reconnect, embedding registry overhaul.
+> **[2026.4.17]** [v1.1.1](https://github.com/kkkayye/Socartes/releases/tag/v1.1.1) — Universal "Answer now", Co-Writer scroll sync, unified settings panel, streaming Stop button.
 
-> **[2026.4.13]** [v1.0.3](https://github.com/HKUDS/Socartes/releases/tag/v1.0.3) — Question Notebook with bookmarks & categories, Mermaid in Visualize, embedding mismatch detection, Qwen/vLLM compatibility, LM Studio & llama.cpp support, and Glass theme.
+> **[2026.4.15]** [v1.1.0](https://github.com/kkkayye/Socartes/releases/tag/v1.1.0) — LaTeX block math overhaul, LLM diagnostic probe, Docker + local LLM guidance.
 
-> **[2026.4.11]** [v1.0.2](https://github.com/HKUDS/Socartes/releases/tag/v1.0.2) — Search consolidation with SearXNG fallback, provider switch fix, and frontend resource leak fixes.
+> **[2026.4.14]** [v1.1.0-beta](https://github.com/kkkayye/Socartes/releases/tag/v1.1.0-beta) — Bookmarkable sessions, Snow theme, WebSocket heartbeat & auto-reconnect, embedding registry overhaul.
 
-> **[2026.4.10]** [v1.0.1](https://github.com/HKUDS/Socartes/releases/tag/v1.0.1) — Visualize capability (Chart.js/SVG), quiz duplicate prevention, and o4-mini model support.
+> **[2026.4.13]** [v1.0.3](https://github.com/kkkayye/Socartes/releases/tag/v1.0.3) — Question Notebook with bookmarks & categories, Mermaid in Visualize, embedding mismatch detection, Qwen/vLLM compatibility, LM Studio & llama.cpp support, and Glass theme.
 
-> **[2026.4.10]** [v1.0.0-beta.4](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.4) — Embedding progress tracking with rate-limit retry, cross-platform dependency fixes, and MIME validation fix.
+> **[2026.4.11]** [v1.0.2](https://github.com/kkkayye/Socartes/releases/tag/v1.0.2) — Search consolidation with SearXNG fallback, provider switch fix, and frontend resource leak fixes.
 
-> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.3) — Native OpenAI/Anthropic SDK (drop litellm), Windows Math Animator support, robust JSON parsing, and full Chinese i18n.
+> **[2026.4.10]** [v1.0.1](https://github.com/kkkayye/Socartes/releases/tag/v1.0.1) — Visualize capability (Chart.js/SVG), quiz duplicate prevention, and o4-mini model support.
 
-> **[2026.4.7]** [v1.0.0-beta.2](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.2) — Hot settings reload, MinerU nested output, WebSocket fix, and Python 3.11+ minimum.
+> **[2026.4.10]** [v1.0.0-beta.4](https://github.com/kkkayye/Socartes/releases/tag/v1.0.0-beta.4) — Embedding progress tracking with rate-limit retry, cross-platform dependency fixes, and MIME validation fix.
 
-> **[2026.4.4]** [v1.0.0-beta.1](https://github.com/HKUDS/Socartes/releases/tag/v1.0.0-beta.1) — Agent-native architecture rewrite (~200k lines): Tools + Capabilities plugin model, CLI & SDK, TutorBot, Co-Writer, Guided Learning, and persistent memory.
+> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/kkkayye/Socartes/releases/tag/v1.0.0-beta.3) — Native OpenAI/Anthropic SDK (drop litellm), Windows Math Animator support, robust JSON parsing, and full Chinese i18n.
 
-> **[2026.1.23]** [v0.6.0](https://github.com/HKUDS/Socartes/releases/tag/v0.6.0) — Session persistence, incremental document upload, flexible RAG pipeline import, and full Chinese localization.
+> **[2026.4.7]** [v1.0.0-beta.2](https://github.com/kkkayye/Socartes/releases/tag/v1.0.0-beta.2) — Hot settings reload, MinerU nested output, WebSocket fix, and Python 3.11+ minimum.
 
-> **[2026.1.18]** [v0.5.2](https://github.com/HKUDS/Socartes/releases/tag/v0.5.2) — Docling support for RAG-Anything, logging system optimization, and bug fixes.
+> **[2026.4.4]** [v1.0.0-beta.1](https://github.com/kkkayye/Socartes/releases/tag/v1.0.0-beta.1) — Agent-native architecture rewrite (~200k lines): Tools + Capabilities plugin model, CLI & SDK, TutorBot, Co-Writer, Guided Learning, and persistent memory.
 
-> **[2026.1.15]** [v0.5.0](https://github.com/HKUDS/Socartes/releases/tag/v0.5.0) — Unified service configuration, RAG pipeline selection per knowledge base, question generation overhaul, and sidebar customization.
+> **[2026.1.23]** [v0.6.0](https://github.com/kkkayye/Socartes/releases/tag/v0.6.0) — Session persistence, incremental document upload, flexible RAG pipeline import, and full Chinese localization.
 
-> **[2026.1.9]** [v0.4.0](https://github.com/HKUDS/Socartes/releases/tag/v0.4.0) — Multi-provider LLM & embedding support, new home page, RAG module decoupling, and environment variable refactor.
+> **[2026.1.18]** [v0.5.2](https://github.com/kkkayye/Socartes/releases/tag/v0.5.2) — Docling support for RAG-Anything, logging system optimization, and bug fixes.
 
-> **[2026.1.5]** [v0.3.0](https://github.com/HKUDS/Socartes/releases/tag/v0.3.0) — Unified PromptManager architecture, GitHub Actions CI/CD, and pre-built Docker images on GHCR.
+> **[2026.1.15]** [v0.5.0](https://github.com/kkkayye/Socartes/releases/tag/v0.5.0) — Unified service configuration, RAG pipeline selection per knowledge base, question generation overhaul, and sidebar customization.
 
-> **[2026.1.2]** [v0.2.0](https://github.com/HKUDS/Socartes/releases/tag/v0.2.0) — Docker deployment, Next.js 16 & React 19 upgrade, WebSocket security hardening, and critical vulnerability fixes.
+> **[2026.1.9]** [v0.4.0](https://github.com/kkkayye/Socartes/releases/tag/v0.4.0) — Multi-provider LLM & embedding support, new home page, RAG module decoupling, and environment variable refactor.
+
+> **[2026.1.5]** [v0.3.0](https://github.com/kkkayye/Socartes/releases/tag/v0.3.0) — Unified PromptManager architecture, GitHub Actions CI/CD, and pre-built Docker images on GHCR.
+
+> **[2026.1.2]** [v0.2.0](https://github.com/kkkayye/Socartes/releases/tag/v0.2.0) — Docker deployment, Next.js 16 & React 19 upgrade, WebSocket security hardening, and critical vulnerability fixes.
 
 </details>
 
@@ -109,7 +140,7 @@
 
 > **[2026.2.6]** 🚀 We've reached 10k stars in just 39 days! A huge thank you to our incredible community for the support!
 
-> **[2026.1.1]** Happy New Year! Join our [Discord](https://discord.gg/eRsjPgMU4t), [WeChat](https://github.com/HKUDS/Socartes/issues/78), or [Discussions](https://github.com/HKUDS/Socartes/discussions) — let's shape the future of Socartes together!
+> **[2026.1.1]** Happy New Year! Join our [Discord](https://discord.gg/eRsjPgMU4t), [WeChat](https://github.com/kkkayye/Socartes/issues/78), or [Discussions](https://github.com/kkkayye/Socartes/discussions) — let's shape the future of Socartes together!
 
 > **[2025.12.29]** Socartes is officially released!
 
@@ -151,7 +182,7 @@ A guided CLI wizard for first-time local Web setup. It checks your environment, 
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/HKUDS/Socartes.git
+git clone https://github.com/kkkayye/Socartes.git
 cd Socartes
 ```
 
@@ -195,7 +226,7 @@ During the install step, the tour asks which dependency profile you want:
 |:---|:---|:---|
 | Web app (recommended) | CLI + API server + RAG/document parsing | Most first-time users |
 | Web + TutorBot | Adds TutorBot engine and common channel SDKs | If you want autonomous tutor bots or channel integrations |
-| Web + TutorBot + Matrix | Adds Matrix / Element channel support | Only if you already have `libolm` installed or are ready to install it |
+| Web + TutorBot + Matrix | Adds Matrix / Element channel support without E2EE | If you need Matrix/Element rooms; install `matrix-e2e` only for encrypted rooms |
 | Math Animator add-on | Installs Manim separately | Only if you need animation generation and have LaTeX/ffmpeg/system build tools ready |
 
 Once the wizard finishes:
@@ -215,7 +246,7 @@ Use this path if you prefer to run each setup command yourself.
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/HKUDS/Socartes.git
+git clone https://github.com/kkkayye/Socartes.git
 cd Socartes
 ```
 
@@ -256,7 +287,8 @@ python -m pip install -e ".[server]"
 
 # Optional add-ons — install only the ones you need:
 #   python -m pip install -e ".[tutorbot]"       # TutorBot engine + channel SDKs
-#   python -m pip install -e ".[tutorbot,matrix]" # TutorBot + Matrix channel; requires libolm
+#   python -m pip install -e ".[tutorbot,matrix]" # TutorBot + Matrix channel without E2EE/libolm
+#   python -m pip install -e ".[matrix-e2e]"      # Optional encrypted Matrix rooms; requires libolm
 #   python -m pip install -e ".[math-animator]"  # Manim; also requires LaTeX/ffmpeg/system build tools
 #   python -m pip install -e ".[all]"            # Everything above + dev tools
 
@@ -397,7 +429,7 @@ Docker wraps the backend and frontend into a single container — no local Pytho
 **1. Configure environment variables** (required for both options below)
 
 ```bash
-git clone https://github.com/HKUDS/Socartes.git
+git clone https://github.com/kkkayye/Socartes.git
 cd Socartes
 cp .env.example .env
 ```
@@ -406,7 +438,7 @@ Edit `.env` and fill in at least the required fields (same as [Option B](#option
 
 **2a. Pull official image (recommended)**
 
-Official images are published to [GitHub Container Registry](https://github.com/HKUDS/Socartes/pkgs/container/socartes) on every release, built for `linux/amd64` and `linux/arm64`.
+Official images are published to [GitHub Container Registry](https://github.com/kkkayye/Socartes/pkgs/container/socartes) on every release, built for `linux/amd64` and `linux/arm64`.
 
 ```bash
 docker compose -f docker-compose.ghcr.yml up -d
@@ -590,7 +622,8 @@ These directories survive `docker compose down` and are reused on the next `dock
 | `POCKETBASE_PORT` | No | Docker port mapping for the optional PocketBase sidecar (default `8090`) |
 | `NEXT_PUBLIC_API_BASE_EXTERNAL` | No | Public backend URL for cloud deployment |
 | `NEXT_PUBLIC_API_BASE` | No | Direct backend URL override for the Next.js client |
-| `CORS_ORIGIN` | No | Extra origin appended to the FastAPI CORS allowlist |
+| `CORS_ORIGIN` | No | Single extra origin appended to the FastAPI CORS allowlist |
+| `CORS_ORIGINS` | No | Comma/newline-separated extra origins for authenticated remote deployments |
 | `DISABLE_SSL_VERIFY` | No | Disable outbound TLS verification (default `false`) |
 | `AUTH_ENABLED` | No | Require login when `true` (default `false`) |
 | `NEXT_PUBLIC_AUTH_ENABLED` | No | Optional frontend override; blank derives from `AUTH_ENABLED` |
@@ -959,7 +992,7 @@ multi-user/
 | 🔜 | **LightRAG Integration** — Integrate [LightRAG](https://github.com/HKUDS/LightRAG) as an advanced knowledge base engine |
 | 🔜 | **Documentation Site** — Comprehensive docs page with guides, API reference, and tutorials |
 
-> If you find Socartes useful, [give us a star](https://github.com/HKUDS/Socartes/stargazers) — it helps us keep going!
+> If you find Socartes useful, [give us a star](https://github.com/kkkayye/Socartes/stargazers) — it helps us keep going!
 
 ---
 
@@ -986,8 +1019,8 @@ Socartes stands on the shoulders of outstanding open-source projects:
 
 We hope Socartes becomes a gift for the community. 🎁
 
-<a href="https://github.com/HKUDS/Socartes/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HKUDS/Socartes&max=999" alt="Contributors" />
+<a href="https://github.com/kkkayye/Socartes/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=kkkayye/Socartes&max=999" alt="Contributors" />
 </a>
 
 </div>
@@ -998,11 +1031,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on setting up your develop
 
 <div align="center">
 
-<a href="https://www.star-history.com/#HKUDS/Socartes&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/#kkkayye/Socartes&type=timeline&legend=top-left">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&theme=dark&legend=top-left" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&legend=top-left" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/Socartes&type=timeline&legend=top-left" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=kkkayye/Socartes&type=timeline&theme=dark&legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=kkkayye/Socartes&type=timeline&legend=top-left" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=kkkayye/Socartes&type=timeline&legend=top-left" />
   </picture>
 </a>
 
@@ -1011,9 +1044,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on setting up your develop
 <p align="center">
  <a href="https://www.star-history.com/hkuds/socartes">
   <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=HKUDS/Socartes&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=HKUDS/Socartes" />
-   <img alt="Star History Rank" src="https://api.star-history.com/badge?repo=HKUDS/Socartes" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=kkkayye/Socartes&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=kkkayye/Socartes" />
+   <img alt="Star History Rank" src="https://api.star-history.com/badge?repo=kkkayye/Socartes" />
   </picture>
  </a>
 </p>
@@ -1022,7 +1055,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on setting up your develop
 
 **[Data Intelligence Lab @ HKU](https://github.com/HKUDS)**
 
-[⭐ Star us](https://github.com/HKUDS/Socartes/stargazers) · [🐛 Report a bug](https://github.com/HKUDS/Socartes/issues) · [💬 Discussions](https://github.com/HKUDS/Socartes/discussions)
+[⭐ Star us](https://github.com/kkkayye/Socartes/stargazers) · [🐛 Report a bug](https://github.com/kkkayye/Socartes/issues) · [💬 Discussions](https://github.com/kkkayye/Socartes/discussions)
 
 ---
 

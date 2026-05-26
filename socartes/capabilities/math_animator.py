@@ -6,6 +6,10 @@ import importlib.util
 import time
 from typing import Any
 
+from socartes.agents.math_animator.voiceover import (
+    add_edge_voiceover_to_render_result,
+    compose_voiceover_script,
+)
 from socartes.capabilities.request_contracts import get_capability_request_schema
 from socartes.core.capability_protocol import BaseCapability, CapabilityManifest
 from socartes.core.context import UnifiedContext
@@ -176,6 +180,23 @@ class MathAnimatorCapability(BaseCapability):
             if summary.summary_text:
                 await stream.content(summary.summary_text, source=self.name, stage="summary")
         timings["summary"] = round(time.perf_counter() - stage_start, 3)
+
+        if request_config.output_mode == "video":
+            stage_start = time.perf_counter()
+            artifact_count = len(render_result.artifacts)
+            render_result = await add_edge_voiceover_to_render_result(
+                render_result=render_result,
+                narration_text=compose_voiceover_script(
+                    user_input=context.user_message,
+                    summary=summary,
+                    analysis=analysis,
+                    design=design,
+                ),
+                language=context.language,
+                progress_callback=_on_render_progress,
+            )
+            if len(render_result.artifacts) != artifact_count:
+                timings["voiceover"] = round(time.perf_counter() - stage_start, 3)
 
         async with stream.stage("render_output", source=self.name):
             await stream.progress(
@@ -370,6 +391,24 @@ class MathAnimatorCapability(BaseCapability):
         )
         if notice:
             await stream.content(summary_text, source=self.name, stage="summary")
+
+        if request_config.output_mode == "video":
+            stage_start = time.perf_counter()
+            artifact_count = len(render_result.artifacts)
+            render_result = await add_edge_voiceover_to_render_result(
+                render_result=render_result,
+                narration_text=compose_voiceover_script(
+                    user_input=original,
+                    analysis=analysis,
+                    design=design,
+                )
+                or partial
+                or original,
+                language=context.language,
+                progress_callback=_on_render_progress,
+            )
+            if len(render_result.artifacts) != artifact_count:
+                timings["voiceover"] = round(time.perf_counter() - stage_start, 3)
 
         await stream.result(
             {

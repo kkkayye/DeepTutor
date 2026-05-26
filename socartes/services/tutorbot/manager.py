@@ -80,6 +80,44 @@ def mask_channel_secrets(channels: dict[str, Any]) -> dict[str, Any]:
     return walked
 
 
+def merge_masked_channel_secrets(
+    incoming: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    """Preserve existing channel secrets when clients submit masked placeholders."""
+
+    def _walk(value: Any, existing: Any, key_hint: str | None = None) -> Any:
+        if isinstance(value, dict):
+            existing_dict = existing if isinstance(existing, dict) else {}
+            return {
+                k: _walk(v, existing_dict.get(k), key_hint=k) for k, v in value.items()
+            }
+        if isinstance(value, list):
+            existing_list = existing if isinstance(existing, list) else []
+            return [
+                _walk(
+                    item,
+                    existing_list[index] if index < len(existing_list) else None,
+                    key_hint,
+                )
+                for index, item in enumerate(value)
+            ]
+        if (
+            key_hint is not None
+            and _is_secret_field(key_hint)
+            and value == _SECRET_MASK
+            and isinstance(existing, str)
+            and existing
+        ):
+            return existing
+        return value
+
+    merged = _walk(incoming, current)
+    if not isinstance(merged, dict):  # defensive — should not happen
+        return {}
+    return merged
+
+
 def normalize_message_content(content: Any) -> str:
     """Return a display-safe string for text or multimodal message content."""
     if content is None:

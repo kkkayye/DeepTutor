@@ -53,7 +53,7 @@ export default function InteractiveBlock({ block }: InteractiveBlockProps) {
 
   return (
     <figure className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-sm">
-      <VisualizationViewer result={result} />
+      <VisualizationViewer result={result} htmlAutoHeight />
       {description && (
         <figcaption className="mt-3 text-xs leading-snug text-[var(--muted-foreground)]">
           <MarkdownRenderer content={description} variant="default" />

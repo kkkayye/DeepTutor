@@ -1,19 +1,26 @@
 "use client";
 
-export type AppLanguage = "en" | "zh";
+export type AppLanguage = "en" | "zh" | "ko";
 
-export const ACTIVE_SESSION_STORAGE_KEY = "deeptutor.activeSessionId.tab";
-export const LANGUAGE_STORAGE_KEY = "deeptutor-language";
-export const SIDEBAR_COLLAPSED_STORAGE_KEY = "deeptutor.sidebarCollapsed";
+export const ACTIVE_SESSION_STORAGE_KEY = "socartes.activeSessionId.tab";
+export const LANGUAGE_STORAGE_KEY = "socartes-language";
+export const SIDEBAR_COLLAPSED_STORAGE_KEY = "socartes.sidebarCollapsed";
 
-export const ACTIVE_SESSION_EVENT = "deeptutor:active-session";
-export const LANGUAGE_EVENT = "deeptutor:language";
-export const SIDEBAR_COLLAPSED_EVENT = "deeptutor:sidebar-collapsed";
+export const ACTIVE_SESSION_EVENT = "socartes:active-session";
+export const LANGUAGE_EVENT = "socartes:language";
+export const SIDEBAR_COLLAPSED_EVENT = "socartes:sidebar-collapsed";
 
 export function normalizeLanguage(
   value: string | null | undefined,
 ): AppLanguage {
-  return value === "zh" ? "zh" : "en";
+  const language = String(value || "").toLowerCase();
+  if (language === "zh" || language === "cn" || language === "chinese") {
+    return "zh";
+  }
+  if (language === "ko" || language === "kr" || language === "korean") {
+    return "ko";
+  }
+  return "en";
 }
 
 export function readStoredLanguage(): AppLanguage {

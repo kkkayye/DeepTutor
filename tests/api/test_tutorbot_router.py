@@ -345,7 +345,7 @@ class TestCreateBotExplicitClearSemantics:
 
 
 class TestGetBotStoppedSecretHandling:
-    """GET /{bot_id} masks channel secrets by default; ?include_secrets=true reveals them."""
+    """GET /{bot_id} masks channel secrets by default; env-gated opt-in can reveal them."""
 
     _CHANNELS = {
         "telegram": {"enabled": True, "token": "123:ABC", "allow_from": ["1"]},
@@ -389,6 +389,7 @@ class TestGetBotStoppedSecretHandling:
         assert body["llm_selection"] == {"profile_id": "p-default", "model_id": "m-default"}
 
     def test_explicit_include_secrets_reveals_token(self, monkeypatch):
+        monkeypatch.setenv("ALLOW_SECRET_REVEAL", "true")
         client = self._client(monkeypatch)
         resp = client.get("/api/v1/tutorbot/b?include_secrets=true")
         assert resp.status_code == 200

@@ -28,7 +28,6 @@ function ChartJsRenderer({ config }: { config: string }) {
           chartRef.current = null;
         }
 
-        // eslint-disable-next-line no-new-func
         const parsedConfig = new Function(
           `"use strict"; return (${config});`,
         )();
@@ -77,10 +76,105 @@ function ChartJsRenderer({ config }: { config: string }) {
   );
 }
 
-function HtmlRenderer({ html }: { html: string }) {
+function HtmlRenderer({
+  html,
+  autoHeight = false,
+}: {
+  html: string;
+  autoHeight?: boolean;
+}) {
+  const { t } = useTranslation();
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [iframeHeight, setIframeHeight] = useState(560);
 
-  const prepared = useMemo(() => prepareIframeHtml(html || ""), [html]);
+  const prepared = useMemo(
+    () => prepareIframeHtml(html || "", { fitFrame: autoHeight }),
+    [html, autoHeight],
+  );
+
+  useEffect(() => {
+    if (!autoHeight) return;
+
+    const overflowAllowsScroll = (value: string) =>
+      /auto|scroll|overlay/.test(value);
+
+    const scrollFrameHost = (deltaX: number, deltaY: number) => {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+
+      let node = iframe.parentElement;
+      while (node) {
+        const style = window.getComputedStyle(node);
+        const canScrollY =
+          deltaY !== 0 &&
+          overflowAllowsScroll(style.overflowY) &&
+          node.scrollHeight > node.clientHeight + 1;
+        const canScrollX =
+          deltaX !== 0 &&
+          overflowAllowsScroll(style.overflowX) &&
+          node.scrollWidth > node.clientWidth + 1;
+
+        if (canScrollY || canScrollX) {
+          const beforeTop = node.scrollTop;
+          const beforeLeft = node.scrollLeft;
+          node.scrollBy({
+            left: canScrollX ? deltaX : 0,
+            top: canScrollY ? deltaY : 0,
+            behavior: "auto",
+          });
+          if (
+            node.scrollTop !== beforeTop ||
+            node.scrollLeft !== beforeLeft
+          ) {
+            return;
+          }
+        }
+
+        node = node.parentElement;
+      }
+
+      window.scrollBy({ left: deltaX, top: deltaY, behavior: "auto" });
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      const iframe = iframeRef.current;
+      if (!iframe || event.source !== iframe.contentWindow) return;
+
+      const data = event.data as
+        | {
+            source?: string;
+            type?: string;
+            height?: unknown;
+            deltaX?: unknown;
+            deltaY?: unknown;
+          }
+        | undefined;
+      if (data?.source !== "socartes-html-iframe") {
+        return;
+      }
+
+      if (data.type === "scroll") {
+        const deltaX = Number(data.deltaX) || 0;
+        const deltaY = Number(data.deltaY) || 0;
+        if (!Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+        if (deltaX === 0 && deltaY === 0) return;
+        scrollFrameHost(deltaX, deltaY);
+        return;
+      }
+
+      if (data.type !== "resize") return;
+
+      const measured = Number(data.height);
+      if (!Number.isFinite(measured) || measured <= 0) return;
+      const nextHeight = Math.min(Math.max(Math.ceil(measured), 480), 20000);
+      setIframeHeight((current) =>
+        Math.abs(current - nextHeight) > 4 ? nextHeight : current,
+      );
+    };
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [autoHeight]);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -106,17 +200,22 @@ function HtmlRenderer({ html }: { html: string }) {
         type="button"
         onClick={handleOpenInNewTab}
         className="absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-md border border-[var(--border)] bg-[var(--background)]/90 px-2 py-1 text-[10px] font-medium text-[var(--muted-foreground)] backdrop-blur transition-colors hover:text-[var(--foreground)]"
-        title="Open in new tab"
+        title={t("Open in new tab")}
       >
         <ExternalLink size={10} strokeWidth={1.8} />
-        Open
+        {t("Open")}
       </button>
       <iframe
         ref={iframeRef}
-        title="HTML visualization"
+        title={t("HTML visualization")}
         sandbox="allow-scripts"
-        className="w-full rounded-lg border border-[var(--border)] bg-white"
-        style={{ minHeight: 480, height: 560 }}
+        scrolling={autoHeight ? "no" : undefined}
+        className="block w-full rounded-lg border border-[var(--border)] bg-white"
+        style={
+          autoHeight
+            ? { minHeight: 480, height: iframeHeight }
+            : { minHeight: 480, height: 560 }
+        }
       />
     </div>
   );
@@ -125,17 +224,11 @@ function HtmlRenderer({ html }: { html: string }) {
 function SvgRenderer({ svg }: { svg: string }) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  const sanitizedSvg = useMemo(() => {
-    const trimmed = svg.trim();
-    if (!trimmed.startsWith("<svg")) {
-      setError(t("Invalid SVG: does not start with <svg"));
-      return "";
-    }
-    setError(null);
-    return trimmed;
-  }, [svg, t]);
+  const sanitizedSvg = useMemo(() => svg.trim(), [svg]);
+  const error = sanitizedSvg.startsWith("<svg")
+    ? null
+    : t("Invalid SVG: does not start with <svg");
 
   if (error) {
     return (
@@ -159,7 +252,10 @@ function SvgRenderer({ svg }: { svg: string }) {
   );
 }
 
-function renderVisualization(result: VisualizeResult) {
+function renderVisualization(
+  result: VisualizeResult,
+  options: { htmlAutoHeight?: boolean } = {},
+) {
   if (result.render_type === "svg") {
     return <SvgRenderer svg={result.code.content} />;
   }
@@ -167,15 +263,22 @@ function renderVisualization(result: VisualizeResult) {
     return <Mermaid chart={result.code.content} />;
   }
   if (result.render_type === "html") {
-    return <HtmlRenderer html={result.code.content} />;
+    return (
+      <HtmlRenderer
+        html={result.code.content}
+        autoHeight={options.htmlAutoHeight}
+      />
+    );
   }
   return <ChartJsRenderer config={result.code.content} />;
 }
 
 export default function VisualizationViewer({
   result,
+  htmlAutoHeight = false,
 }: {
   result: VisualizeResult;
+  htmlAutoHeight?: boolean;
 }) {
   const { t } = useTranslation();
   const [showCode, setShowCode] = useState(false);
@@ -231,7 +334,7 @@ export default function VisualizationViewer({
             {t("Fullscreen")}
           </button>
         )}
-        {renderVisualization(result)}
+        {renderVisualization(result, { htmlAutoHeight })}
       </div>
 
       {/* Toolbar */}

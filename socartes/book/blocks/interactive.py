@@ -43,7 +43,17 @@ class InteractiveGenerator(BlockGenerator):
             f"Build an {interaction} HTML page for the chapter "
             f'"{chapter_title}"{focus_clause}. The page should let the learner '
             "manipulate state, drag/click controls, or step through a guided "
-            "demo to internalise the concept."
+            "demo to internalise the concept. Because this HTML is embedded in "
+            "a book page, do not create internal vertical scrolling panels, "
+            "max-height content boxes, or collapsed accordions. Keep teaching "
+            "sections expanded by default and let the document height grow. "
+            "Make every interaction mobile-safe: never require vertical "
+            "dragging, drag-and-drop, or a vertical slider as the only way to "
+            "answer because the surrounding book page scrolls vertically. For "
+            "sorting or classification exercises, such as noun/verb/adjective "
+            "tasks, provide tap-to-select plus tap-target, segmented buttons, "
+            "dropdowns, or click controls; drag can be an optional desktop "
+            "enhancement only."
         )
 
         try:

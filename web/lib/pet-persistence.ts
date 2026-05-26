@@ -1,4 +1,4 @@
-const PET_SHELL_STORAGE_KEY = "deeptutor.pet.shell.v1";
+const PET_SHELL_STORAGE_KEY = "socartes.pet.shell.v1";
 
 export interface PetShell {
   position?: { x: number; y: number };

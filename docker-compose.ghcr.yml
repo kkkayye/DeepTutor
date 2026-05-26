@@ -35,6 +35,8 @@
 #   (not the server), and all API calls will fail.
 # ============================================
 
+name: socartes
+
 services:
   socartes:
     image: ghcr.io/hkuds/socartes:latest
@@ -42,8 +44,8 @@ services:
     container_name: socartes
     restart: unless-stopped
     ports:
-      - "${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
-      - "${FRONTEND_PORT:-3782}:${FRONTEND_PORT:-3782}"
+      - "${BACKEND_BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
+      - "${FRONTEND_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-3782}:${FRONTEND_PORT:-3782}"
 
     # Load environment variables from .env file
     env_file:
@@ -71,11 +73,13 @@ services:
       # Service Ports
       - BACKEND_PORT=${BACKEND_PORT:-8001}
       - FRONTEND_PORT=${FRONTEND_PORT:-3782}
-      # API URL for remote/cloud deployment (see note above)
-      # LOCAL:  leave blank
-      # REMOTE: set to http://<your-server-ip>:8001 or https://your-domain.com:8001
+      # Legacy public API variables; keep blank for public deployments.
       - NEXT_PUBLIC_API_BASE_EXTERNAL=${NEXT_PUBLIC_API_BASE_EXTERNAL:-}
       - NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE:-}
+      - INTERNAL_API_BASE=${INTERNAL_API_BASE:-http://127.0.0.1:8001}
+      - ALLOW_SECRET_REVEAL=${ALLOW_SECRET_REVEAL:-false}
+      - CORS_ORIGIN=${CORS_ORIGIN:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
 
     volumes:
       # Persistent data (created automatically on first start)
@@ -95,4 +99,5 @@ services:
 
 networks:
   socartes-network:
+    name: socartes-network
     driver: bridge

@@ -30,8 +30,10 @@ function isAbortError(error: unknown): boolean {
   );
 }
 
-function agentLanguage(language: string): "zh" | "en" {
-  return language.startsWith("en") ? "en" : "zh";
+function agentLanguage(language: string): "zh" | "en" | "ko" {
+  if (language.startsWith("zh")) return "zh";
+  if (language.startsWith("ko")) return "ko";
+  return "en";
 }
 
 function listVisiblePetSections(): string[] {

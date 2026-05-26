@@ -59,6 +59,7 @@ __all__ = [
     "ConfigTestRunner",
     "TestRun",
     "get_config_test_runner",
+    "context_window_detection",
 ]
 
 
@@ -82,4 +83,8 @@ def __getattr__(name: str):
     if name in {"ConfigTestRunner", "TestRun", "get_config_test_runner"}:
         test_runner = importlib.import_module(f"{__name__}.test_runner")
         return getattr(test_runner, name)
+    if name == "context_window_detection":
+        module = importlib.import_module(f"{__name__}.context_window_detection")
+        globals()[name] = module
+        return module
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

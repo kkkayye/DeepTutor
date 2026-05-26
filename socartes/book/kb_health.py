@@ -230,6 +230,11 @@ def mark_drift_on_book(
 _LOG_LINE = re.compile(r"^- `(?P<ts>[^`]+)` \*\*(?P<op>[^*]+)\*\* — (?P<msg>.+)$")
 
 
+def _is_failure_log(op: str, msg: str) -> bool:
+    text = f"{op} {msg}".lower()
+    return any(marker in text for marker in ("error", "fail", "failed", "failure"))
+
+
 @dataclass
 class LogHealthReport:
     book_id: str
@@ -272,13 +277,15 @@ def scan_log_health(book_id: str, storage: BookStorage | None = None) -> LogHeal
                 msg = m.group("msg").strip()
                 if op in {"compile_page", "page_compiled", "page_planned"}:
                     report.last_compile_at = ts
-                if "error" in op.lower() or "fail" in op.lower():
+                is_failure = _is_failure_log(op, msg)
+                if is_failure:
                     report.error_entries += 1
                     report.last_error_at = ts
                 if op == "block_error":
                     report.block_failures += 1
-                key = f"{op}:{msg[:80]}"
-                counter[key] = counter.get(key, 0) + 1
+                if is_failure:
+                    key = f"{op}:{msg[:80]}"
+                    counter[key] = counter.get(key, 0) + 1
     except OSError as exc:
         logger.warning(f"Could not read log {log_path}: {exc}")
         return report

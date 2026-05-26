@@ -1,5 +1,5 @@
 """
-Agents Module - Unified agent system for OpenTutor.
+Agents Module - Unified agent system for Socartes.
 
 This module provides a unified BaseAgent class and module-specific agents:
 - solve: Question solving agents (MainSolver, SolveAgent, etc.)

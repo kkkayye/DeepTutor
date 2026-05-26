@@ -96,16 +96,22 @@ tutorbot = [
 ]
 
 # Matrix (Element) channel for TutorBot. Mirrors requirements/matrix.txt.
-# Kept as a separate extra because matrix-nio[e2e] requires libolm (native dep).
+# Default Matrix install is non-E2EE so it works without libolm/python-olm.
 matrix = [
-    "matrix-nio[e2e]>=0.25.2,<1.0.0",
+    "matrix-nio>=0.25.2,<1.0.0",
     "mistune>=3.0.0,<4.0.0",
     "nh3>=0.2.18,<1.0.0",
 ]
 
-# Math Animator addon (Manim). Mirrors requirements/math-animator.txt.
+# Optional Matrix E2EE addon. Mirrors requirements/matrix-e2e.txt and requires libolm.
+matrix-e2e = [
+    "socartes[matrix]",
+    "matrix-nio[e2e]>=0.25.2,<1.0.0",
+]
+
+# Math Animator addon (Manim + optional Edge TTS voiceover). Mirrors requirements/math-animator.txt.
 # System prerequisites (installed outside pip): LaTeX, pkg-config, cairo, cmake, ffmpeg.
-math-animator = ["manim>=0.19.0"]
+math-animator = ["manim>=0.19.0", "edge-tts>=7.0.0,<8.0.0"]
 
 # Dev/test tooling. Mirrors requirements/dev.txt.
 dev = [
@@ -117,7 +123,7 @@ dev = [
     "bandit>=1.8.0",
 ]
 
-# Everything: server + tutorbot + matrix + math-animator + dev tools.
+# Everything: server + tutorbot + non-E2EE matrix + math-animator + dev tools.
 all = [
     "socartes[tutorbot]",
     "socartes[matrix]",
@@ -292,6 +298,7 @@ asyncio_default_fixture_loop_scope = "function"
 addopts = [
     "--strict-markers",
     "--strict-config",
+    "--import-mode=importlib",
     "--disable-warnings",
     "--tb=short"
 ]

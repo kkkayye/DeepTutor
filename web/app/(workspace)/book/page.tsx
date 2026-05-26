@@ -119,6 +119,38 @@ function BookPageInner() {
     return data;
   }, []);
 
+  const detailReloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const selectedBookIdRef = useRef<string | null>(selectedBookId);
+
+  useEffect(() => {
+    selectedBookIdRef.current = selectedBookId;
+  }, [selectedBookId]);
+
+  const clearScheduledDetailReload = useCallback(() => {
+    if (!detailReloadTimerRef.current) return;
+    clearTimeout(detailReloadTimerRef.current);
+    detailReloadTimerRef.current = null;
+  }, []);
+
+  const scheduleLoadBookDetail = useCallback(
+    (id: string) => {
+      if (detailReloadTimerRef.current) return;
+      detailReloadTimerRef.current = setTimeout(() => {
+        detailReloadTimerRef.current = null;
+        if (selectedBookIdRef.current === id) {
+          void loadBookDetail(id);
+        }
+      }, 450);
+    },
+    [loadBookDetail],
+  );
+
+  useEffect(() => {
+    return () => clearScheduledDetailReload();
+  }, [clearScheduledDetailReload]);
+
   useEffect(() => {
     void refreshBooks();
   }, [refreshBooks]);
@@ -143,17 +175,18 @@ function BookPageInner() {
         kind === "page_planned" ||
         kind === "spine_ready"
       ) {
-        void loadBookDetail(selectedBookId);
+        scheduleLoadBookDetail(selectedBookId);
       }
     });
     return () => {
+      clearScheduledDetailReload();
       try {
         socket.close();
       } catch {
         // ignore
       }
     };
-  }, [selectedBookId, loadBookDetail]);
+  }, [selectedBookId, scheduleLoadBookDetail, clearScheduledDetailReload]);
 
   // ── Selectors ──────────────────────────────────────────────────────
 
