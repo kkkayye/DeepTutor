@@ -59,6 +59,8 @@ cli = [
 
 vector = [
     "sqlite-vec>=0.1.6",
+    "onnxruntime>=1.17",
+    "tokenizers>=0.15",
 ]
 # Web/API server (CLI + FastAPI). Mirrors requirements/server.txt.
 # loguru / json-repair live here (not in [tutorbot]) because provider_core
