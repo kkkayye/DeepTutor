@@ -314,6 +314,7 @@ app.include_router(
 app.include_router(
     knowledge.router, prefix="/api/v1/knowledge", tags=["knowledge"], dependencies=_auth
 )
+knowledge.include_course_alias_routes(app, dependencies=_auth)
 app.include_router(
     dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"], dependencies=_auth
 )

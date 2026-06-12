@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import json
 from pathlib import Path
+import zipfile
 
 import pytest
 
@@ -33,6 +34,14 @@ def _build_app() -> FastAPI:
     return app
 
 
+def _build_course_alias_app() -> FastAPI:
+    if FastAPI is None or router is None:  # pragma: no cover - guarded by pytestmark
+        raise RuntimeError("fastapi is not installed")
+    app = FastAPI()
+    knowledge_router_module.include_course_alias_routes(app)
+    return app
+
+
 class _FakeKBManager:
     def __init__(self, base_dir: Path) -> None:
         self.base_dir = base_dir
@@ -57,6 +66,18 @@ class _FakeKBManager:
     def get_default(self) -> str | None:
         names = self.list_knowledge_bases()
         return names[0] if names else None
+
+    def get_info(self, name: str) -> dict:
+        kb_dir = self.get_knowledge_base_path(name)
+        return {
+            "name": name,
+            "is_default": name == self.get_default(),
+            "statistics": {"raw_documents": 0, "rag_initialized": False},
+            "metadata": self.config.get("knowledge_bases", {}).get(name, {}),
+            "path": str(kb_dir),
+            "status": self.config.get("knowledge_bases", {}).get(name, {}).get("status", "ready"),
+            "progress": None,
+        }
 
     def get_knowledge_base_path(self, name: str) -> Path:
         kb_dir = self.base_dir / name
@@ -91,6 +112,21 @@ def _uppercase_upload_payload() -> list[tuple[str, tuple[str, bytes, str]]]:
     return [("files", ("报告.PDF", b"%PDF-1.4\n", "application/pdf"))]
 
 
+def _write_docx(path: Path, paragraphs: list[str]) -> None:
+    body = "".join(f"<w:p><w:r><w:t>{text}</w:t></w:r></w:p>" for text in paragraphs)
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        archive.writestr(
+            "word/document.xml",
+            (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+                f"<w:body>{body}</w:body>"
+                "</w:document>"
+            ),
+        )
+
+
 def test_rag_providers_returns_llamaindex_only() -> None:
     with TestClient(_build_app()) as client:
         response = client.get("/api/v1/knowledge/rag-providers")
@@ -122,6 +158,65 @@ def test_supported_file_types_returns_upload_policy() -> None:
     assert payload["max_file_size_bytes"] > payload["max_pdf_size_bytes"] > 0
     assert ".pdf" in payload["accept"]
     assert ".docx" in payload["accept"]
+
+
+def test_course_alias_routes_are_registered_for_knowledge_router(
+    monkeypatch, tmp_path: Path
+) -> None:
+    assert hasattr(knowledge_router_module, "include_course_alias_routes")
+
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["alias-course"] = {"path": "alias-course"}
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: manager)
+    monkeypatch.setattr(knowledge_router_module, "list_visible_kb_access", lambda: [])
+    monkeypatch.setattr(knowledge_router_module, "KnowledgeBaseInitializer", _FakeInitializer)
+    monkeypatch.setattr(knowledge_router_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+
+    async def _noop_init_task(*_args, **_kwargs):
+        return None
+
+    monkeypatch.setattr(knowledge_router_module, "run_initialization_task", _noop_init_task)
+
+    with TestClient(_build_course_alias_app()) as client:
+        courses = client.get("/api/v1/courses")
+        assert courses.status_code == 200
+        assert any(item["name"] == "alias-course" for item in courses.json())
+
+        courses_slash = client.get("/api/v1/courses/", follow_redirects=False)
+        assert courses_slash.status_code == 200
+        assert any(item["name"] == "alias-course" for item in courses_slash.json())
+
+        course = client.get("/api/v1/course")
+        assert course.status_code == 200
+        assert course.json() == courses.json()
+
+        course_slash = client.get("/api/v1/course/", follow_redirects=False)
+        assert course_slash.status_code == 200
+        assert course_slash.json() == courses_slash.json()
+
+        assert client.get("/api/v1/courses/rag-providers").status_code == 200
+        assert client.get("/api/v1/course/rag-providers").status_code == 200
+
+        created = client.post(
+            "/api/v1/course",
+            data={"name": "singular-course", "rag_provider": "llamaindex"},
+            files=_upload_payload(),
+        )
+        assert created.status_code == 200
+        assert created.json()["name"] == "singular-course"
+
+        created_slash = client.post(
+            "/api/v1/course/",
+            data={"name": "singular-course-slash", "rag_provider": "llamaindex"},
+            files=_upload_payload(),
+        )
+        assert created_slash.status_code == 200
+        assert created_slash.json()["name"] == "singular-course-slash"
+
+        courses_after_create = client.get("/api/v1/courses")
+        assert courses_after_create.status_code == 200
+        names = {item["name"] for item in courses_after_create.json()}
+        assert {"singular-course", "singular-course-slash"}.issubset(names)
 
 
 def test_create_kb_does_not_require_llm_precheck(monkeypatch, tmp_path: Path) -> None:
@@ -317,6 +412,29 @@ def test_list_files_preserves_kb_named_default(monkeypatch, tmp_path: Path) -> N
 
     assert response.status_code == 200
     assert response.json()["files"][0]["name"] == "default.txt"
+
+
+def test_list_files_includes_extracted_text_for_docx_preview(
+    monkeypatch, tmp_path: Path
+) -> None:
+    manager = _FakeKBManager(tmp_path / "knowledge_bases")
+    manager.config["knowledge_bases"]["doc-kb"] = {
+        "path": "doc-kb",
+        "status": "ready",
+    }
+    raw_dir = manager.base_dir / "doc-kb" / "raw"
+    raw_dir.mkdir(parents=True)
+    _write_docx(raw_dir / "THE HAUNTED PAJAMAS.docx", ["Chapter One", "A locked drawer"])
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app()) as client:
+        response = client.get("/api/v1/knowledge/doc-kb/files")
+
+    assert response.status_code == 200
+    file_info = response.json()["files"][0]
+    assert file_info["name"] == "THE HAUNTED PAJAMAS.docx"
+    assert "Chapter One" in file_info["extracted_text"]
+    assert "A locked drawer" in file_info["extracted_text"]
 
 
 def test_reindex_accepts_default_alias(monkeypatch, tmp_path: Path) -> None:

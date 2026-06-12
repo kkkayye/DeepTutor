@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from socartes.agents.chat.agentic_pipeline import AgenticChatPipeline
+from socartes.agents.chat.agentic_pipeline import AgenticChatPipeline, ToolTrace
 from socartes.core.context import UnifiedContext
 from socartes.core.stream import StreamEvent, StreamEventType
 from socartes.core.stream_bus import StreamBus
@@ -253,6 +253,144 @@ async def test_execute_tool_call_streams_retrieve_progress_for_rag(
     ]
 
 
+@pytest.mark.asyncio
+async def test_current_course_question_answers_selected_course_and_checks_rag(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "socartes.agents.chat.agentic_pipeline.get_llm_config",
+        lambda: SimpleNamespace(
+            binding="openai", model="gpt-test", api_key="k", base_url="u", api_version=None
+        ),
+    )
+
+    class FakeRegistry:
+        def __init__(self) -> None:
+            self.calls: list[dict[str, Any]] = []
+
+        def get_enabled(self, selected):
+            return [SimpleNamespace(name=name) for name in selected]
+
+        async def execute(self, name: str, **kwargs):
+            self.calls.append({"name": name, **kwargs})
+            return ToolResult(
+                content="CHAPTER I\n\nA PRESENT FROM CHINA",
+                sources=[{"type": "rag", "query": kwargs["query"], "kb_name": kwargs["kb_name"]}],
+                metadata={"provider": "test"},
+                success=True,
+            )
+
+    registry = FakeRegistry()
+    monkeypatch.setattr(
+        "socartes.agents.chat.agentic_pipeline.get_tool_registry", lambda: registry
+    )
+
+    pipeline = AgenticChatPipeline(language="zh")
+    pipeline.registry = registry
+
+    async def fail_llm_path(*_args, **_kwargs):
+        raise AssertionError("current course should be answered from selected course context")
+
+    monkeypatch.setattr(pipeline, "_stage_thinking", fail_llm_path)
+    monkeypatch.setattr(pipeline, "_stage_acting", fail_llm_path)
+    monkeypatch.setattr(pipeline, "_stage_observing", fail_llm_path)
+    monkeypatch.setattr(pipeline, "_stage_responding", fail_llm_path)
+
+    bus = StreamBus()
+    events, consumer = await _collect_bus_events(bus)
+    context = UnifiedContext(
+        session_id="session-1",
+        user_message="现在是什么课程",
+        enabled_tools=["rag"],
+        knowledge_bases=["THE HAUNTED PAJAMAS"],
+        language="zh",
+        metadata={"turn_id": "turn-1"},
+    )
+
+    await pipeline.run(context, bus)
+    await asyncio.sleep(0)
+    await bus.close()
+    await consumer
+
+    assert registry.calls == [
+        {
+            "name": "rag",
+            "query": "THE HAUNTED PAJAMAS",
+            "kb_name": "THE HAUNTED PAJAMAS",
+            "mode": "hybrid",
+            "event_sink": registry.calls[0]["event_sink"],
+        }
+    ]
+    content = "".join(event.content for event in events if event.type == StreamEventType.CONTENT)
+    assert "当前课程是 THE HAUNTED PAJAMAS" in content
+    sources_events = [event for event in events if event.type == StreamEventType.SOURCES]
+    assert sources_events
+    assert sources_events[0].metadata["sources"][0]["kb_name"] == "THE HAUNTED PAJAMAS"
+    result_events = [event for event in events if event.type == StreamEventType.RESULT]
+    assert result_events[0].metadata["response"] == "当前课程是 THE HAUNTED PAJAMAS。"
+
+
+@pytest.mark.asyncio
+async def test_current_course_question_reports_no_selected_course(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "socartes.agents.chat.agentic_pipeline.get_llm_config",
+        lambda: SimpleNamespace(
+            binding="openai", model="gpt-test", api_key="k", base_url="u", api_version=None
+        ),
+    )
+
+    class FakeRegistry:
+        def __init__(self) -> None:
+            self.calls: list[dict[str, Any]] = []
+
+        def get_enabled(self, selected):
+            return [SimpleNamespace(name=name) for name in selected]
+
+        async def execute(self, name: str, **kwargs):
+            self.calls.append({"name": name, **kwargs})
+            return ToolResult(content="unexpected", success=True)
+
+    registry = FakeRegistry()
+    monkeypatch.setattr(
+        "socartes.agents.chat.agentic_pipeline.get_tool_registry", lambda: registry
+    )
+
+    pipeline = AgenticChatPipeline(language="zh")
+    pipeline.registry = registry
+
+    async def fail_llm_path(*_args, **_kwargs):
+        raise AssertionError("current course missing state should not call the LLM")
+
+    monkeypatch.setattr(pipeline, "_stage_thinking", fail_llm_path)
+    monkeypatch.setattr(pipeline, "_stage_acting", fail_llm_path)
+    monkeypatch.setattr(pipeline, "_stage_observing", fail_llm_path)
+    monkeypatch.setattr(pipeline, "_stage_responding", fail_llm_path)
+
+    bus = StreamBus()
+    events, consumer = await _collect_bus_events(bus)
+    context = UnifiedContext(
+        session_id="session-1",
+        user_message="现在是什么课程",
+        enabled_tools=["rag"],
+        knowledge_bases=[],
+        language="zh",
+        metadata={"turn_id": "turn-1"},
+    )
+
+    await pipeline.run(context, bus)
+    await asyncio.sleep(0)
+    await bus.close()
+    await consumer
+
+    assert registry.calls == []
+    content = "".join(event.content for event in events if event.type == StreamEventType.CONTENT)
+    assert "当前没有选中的课程" in content
+    result_events = [event for event in events if event.type == StreamEventType.RESULT]
+    assert result_events[0].metadata["current_course"] is None
+
+
 def test_rag_tool_args_replace_default_alias_with_selected_kb() -> None:
     pipeline = AgenticChatPipeline.__new__(AgenticChatPipeline)
     context = UnifiedContext(
@@ -272,6 +410,27 @@ def test_rag_tool_args_replace_default_alias_with_selected_kb() -> None:
 
     assert args["kb_name"] == "西方修辞思想史"
     assert args["mode"] == "hybrid"
+
+
+def test_rag_tool_trace_preserves_large_course_context() -> None:
+    pipeline = AgenticChatPipeline.__new__(AgenticChatPipeline)
+    rag_result = "A" * 5000 + "Hickey's Pride" + "B" * 5000
+
+    formatted = pipeline._format_tool_traces(
+        [
+            ToolTrace(
+                name="rag",
+                arguments={"query": "combined course questions"},
+                result=rag_result,
+                success=True,
+                sources=[],
+                metadata={},
+            )
+        ]
+    )
+
+    assert "Hickey's Pride" in formatted
+    assert len(formatted) > 9000
 
 
 def test_rag_tool_args_replace_hallucinated_kb_with_selected_kb() -> None:
@@ -513,6 +672,124 @@ async def test_native_rag_call_uses_system_selected_kb_not_llm_args(
     assert tool_call_events[0].metadata["tool_name"] == "rag"
     assert tool_call_events[0].metadata.get("args", {}) == {"query": "chapter summary"}
     assert tool_call_events[0].content
+
+
+@pytest.mark.asyncio
+async def test_native_rag_call_uses_newly_selected_course_over_chat_history(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "socartes.agents.chat.agentic_pipeline.get_llm_config",
+        lambda: SimpleNamespace(
+            binding="openai", model="gpt-test", api_key="k", base_url="u", api_version=None
+        ),
+    )
+
+    class FakeRegistry:
+        def __init__(self) -> None:
+            self.calls: list[dict[str, Any]] = []
+
+        def build_openai_schemas(self, _enabled_tools):
+            return [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "rag",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "query": {"type": "string"},
+                                "kb_name": {"type": "string"},
+                            },
+                            "required": ["query", "kb_name"],
+                        },
+                    },
+                }
+            ]
+
+        def build_prompt_text(self, enabled_tools, **_kwargs):
+            return "\n".join(enabled_tools)
+
+        async def execute(self, name: str, **kwargs):
+            self.calls.append({"name": name, **kwargs})
+            return ToolResult(
+                content=f"grounded in {kwargs.get('kb_name')}",
+                sources=[{"type": "rag", "query": kwargs.get("query"), "kb_name": kwargs.get("kb_name")}],
+                metadata={"tool": name},
+                success=True,
+            )
+
+    registry = FakeRegistry()
+    monkeypatch.setattr(
+        "socartes.agents.chat.agentic_pipeline.get_tool_registry", lambda: registry
+    )
+
+    pipeline = AgenticChatPipeline(language="en")
+    pipeline.registry = registry
+
+    async def fake_create(**_kwargs):
+        return SimpleNamespace(
+            choices=[
+                SimpleNamespace(
+                    message=SimpleNamespace(
+                        content="",
+                        tool_calls=[
+                            SimpleNamespace(
+                                id="tool-call-rag",
+                                function=SimpleNamespace(
+                                    name="rag",
+                                    arguments=(
+                                        '{"query":"chapter summary",'
+                                        '"kb_name":"THE HAUNTED PAJAMAS"}'
+                                    ),
+                                ),
+                            )
+                        ],
+                    )
+                )
+            ]
+        )
+
+    monkeypatch.setattr(
+        pipeline,
+        "_build_openai_client",
+        lambda: SimpleNamespace(
+            chat=SimpleNamespace(completions=SimpleNamespace(create=fake_create)),
+        ),
+    )
+
+    bus = StreamBus()
+    events, consumer = await _collect_bus_events(bus)
+    context = UnifiedContext(
+        session_id="session-1",
+        user_message="Summarize the current course.",
+        conversation_history=[
+            {"role": "user", "content": "Earlier we used THE HAUNTED PAJAMAS."},
+            {"role": "assistant", "content": "Retrieved from THE HAUNTED PAJAMAS."},
+        ],
+        enabled_tools=["rag"],
+        knowledge_bases=["CURRENT COURSE"],
+        language="en",
+        metadata={"turn_id": "turn-1"},
+    )
+
+    traces = await pipeline._run_native_tool_loop(
+        context=context,
+        enabled_tools=["rag"],
+        thinking_text="Use the selected course.",
+        stream=bus,
+    )
+    await asyncio.sleep(0)
+    await bus.close()
+    await consumer
+
+    assert registry.calls[0]["kb_name"] == "CURRENT COURSE"
+    assert traces[0].sources == [
+        {"type": "rag", "query": "chapter summary", "kb_name": "CURRENT COURSE"}
+    ]
+    tool_call_events = [event for event in events if event.type == StreamEventType.TOOL_CALL]
+    assert tool_call_events[0].metadata.get("args", {}) == {"query": "chapter summary"}
+    assert "THE HAUNTED PAJAMAS" not in tool_call_events[0].metadata.get("args", {})
 
 
 @pytest.mark.asyncio

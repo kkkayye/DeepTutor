@@ -18,6 +18,7 @@ import hashlib
 import logging
 from pathlib import Path
 import re
+import time
 
 from socartes.knowledge.manager import KnowledgeBaseManager
 
@@ -136,9 +137,16 @@ def detect_kb_drift(
     has_drift = bool(new_kbs or removed_kbs or changed_kbs)
     stale_pages: list[str] = []
     if has_drift:
-        # Any READY page that referenced this KB is stale.
+        remaining_stale_ids = set(book.stale_page_ids or [])
+        # On first drift detection there is no per-page compile fingerprint, so
+        # every READY page is considered stale. Once the user recompiles pages,
+        # book.stale_page_ids becomes the authoritative remaining work list.
         for page in store.list_pages(book.id):
-            if page.status.value == "ready":
+            if page.status.value != "ready":
+                continue
+            if remaining_stale_ids and page.id not in remaining_stale_ids:
+                continue
+            if not remaining_stale_ids or page.id in remaining_stale_ids:
                 stale_pages.append(page.id)
 
     return KBDriftReport(
@@ -164,6 +172,7 @@ def refresh_book_fingerprints(
         return None
     book.kb_fingerprints = fingerprint_kbs(book.knowledge_bases, manager=manager)
     book.stale_page_ids = []
+    book.updated_at = time.time()
     store.save_book(book)
     store.append_log(
         book_id,

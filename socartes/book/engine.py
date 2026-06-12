@@ -803,9 +803,43 @@ class BookEngine:
                     )
             except Exception as exc:  # noqa: BLE001
                 logger.debug(f"fingerprint refresh skipped: {exc}")
+            await self._mark_force_compiled_page_fresh(
+                book_id=book_id,
+                page_id=page_id,
+                force=force,
+            )
 
         await self._maybe_finalize_book(book_id)
         return page
+
+    async def _mark_force_compiled_page_fresh(
+        self,
+        *,
+        book_id: str,
+        page_id: str,
+        force: bool,
+    ) -> None:
+        if not force:
+            return
+        try:
+            book = await self.storage.load_book_async(book_id)
+            if book is None or page_id not in (book.stale_page_ids or []):
+                return
+            remaining = [stale_id for stale_id in book.stale_page_ids if stale_id != page_id]
+            if not remaining:
+                from .kb_health import refresh_book_fingerprints
+
+                await asyncio.to_thread(
+                    refresh_book_fingerprints,
+                    book_id,
+                    storage=self.storage,
+                )
+                return
+            book.stale_page_ids = remaining
+            book.updated_at = time.time()
+            await self.storage.save_book_async(book)
+        except Exception as exc:  # noqa: BLE001
+            logger.debug(f"stale page marker update skipped: {exc}")
 
     # ── Background compilation queue ─────────────────────────────────────
 

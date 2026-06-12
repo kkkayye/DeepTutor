@@ -131,6 +131,14 @@ function paletteFor(id: string) {
   return COVER_PALETTES[hash % COVER_PALETTES.length];
 }
 
+function metadataString(
+  metadata: Book["metadata"] | null | undefined,
+  key: string,
+): string {
+  const value = metadata?.[key];
+  return typeof value === "string" ? value : "";
+}
+
 export interface BookLibraryProps {
   books: Book[];
   loading: boolean;
@@ -272,9 +280,29 @@ export default function BookLibrary({
               const isPendingDelete = pendingDeleteId === book.id;
               const status = STATUS_STYLES[book.status] || STATUS_STYLES.draft;
               const palette = paletteFor(book.id);
-              const coverStyle: CSSProperties = { background: palette.base };
+              const coverImageUrl = metadataString(
+                book.metadata,
+                "cover_image_url",
+              );
+              const coverBadge =
+                metadataString(book.metadata, "cover_badge") ||
+                t("Course book");
+              const coverSubtitle = metadataString(
+                book.metadata,
+                "cover_subtitle",
+              );
+              const coverTheme = metadataString(book.metadata, "cover_theme");
+              const coverStyle: CSSProperties = {
+                background:
+                  coverImageUrl && coverTheme === "skku"
+                    ? "linear-gradient(135deg, #f8fbf9 0%, #e2efe7 48%, #b7d3c3 100%)"
+                    : palette.base,
+              };
               const glowStyle: CSSProperties = {
-                background: `radial-gradient(circle at 80% 25%, ${palette.glow} 0%, transparent 60%)`,
+                background:
+                  coverImageUrl && coverTheme === "skku"
+                    ? "radial-gradient(circle at 82% 22%, rgba(0, 116, 73, 0.25) 0%, transparent 62%)"
+                    : `radial-gradient(circle at 80% 25%, ${palette.glow} 0%, transparent 60%)`,
               };
 
               return (
@@ -347,6 +375,26 @@ export default function BookLibrary({
                       className="absolute bottom-3 right-3 opacity-50"
                       style={{ color: palette.accent }}
                     />
+                    {coverImageUrl ? (
+                      <>
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
+                        <img
+                          src={coverImageUrl}
+                          alt=""
+                          className="absolute right-4 top-4 h-12 w-12 object-contain drop-shadow-sm"
+                        />
+                        <div className="absolute bottom-3 left-4 right-16">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-950/70">
+                            {coverBadge}
+                          </div>
+                          {coverSubtitle ? (
+                            <div className="mt-0.5 line-clamp-1 text-[11px] font-medium text-emerald-950/75">
+                              {coverSubtitle}
+                            </div>
+                          ) : null}
+                        </div>
+                      </>
+                    ) : null}
 
                     <span
                       className={`absolute left-4 top-3 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${status.className}`}

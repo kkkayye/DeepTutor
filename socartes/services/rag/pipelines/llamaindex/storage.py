@@ -5,10 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 import shutil
 from typing import Any
 
 from llama_index.core import StorageContext, VectorStoreIndex, load_index_from_storage
+from llama_index.core.schema import NodeWithScore, TextNode
 
 from socartes.services.embedding.validation import validate_embedding_batch
 from socartes.services.rag import index_versioning
@@ -26,6 +28,58 @@ class AddStoragePlan:
 
 
 _INDEX_CACHE: dict[tuple[str, tuple[tuple[str, int, int], ...]], Any] = {}
+_TOKEN_RE = re.compile(r"[A-Za-z0-9]+(?:'[A-Za-z0-9]+)?")
+_NUMBERED_QUESTION_RE = re.compile(
+    r"^\s*(?:Q\d+|Question\s+\d+|\d+)\s*[:.)-]\s*(.+\?)\s*$",
+    re.IGNORECASE,
+)
+_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "as",
+    "at",
+    "be",
+    "by",
+    "did",
+    "do",
+    "does",
+    "for",
+    "from",
+    "had",
+    "has",
+    "have",
+    "he",
+    "her",
+    "him",
+    "his",
+    "how",
+    "in",
+    "is",
+    "it",
+    "its",
+    "of",
+    "on",
+    "or",
+    "say",
+    "says",
+    "the",
+    "their",
+    "there",
+    "they",
+    "this",
+    "to",
+    "was",
+    "were",
+    "what",
+    "when",
+    "where",
+    "which",
+    "who",
+    "why",
+    "with",
+}
 
 
 def clear_index_cache() -> None:
@@ -200,10 +254,193 @@ def validate_storage_embeddings(storage_dir: Path) -> None:
     _validate_persisted_embeddings(None, storage_dir)
 
 
+def _load_docstore_entries(storage_dir: Path) -> dict[str, dict[str, Any]]:
+    docstore_path = storage_dir / "docstore.json"
+    try:
+        with open(docstore_path, encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+    raw_entries = payload.get("docstore/data")
+    if not isinstance(raw_entries, dict):
+        return {}
+
+    entries: dict[str, dict[str, Any]] = {}
+    for fallback_id, raw_entry in raw_entries.items():
+        if not isinstance(raw_entry, dict):
+            continue
+        data = raw_entry.get("__data__", raw_entry)
+        if not isinstance(data, dict):
+            continue
+        text = data.get("text")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        node_id = data.get("id_") or data.get("id") or fallback_id
+        if isinstance(node_id, str) and node_id:
+            entries[node_id] = data
+    return entries
+
+
+def _tokenize_for_search(text: str) -> list[str]:
+    return [
+        token.lower()
+        for token in _TOKEN_RE.findall(text)
+        if len(token) > 1 and token.lower() not in _STOPWORDS
+    ]
+
+
+def _lexical_score(query_tokens: list[str], text: str) -> float:
+    if not query_tokens:
+        return 0.0
+
+    text_lower = text.lower()
+    text_tokens = set(_tokenize_for_search(text))
+    hits = [token for token in query_tokens if token in text_tokens]
+    if not hits:
+        return 0.0
+
+    score = float(len(hits))
+    for left, right in zip(query_tokens, query_tokens[1:]):
+        if f"{left} {right}" in text_lower:
+            score += 1.5
+    return score
+
+
+def _split_lexical_queries(query: str) -> list[str]:
+    subqueries: list[str] = []
+    for line in query.splitlines():
+        match = _NUMBERED_QUESTION_RE.match(line.strip())
+        if match:
+            subqueries.append(match.group(1).strip())
+    return subqueries or [query]
+
+
+def _relationship_node_id(entry: dict[str, Any], relationship_key: str) -> str | None:
+    relationships = entry.get("relationships")
+    if not isinstance(relationships, dict):
+        return None
+    relationship = relationships.get(relationship_key)
+    if not isinstance(relationship, dict):
+        return None
+    node_id = relationship.get("node_id")
+    return node_id if isinstance(node_id, str) and node_id else None
+
+
+def _node_id_from_result(result: Any) -> str | None:
+    node = getattr(result, "node", result)
+    for attr in ("node_id", "id_", "id"):
+        value = getattr(node, attr, None)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _node_from_docstore_entry(node_id: str, entry: dict[str, Any], score: float) -> NodeWithScore:
+    metadata = entry.get("metadata")
+    if not isinstance(metadata, dict):
+        metadata = {}
+    return NodeWithScore(
+        node=TextNode(text=entry["text"], id_=node_id, metadata=metadata),
+        score=score,
+    )
+
+
+def _append_docstore_node(
+    output: list[Any],
+    seen: set[str],
+    entries: dict[str, dict[str, Any]],
+    node_id: str | None,
+    score: float,
+) -> bool:
+    if not node_id or node_id in seen:
+        return False
+    entry = entries.get(node_id)
+    if entry is None:
+        return False
+    output.append(_node_from_docstore_entry(node_id, entry, score))
+    seen.add(node_id)
+    return True
+
+
+def _append_adjacent_nodes(
+    output: list[Any],
+    seen: set[str],
+    entries: dict[str, dict[str, Any]],
+    start_node_id: str,
+    *,
+    score: float,
+    adjacent_hops: int,
+) -> None:
+    frontier = [start_node_id]
+    for _ in range(adjacent_hops):
+        next_frontier: list[str] = []
+        for node_id in frontier:
+            entry = entries.get(node_id)
+            if entry is None:
+                continue
+            for relationship_key in ("2", "3"):
+                adjacent_id = _relationship_node_id(entry, relationship_key)
+                if _append_docstore_node(output, seen, entries, adjacent_id, score):
+                    next_frontier.append(adjacent_id)
+        frontier = next_frontier
+
+
+def augment_retrieved_nodes(
+    storage_dir: Path,
+    query: str,
+    vector_nodes: list[Any],
+    *,
+    lexical_top_k: int = 3,
+    adjacent_hops: int = 1,
+) -> list[Any]:
+    """Augment vector retrieval with lexical hits and neighboring chunks."""
+    entries = _load_docstore_entries(storage_dir)
+    if not entries:
+        return vector_nodes
+
+    output: list[Any] = []
+    seen: set[str] = set()
+
+    for lexical_query in _split_lexical_queries(query):
+        query_tokens = _tokenize_for_search(lexical_query)
+        lexical_matches = sorted(
+            (
+                (_lexical_score(query_tokens, entry["text"]), node_id)
+                for node_id, entry in entries.items()
+            ),
+            key=lambda item: item[0],
+            reverse=True,
+        )
+
+        for score, node_id in lexical_matches[: max(0, lexical_top_k)]:
+            if score <= 0:
+                continue
+            if _append_docstore_node(output, seen, entries, node_id, score):
+                _append_adjacent_nodes(
+                    output,
+                    seen,
+                    entries,
+                    node_id,
+                    score=max(score - 0.1, 0.1),
+                    adjacent_hops=max(0, adjacent_hops),
+            )
+
+    for node in vector_nodes:
+        node_id = _node_id_from_result(node)
+        if node_id and node_id in seen:
+            continue
+        output.append(node)
+        if node_id:
+            seen.add(node_id)
+    return output
+
+
 def retrieve_nodes(storage_dir: Path, query: str, *, top_k: int = 5) -> list[Any]:
     index = _load_index_cached(storage_dir)
     retriever = index.as_retriever(similarity_top_k=top_k)
-    return retriever.retrieve(query)
+    nodes = retriever.retrieve(query)
+    return augment_retrieved_nodes(storage_dir, query, nodes)
 
 
 def delete_kb_dir(kb_dir: Path) -> bool:

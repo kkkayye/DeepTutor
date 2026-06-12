@@ -57,6 +57,7 @@ services:
       - "127.0.0.1:8320:8320"
     networks:
       socartes-network:
+        ipv4_address: 172.22.0.3
         aliases:
           - embedding-local
     healthcheck:
@@ -152,5 +153,5 @@ services:
 # ============================================
 networks:
   socartes-network:
+    external: true
     name: socartes-network
-    driver: bridge

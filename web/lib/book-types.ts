@@ -149,6 +149,10 @@ export interface Book {
   updated_at: number;
   metadata: Record<string, unknown> & {
     page_chat_sessions?: Record<string, string>;
+    cover_image_url?: string;
+    cover_badge?: string;
+    cover_subtitle?: string;
+    cover_theme?: string;
   };
 }
 

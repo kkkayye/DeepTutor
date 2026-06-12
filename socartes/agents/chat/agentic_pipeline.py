@@ -44,6 +44,7 @@ CHAT_EXCLUDED_TOOLS = {"geogebra_analysis"}
 CHAT_OPTIONAL_TOOLS = [name for name in BUILTIN_TOOL_NAMES if name not in CHAT_EXCLUDED_TOOLS]
 MAX_PARALLEL_TOOL_CALLS = 8
 MAX_TOOL_RESULT_CHARS = 4000
+MAX_RAG_TOOL_RESULT_CHARS = 24000
 
 CHAT_STAGE_KEYS: tuple[str, ...] = (
     "responding",
@@ -180,6 +181,10 @@ class AgenticChatPipeline:
             await stream.result(result_payload, source="chat")
             return
 
+        if self._is_current_course_question(context):
+            await self._answer_current_course_question(context, stream)
+            return
+
         requested_tools = self._normalize_enabled_tools(context.enabled_tools)
         enabled_tools = self._drop_rag_without_selected_kb(requested_tools, context)
         if "rag" in requested_tools and "rag" not in enabled_tools:
@@ -235,6 +240,134 @@ class AgenticChatPipeline:
         if cs:
             result_payload["metadata"] = {"cost_summary": cs}
         await stream.result(result_payload, source="chat")
+
+    async def _answer_current_course_question(
+        self,
+        context: UnifiedContext,
+        stream: StreamBus,
+    ) -> None:
+        selected_kbs = self._selected_kbs(context)
+        use_zh = self._prefers_chinese(context)
+        if not selected_kbs:
+            final_response = (
+                "当前没有选中的课程。请先在 Course DB 选择课程。"
+                if use_zh
+                else "No course is currently selected. Please choose one in Course DB first."
+            )
+            await stream.content(final_response, source="chat", stage="responding")
+            await stream.result(
+                {
+                    "response": final_response,
+                    "current_course": None,
+                    "tool_traces": [],
+                    "source_trace": "current_course_context",
+                },
+                source="chat",
+            )
+            return
+
+        kb_name = selected_kbs[0]
+        query = kb_name
+        trace_meta = build_trace_metadata(
+            call_id=new_call_id("chat-current-course"),
+            phase="acting",
+            label=self._t("labels.retrieve", default="Retrieve"),
+            call_kind="current_course_lookup",
+            trace_id="chat-current-course",
+            trace_role="tool",
+            trace_group="tool_call",
+        )
+        tool_call_id = new_call_id("chat-current-course-rag")
+        tool_args = {"query": query, "kb_name": kb_name, "mode": "hybrid"}
+        display_args = {"query": query}
+
+        async with stream.stage("acting", source="chat", metadata=trace_meta):
+            await stream.tool_call(
+                tool_name="rag",
+                args=display_args,
+                source="chat",
+                stage="acting",
+                metadata=self._tool_trace_metadata(
+                    trace_meta,
+                    context=context,
+                    tool_call_id=tool_call_id,
+                    tool_name="rag",
+                    tool_index=0,
+                ),
+            )
+            result = await self._execute_tool_call(
+                "rag",
+                tool_args,
+                stream=stream,
+                retrieve_meta=self._retrieve_trace_metadata(
+                    trace_meta,
+                    context=context,
+                    tool_call_id=tool_call_id,
+                    tool_name="rag",
+                    tool_index=0,
+                    tool_args=tool_args,
+                ),
+            )
+            await stream.tool_result(
+                tool_name="rag",
+                result=result["result_text"],
+                source="chat",
+                stage="acting",
+                metadata=self._tool_trace_metadata(
+                    trace_meta,
+                    context=context,
+                    tool_call_id=tool_call_id,
+                    tool_name="rag",
+                    tool_index=0,
+                    trace_kind="tool_result",
+                ),
+            )
+
+        sources = result["sources"] or [{"type": "rag", "query": query, "kb_name": kb_name}]
+        final_response = (
+            f"当前课程是 {kb_name}。"
+            if use_zh
+            else f"The current course is {kb_name}."
+        )
+        response_meta = build_trace_metadata(
+            call_id=new_call_id("chat-current-course-response"),
+            phase="responding",
+            label=self._t("labels.final_response", default="Final response"),
+            call_kind="llm_final_response",
+            trace_id="chat-current-course-response",
+            trace_role="response",
+            trace_group="stage",
+        )
+        async with stream.stage("responding", source="chat", metadata=response_meta):
+            await stream.content(
+                final_response,
+                source="chat",
+                stage="responding",
+                metadata=merge_trace_metadata(response_meta, {"trace_kind": "final_answer"}),
+            )
+        await stream.sources(
+            sources,
+            source="chat",
+            stage="responding",
+            metadata=merge_trace_metadata(response_meta, {"trace_kind": "sources"}),
+        )
+        tool_trace = ToolTrace(
+            name="rag",
+            arguments=display_args,
+            result=result["result_text"],
+            success=bool(result["success"]),
+            sources=sources,
+            metadata=result["metadata"],
+        )
+        await stream.result(
+            {
+                "response": final_response,
+                "current_course": kb_name,
+                "tool_traces": [asdict(tool_trace)],
+                "source_trace": "current_course_context",
+            },
+            source="chat",
+        )
 
     async def _stage_thinking(
         self,
@@ -1357,6 +1490,45 @@ class AgenticChatPipeline:
     def _selected_kbs(self, context: UnifiedContext) -> list[str]:
         return [str(kb).strip() for kb in context.knowledge_bases if str(kb).strip()]
 
+    @staticmethod
+    def _is_current_course_question(context: UnifiedContext) -> bool:
+        message = " ".join(str(context.user_message or "").strip().lower().split())
+        compact = "".join(message.split())
+        if not message:
+            return False
+        zh_patterns = (
+            "现在是什么课程",
+            "当前是什么课程",
+            "现在课程是什么",
+            "当前课程是什么",
+            "我现在是什么课程",
+            "我当前是什么课程",
+            "现在选的课程",
+            "当前选的课程",
+            "当前选中的课程",
+            "现在选中的课程",
+            "当前course",
+            "现在course",
+        )
+        if any(pattern in compact for pattern in zh_patterns):
+            return True
+        en_patterns = (
+            "what is the current course",
+            "which course is selected",
+            "what course is selected",
+            "current selected course",
+            "selected course name",
+            "current course name",
+        )
+        return any(pattern in message for pattern in en_patterns)
+
+    def _prefers_chinese(self, context: UnifiedContext) -> bool:
+        language = str(context.language or getattr(self, "language", "en") or "").lower()
+        message = str(context.user_message or "")
+        return language.startswith("zh") or getattr(self, "language", "en") == "zh" or any(
+            "\u4e00" <= char <= "\u9fff" for char in message
+        )
+
     def _drop_rag_without_selected_kb(
         self,
         enabled_tools: list[str],
@@ -1435,13 +1607,16 @@ class AgenticChatPipeline:
 
         blocks: list[str] = []
         for idx, trace in enumerate(tool_traces, start=1):
+            result_limit = (
+                MAX_RAG_TOOL_RESULT_CHARS if trace.name == "rag" else MAX_TOOL_RESULT_CHARS
+            )
             blocks.append(
                 "\n".join(
                     [
                         f"{idx}. {trace.name}",
                         f"arguments: {json.dumps(trace.arguments, ensure_ascii=False)}",
                         f"success: {trace.success}",
-                        f"result: {self._truncate_tool_result(trace.result)}",
+                        f"result: {self._truncate_tool_result(trace.result, limit=result_limit)}",
                     ]
                 )
             )

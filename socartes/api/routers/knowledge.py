@@ -50,6 +50,7 @@ from socartes.multi_user.knowledge_access import (
 from socartes.services.config import PROJECT_ROOT, load_config_with_main
 from socartes.services.rag.factory import DEFAULT_PROVIDER
 from socartes.services.rag.file_routing import FileTypeRouter
+from socartes.utils.document_extractor import DocumentExtractionError, extract_text_from_path
 from socartes.utils.document_validator import DocumentValidator
 from socartes.utils.error_utils import format_exception_message
 
@@ -77,6 +78,7 @@ def format_bytes_human_readable(size_bytes: int) -> str:
 
 _kb_base_dir = PROJECT_ROOT / "data" / "knowledge_bases"
 DEFAULT_KB_ALIASES = {"", "default", "current", "selected", "默认", "默认知识库", "当前知识库"}
+OFFICE_TEXT_PREVIEW_EXTENSIONS = {".docx", ".xlsx", ".pptx"}
 
 # Lazy initialization
 kb_manager = None
@@ -935,6 +937,19 @@ def _resolve_kb_raw_dir(kb_name: str) -> Path:
     return kb_path / "raw"
 
 
+def _extract_kb_file_preview_text(path: Path) -> str | None:
+    """Return extracted text for Office files that browsers cannot render."""
+    if path.suffix.lower() not in OFFICE_TEXT_PREVIEW_EXTENSIONS:
+        return None
+    try:
+        return extract_text_from_path(path, max_bytes=None)
+    except DocumentExtractionError as exc:
+        logger.debug("Could not extract preview text from '%s': %s", path.name, exc)
+    except Exception as exc:  # pragma: no cover - defensive preview fallback
+        logger.debug("Unexpected preview extraction failure for '%s': %s", path.name, exc)
+    return None
+
+
 @router.get("/{kb_name}/files")
 async def list_kb_raw_files(kb_name: str):
     """List raw documents stored under data/knowledge_bases/<kb>/raw/."""
@@ -951,14 +966,16 @@ async def list_kb_raw_files(kb_name: str):
         except OSError:
             continue
         media_type, _ = mimetypes.guess_type(entry.name)
-        files.append(
-            {
-                "name": entry.name,
-                "size": stat.st_size,
-                "modified": stat.st_mtime,
-                "mime_type": media_type,
-            }
-        )
+        file_info = {
+            "name": entry.name,
+            "size": stat.st_size,
+            "modified": stat.st_mtime,
+            "mime_type": media_type,
+        }
+        extracted_text = _extract_kb_file_preview_text(entry)
+        if extracted_text:
+            file_info["extracted_text"] = extracted_text
+        files.append(file_info)
     return {"files": files}
 
 
@@ -1697,3 +1714,56 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def include_course_alias_routes(app, *, dependencies=None) -> None:
+    """Register legacy course paths against the knowledge-base API handlers."""
+    route_dependencies = dependencies or []
+    root_aliases = APIRouter()
+    root_aliases.add_api_route(
+        "/courses",
+        list_knowledge_bases,
+        methods=["GET"],
+        response_model=list[KnowledgeBaseInfo],
+    )
+    root_aliases.add_api_route(
+        "/courses/",
+        list_knowledge_bases,
+        methods=["GET"],
+        response_model=list[KnowledgeBaseInfo],
+    )
+    root_aliases.add_api_route("/courses", create_knowledge_base, methods=["POST"])
+    root_aliases.add_api_route("/courses/", create_knowledge_base, methods=["POST"])
+    root_aliases.add_api_route(
+        "/course",
+        list_knowledge_bases,
+        methods=["GET"],
+        response_model=list[KnowledgeBaseInfo],
+    )
+    root_aliases.add_api_route(
+        "/course/",
+        list_knowledge_bases,
+        methods=["GET"],
+        response_model=list[KnowledgeBaseInfo],
+    )
+    root_aliases.add_api_route("/course", create_knowledge_base, methods=["POST"])
+    root_aliases.add_api_route("/course/", create_knowledge_base, methods=["POST"])
+
+    app.include_router(
+        root_aliases,
+        prefix="/api/v1",
+        tags=["knowledge"],
+        dependencies=route_dependencies,
+    )
+    app.include_router(
+        router,
+        prefix="/api/v1/courses",
+        tags=["knowledge"],
+        dependencies=route_dependencies,
+    )
+    app.include_router(
+        router,
+        prefix="/api/v1/course",
+        tags=["knowledge"],
+        dependencies=route_dependencies,
+    )
