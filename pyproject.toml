@@ -57,6 +57,9 @@ cli = [
     "defusedxml>=0.7.1",
 ]
 
+vector = [
+    "sqlite-vec>=0.1.6",
+]
 # Web/API server (CLI + FastAPI). Mirrors requirements/server.txt.
 # loguru / json-repair live here (not in [tutorbot]) because provider_core
 # imports them unconditionally — needed by every server install path.

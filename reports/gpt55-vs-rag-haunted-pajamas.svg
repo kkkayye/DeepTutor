@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="480" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">Socartes full-novel RAG capability test</title>
+  <desc id="desc">Three-condition table showing a closed-book GPT probe, legacy top-1 Socartes baseline, and repaired full-novel Socartes RAG results after an extended question set.</desc>
+  <rect width="960" height="480" fill="#ffffff"/>
+  <text x="42" y="52" fill="#0f172a" font-family="Arial, sans-serif" font-size="26" font-weight="700">Socartes RAG: Full-Novel Capability Test</text>
+  <text x="42" y="82" fill="#475569" font-family="Arial, sans-serif" font-size="14">42-question diagnostic; full-novel RAG uses BM25 + vector RRF reranking and a direct-support gate.</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="42" y="112" width="876" height="44" rx="6" fill="#0f172a"/>
+    <text x="62" y="141" font-size="14" font-weight="700" fill="#ffffff">Condition</text>
+    <text x="505" y="141" font-size="14" font-weight="700" fill="#ffffff">Answerable</text>
+    <text x="650" y="141" font-size="14" font-weight="700" fill="#ffffff">Q11-Q12</text>
+    <text x="784" y="141" font-size="14" font-weight="700" fill="#ffffff">Role</text>
+
+    <rect x="42" y="172" width="876" height="68" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="62" y="201" font-size="16" font-weight="700" fill="#0f172a">GPT-5.5 closed-book probe</text>
+    <text x="62" y="224" font-size="13" fill="#64748b">No search, no database</text>
+    <text x="512" y="214" font-size="27" font-weight="700" fill="#b45309">2/10</text>
+    <text x="662" y="214" font-size="27" font-weight="700" fill="#b45309">1/2</text>
+    <text x="786" y="206" font-size="13" fill="#334155">reference</text>
+
+    <rect x="42" y="254" width="876" height="68" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="62" y="283" font-size="16" font-weight="700" fill="#0f172a">Baseline: legacy top-1 retrieval</text>
+    <text x="62" y="306" font-size="13" fill="#64748b">Single highest lexical-overlap chunk</text>
+    <text x="512" y="296" font-size="27" font-weight="700" fill="#b45309">22/40</text>
+    <text x="662" y="296" font-size="27" font-weight="700" fill="#b45309">1/2</text>
+    <text x="786" y="288" font-size="13" fill="#334155">baseline</text>
+
+    <rect x="42" y="336" width="876" height="76" rx="6" fill="#ecfdf5" stroke="#22c55e" stroke-width="2"/>
+    <text x="62" y="367" font-size="17" font-weight="700" fill="#064e3b">Socartes full-novel automatic index</text>
+    <text x="62" y="391" font-size="13" fill="#166534">1047 deterministic automatic chunks</text>
+    <text x="508" y="380" font-size="30" font-weight="700" fill="#15803d">40/40</text>
+    <text x="662" y="380" font-size="30" font-weight="700" fill="#15803d">2/2</text>
+    <text x="786" y="372" font-size="13" font-weight="700" fill="#064e3b">main test</text>
+  </g>
+
+  <rect x="42" y="434" width="876" height="28" rx="6" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="62" y="453" fill="#166534" font-family="Arial, sans-serif" font-size="12">BM25 + vector RRF plus reranking reaches 40/40 answerable questions while the support gate keeps refusals at 2/2.</text>
+</svg>
